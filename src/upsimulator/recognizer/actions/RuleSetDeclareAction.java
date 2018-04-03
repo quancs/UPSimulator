@@ -33,13 +33,7 @@ public class RuleSetDeclareAction extends RecognizerAction {
 	public void doAction() {
 		List<Rule> targetRuleSet = Rule.getRuleSet(ruleSetName);
 		for (int i = 0; i < targetRuleSet.size(); i++) {
-			Rule rule;
-			try {
-				rule = (Rule) targetRuleSet.get(i).deepClone();
-			} catch (CloneNotSupportedException e) {
-				e.printStackTrace();
-				throw new RuntimeException("深拷贝失败");
-			}
+			Rule rule = (Rule) targetRuleSet.get(i).deepClone();
 			if (prefix != null)
 				rule.setName(prefix + rule.getName());
 			to.addRule(rule);

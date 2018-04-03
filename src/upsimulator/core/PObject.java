@@ -15,11 +15,6 @@ public class PObject implements Obj {
 	private List<Integer> intDimensions;
 	private Evaluator eval;
 
-	/**
-	 * 
-	 * @param name
-	 *            如果不设置eval，则name=name
-	 */
 	public PObject(String name, String... dims) {
 		this.name = name;
 		dimensions = new ArrayList<>();
@@ -28,10 +23,16 @@ public class PObject implements Obj {
 		intDimensions = null;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public PObject deepClone() throws CloneNotSupportedException {
+	public PObject deepClone() {
 		// no need to clone name and dimensions, they won't change.
-		PObject cloned = (PObject) super.clone();
+		PObject cloned = null;
+		try {
+			cloned = (PObject) super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
 		cloned.eval = null;
 		cloned.dimensions = (ArrayList<String>) dimensions.clone();
 		cloned.intDimensions = null;
@@ -43,6 +44,7 @@ public class PObject implements Obj {
 		dimensions = new ArrayList<>();
 	}
 
+	@SuppressWarnings("unchecked")
 	public PObject(PObject object) {
 		this.name = object.name;
 		if (object.eval != null) {
@@ -106,12 +108,6 @@ public class PObject implements Obj {
 		return name;
 	}
 
-	/**
-	 * 新增维度
-	 * 
-	 * @param dimensions
-	 *            name1,formula1,name2,formula2,....
-	 */
 	@Override
 	public void addDimension(String... formulas) {
 		for (String f : formulas)

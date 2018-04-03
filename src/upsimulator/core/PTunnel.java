@@ -7,11 +7,10 @@ import upsimulator.exceptions.UnknownTargetMembraneException;
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Result;
 import upsimulator.interfaces.Tunnel;
-import upsimulator.interfaces.Tunnel.TunnelType;
 
 /*
  * Membrane's connection between A and B.
- * Connection can be a protein tunnel between A and B.
+ * Connection can be a protein tunnel between membranes.
  * */
 
 public class PTunnel implements Tunnel {

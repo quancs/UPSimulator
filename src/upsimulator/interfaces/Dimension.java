@@ -7,25 +7,25 @@ import net.sourceforge.jeval.EvaluationException;
 import net.sourceforge.jeval.Evaluator;
 
 /**
- * 维度对象的接口
+ * Defines the functions of classes which have dimensions
  * 
  * @author quan
  *
  */
 public interface Dimension {
-	
+
 	/**
-	 * 设置计算器，每条规则使用同一个计算器
+	 * Set evaluator
 	 * 
 	 * @param evaluator
-	 *            计算器
+	 *            evaluator used to calculate dimension
 	 */
 	public void setEval(Evaluator evaluator);
 
 	/**
-	 * 获取计算器
+	 * Get the evaluator
 	 * 
-	 * @return 计算器
+	 * @return the evaluator inside
 	 */
 	public Evaluator getEval();
 

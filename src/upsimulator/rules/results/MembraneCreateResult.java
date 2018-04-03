@@ -54,6 +54,7 @@ public class MembraneCreateResult implements Result, Dimension {
 			result.setResult(sonMembrane);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public MembraneCreateResult deepClone() throws CloneNotSupportedException {
 		MembraneCreateResult cloned = (MembraneCreateResult) super.clone();

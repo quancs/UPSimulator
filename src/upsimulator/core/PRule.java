@@ -24,16 +24,13 @@ import upsimulator.rules.conditions.InhibitorCondition;
 import upsimulator.speedup.PossibleValueCombiner;
 import upsimulator.speedup.RuleChecker;
 
-//����ִ�з�Ϊ�������ڣ�1ȡ������Ҫ�Ķ���2���ù�������Ľ��
-//ֻ�е�ϵͳ������Ĥ�ڵ����й���ִ�����һ��֮�󣬲���ִ�еڶ���
-
 public class PRule implements Rule {
 	private static final long serialVersionUID = -3360118464623511714L;
 
 	private static Logger logger = Logger.getLogger(PRule.class);
 
-	private List<Condition> conditions;// ����
-	private List<Result> results;// ���
+	private List<Condition> conditions;
+	private List<Result> results;
 
 	private Evaluator evaluator;
 
@@ -55,31 +52,37 @@ public class PRule implements Rule {
 		evaluator = new Evaluator();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public PRule deepClone() throws CloneNotSupportedException {
-		PRule cloned = (PRule) super.clone();
+	public PRule deepClone() {
+		try {
+			PRule cloned = (PRule) super.clone();
 
-		cloned.evaluator = new Evaluator();
+			cloned.evaluator = new Evaluator();
 
-		cloned.conditions = new ArrayList<>();
-		for (Condition condition : conditions) {
-			Condition conditionCloned = (Condition) condition.deepClone();
-			if (conditionCloned instanceof Dimension)
-				((Dimension) conditionCloned).setEval(cloned.evaluator);
+			cloned.conditions = new ArrayList<>();
+			for (Condition condition : conditions) {
+				Condition conditionCloned = (Condition) condition.deepClone();
+				if (conditionCloned instanceof Dimension)
+					((Dimension) conditionCloned).setEval(cloned.evaluator);
 
-			cloned.conditions.add(conditionCloned);
+				cloned.conditions.add(conditionCloned);
+			}
+
+			cloned.results = new ArrayList<>();
+			for (Result result : results) {
+				Result resultCloned = (Result) result.deepClone();
+				if (resultCloned instanceof Dimension)
+					((Dimension) resultCloned).setEval(cloned.evaluator);
+				cloned.results.add(resultCloned);
+			}
+
+			cloned.dimensions = (LinkedList<String>) dimensions.clone();
+			return cloned;
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
 		}
-
-		cloned.results = new ArrayList<>();
-		for (Result result : results) {
-			Result resultCloned = (Result) result.deepClone();
-			if (resultCloned instanceof Dimension)
-				((Dimension) resultCloned).setEval(cloned.evaluator);
-			cloned.results.add(resultCloned);
-		}
-
-		cloned.dimensions = (LinkedList<String>) dimensions.clone();
-		return cloned;
+		return null;
 	}
 
 	@Override
@@ -103,7 +106,7 @@ public class PRule implements Rule {
 						pValue[dInfo.getRuleDim(i)] = obj.getIntDimensions().get(dInfo.getObjDim(i));
 					} catch (Exception e) {
 						e.printStackTrace();
-						System.err.println("Ĥ�г�����ά��δ����ֵ�Ķ���: " + membrane.toString());
+						System.err.println(membrane.toString());
 						throw e;
 					}
 				}
@@ -143,16 +146,16 @@ public class PRule implements Rule {
 	}
 
 	/**
-	 * ���÷��ε�˼·����ͼ�����з֡���ȡ����ֵ
+	 * Get the possible values of current rule
 	 * 
 	 * @param membrane
-	 *            �ڴ�Ĥ��Ѱ�ҹ���ά�ȵĿ���ֵ
-	 * @return pValues[i][j]��ʾ������iά�ĵ�j��ֵ
+	 *            the membrane current rule in
+	 * @return All the possible value
 	 */
 	private List<Integer[]> getPossibleValues(Membrane membrane) {
-		LinkedList<LinkedList<Integer[]>> pValuesList = new LinkedList<>();// �ȴ��ϲ��Ŀ���ֵ
-		LinkedList<int[]> pValuesDim = new LinkedList<>();// �ļ���ά�Ȳ�Ϊ��
-		for (DimensionInfo dInfo : dInfos) {// ��ʼ��������������
+		LinkedList<LinkedList<Integer[]>> pValuesList = new LinkedList<>();
+		LinkedList<int[]> pValuesDim = new LinkedList<>();
+		for (DimensionInfo dInfo : dInfos) {
 			LinkedList<Integer[]> pList = findValues(dInfo, membrane);
 			if (pList.size() == 0)
 				return new LinkedList<>();
@@ -167,7 +170,7 @@ public class PRule implements Rule {
 
 		LinkedList<PossibleValueCombiner> workers = new LinkedList<>();
 		for (int total = pValuesList.size() - 1, current = 1; workers.size() != 0 || pValuesList.size() > 1;) {
-			for (; pValuesList.size() > 1;) {// �������ά����ͬ
+			for (; pValuesList.size() > 1;) {
 				LinkedList<Integer[]> last = pValuesList.removeFirst(), lastComp = null;
 				int[] lastDims = pValuesDim.removeFirst(), lastDimsComp = null;
 
@@ -224,11 +227,6 @@ public class PRule implements Rule {
 	private ArrayList<DimensionInfo> dInfos;
 	private ArrayList<ArrayList<DimensionInfo>> graph;
 
-	/**
-	 * �ҳ�����Щ���������У���Щά��������ά����ͬ���γɵ�Ϊά�ȣ���ΪDimensionInfo���޻�ͼ
-	 * 
-	 * @throws UnpredictableDimensionException
-	 */
 	private void initDimInfos() throws UnpredictableDimensionException {
 		dInfos = new ArrayList<>();
 		graph = new ArrayList<>(dimensions.size());
@@ -296,8 +294,8 @@ public class PRule implements Rule {
 	@Override
 	public boolean fetch(Membrane membrane) {
 		if (dimensions.size() > 0 && !fixed) {
-			logger.error("�Ժ���ά����ά��û�й̶��Ĺ���ִ��fetch����");
-			return false;// ����ά�ȣ���ά��û�й̶��Ĺ��򣬲���Ҫfetch
+			logger.error("Rule " + this + " has uncomputed dimension.");
+			return false;
 		} else {
 			return doFetch(membrane);
 		}
@@ -321,7 +319,7 @@ public class PRule implements Rule {
 		}
 	}
 
-	@Override // �˷���������Ҫ��
+	@Override
 	public void setResult(Membrane membrane) throws UnknownTargetMembraneException {
 		for (Result product : results)
 			product.setResult(membrane);
@@ -425,9 +423,9 @@ public class PRule implements Rule {
 			this.obj = obj;
 		}
 
-		private ArrayList<Pair<Integer, Integer>> infos = new ArrayList<>();// ����ά��-������ά��
+		private ArrayList<Pair<Integer, Integer>> infos = new ArrayList<>();// <objDim,ruleDim>
 
-		private Obj obj;// �˶����whichDimά�������ĳһά����ͬ����ֻ��Ҫ�ж�Ĥ�е��������Ĵ�ά�ȵ�ֵ����
+		private Obj obj;
 
 		public Obj getObj() {
 			return obj;
@@ -514,7 +512,7 @@ public class PRule implements Rule {
 	}
 
 	/**
-	 * ��ά�Ⱥܶ��ʱ��ÿ��ά�ȵ�ֵҲ�кܶ��ʱ����Ҫ������������ʱ��
+	 * Rule with dimensions check all the satisfied rule of it.
 	 * 
 	 * @throws UnpredictableDimensionException
 	 * @throws CloneNotSupportedException
@@ -552,23 +550,13 @@ public class PRule implements Rule {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} catch (Exception e) {
-				boolean fi = checker.finished();
 				e.printStackTrace();
 			}
 		}
 
-		// for (Integer[] pv : pValues) {
-		// Rule rule = this.deepClone();
-		// for (int i = 0; i < pv.length; i++)
-		// rule.getEval().putVariable(dimensions.get(i), pv[i] + "");
-		//
-		// if (rule.satisfy(membrane)) {
-		// rule.fixDimension();
-		// satisfiedRules.add(rule);
-		// }
-		// }
 		Calendar t3 = Calendar.getInstance();
-		MainWindow.appendLogMsg(getNameDim() + " getPossibleValues=" + (t2.getTimeInMillis() - t1.getTimeInMillis()) + "ms\t\t" + " satisfyCheck=" + (t3.getTimeInMillis() - t2.getTimeInMillis()) + "ms");
+		MainWindow.appendLogMsg(
+				getNameDim() + " getPossibleValues=" + (t2.getTimeInMillis() - t1.getTimeInMillis()) + "ms\t\t" + " satisfyCheck=" + (t3.getTimeInMillis() - t2.getTimeInMillis()) + "ms");
 		return satisfiedRules;
 	}
 

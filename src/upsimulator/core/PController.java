@@ -32,6 +32,7 @@ import upsimulator.recognizer.UPLanguageRecognizer;
  * @author quan, pxx
  *
  */
+@SuppressWarnings("deprecation")
 public class PController extends Thread {
 
 	public enum PMethod {
@@ -64,15 +65,7 @@ public class PController extends Thread {
 		environment = getEnvironment(stringBuilder.toString());
 
 		records = new ArrayList<>();
-		try {
-			records.add((Membrane) environment.deepClone());
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
+		records.add((Membrane) environment.deepClone());
 	}
 
 	public static Membrane getEnvironment(String modelInstanceStr) {
@@ -177,7 +170,7 @@ public class PController extends Thread {
 			Membrane membrane = smList.get(i);
 			try {
 				MainWindow.appendLogMsg("Membrane " + membrane.getNameDim() + " are checking usable rules");
-				List<Rule> uRules = membrane.getUseableRules();
+				List<Rule> uRules = membrane.getUsableRules();
 				// 此处控制极大和极小并行，以及随机执行也是在此控制
 				smList.addAll(((PMembrane) membrane).getChildren());
 				fmList.add(membrane);
@@ -223,16 +216,7 @@ public class PController extends Thread {
 		MainWindow.appendMsg(uList.toString());
 		MainWindow.appendMsg(environment.toString()+"\n");
 
-			
-		try {
-			records.add((Membrane) environment.deepClone());
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
+		records.add((Membrane) environment.deepClone());
 
 		return uList.size();
 	}

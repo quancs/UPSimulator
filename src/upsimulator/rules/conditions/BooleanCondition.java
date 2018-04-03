@@ -22,12 +22,17 @@ public class BooleanCondition implements Dimension, Condition {
 		throw new RuntimeException("DimRelationshipCondition can not add Integer dimensions.");
 	}
 
-	public Condition deepClone() throws CloneNotSupportedException {
+	public Condition deepClone() {
 		// no need to deep clone dimensions
-		BooleanCondition cloned = (BooleanCondition) super.clone();
-		cloned.evaluator = null;
-		cloned.dimensions = (LinkedList<String>) dimensions.clone();
-		return cloned;
+		try {
+			BooleanCondition cloned = (BooleanCondition) super.clone();
+			cloned.evaluator = null;
+			cloned.dimensions = (LinkedList<String>) dimensions.clone();
+			return cloned;
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	private LinkedList<String> dimensions = new LinkedList<>();

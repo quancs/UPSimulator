@@ -57,7 +57,7 @@ public class ObjectCondition extends PObject implements Condition {
 	}
 
 	@Override
-	public ObjectCondition deepClone() throws CloneNotSupportedException {
+	public ObjectCondition deepClone() {
 		return (ObjectCondition) super.deepClone();
 	}
 

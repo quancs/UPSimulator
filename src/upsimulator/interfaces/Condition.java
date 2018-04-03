@@ -1,7 +1,7 @@
 package upsimulator.interfaces;
 
 /**
- * 条件
+ * Condition interface is used to describe the functions conditions need.
  * 
  * @author quan
  *
@@ -9,33 +9,37 @@ package upsimulator.interfaces;
 public interface Condition extends Cloneable {
 
 	/**
-	 * 第一步：是否满足条件（促进剂、抑制剂需要）
+	 * check if condition satisfy the situation in membrane.
 	 * 
 	 * @param membrane
-	 * @return 是否成功
+	 *            the membrane where to check the condition
+	 * @return satisfied or not
 	 */
 	public boolean satisfy(Membrane membrane);
 
 	/**
-	 * 第二步：取出条件的物质前提
+	 * fetch objects condition need from membrane
 	 * 
 	 * @param membrane
-	 * @return 是否成功
+	 *            the membrane where to fetch objects
+	 * @return success or not
 	 */
 	public boolean fetch(Membrane membrane);
 
 	/**
-	 * 如果某条件不能成功取出前提，则其前面的已经取出前提的条件应该退回前提
+	 * If some conditions in one rule cannot fetch the objects then the conditions
+	 * which have fetched the objects they need withdraw the objects they have
+	 * fetched.
 	 * 
 	 * @param membrane
+	 *            the membrane current condition withdraw objects to
 	 */
 	public void withdrawFetch(Membrane membrane);
 
 	/**
-	 * 用于实现对象的深拷贝，因为膜的类型声明，所以声明一个膜的时候需要深拷贝
+	 * Deep clone this condition
 	 * 
-	 * @return
-	 * @throws CloneNotSupportedException
+	 * @return the cloned condition
 	 */
-	public Condition deepClone() throws CloneNotSupportedException;
+	public Condition deepClone();
 }

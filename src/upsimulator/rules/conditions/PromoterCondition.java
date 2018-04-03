@@ -43,7 +43,7 @@ public class PromoterCondition extends PObject implements Condition {
 	}
 
 	@Override
-	public PromoterCondition deepClone() throws CloneNotSupportedException {
+	public PromoterCondition deepClone() {
 		return (PromoterCondition) super.deepClone();
 	}
 }

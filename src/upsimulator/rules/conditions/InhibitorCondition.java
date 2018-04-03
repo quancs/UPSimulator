@@ -7,7 +7,7 @@ import upsimulator.interfaces.Membrane;
 public class InhibitorCondition extends PObject implements Condition {
 
 	@Override
-	public InhibitorCondition deepClone() throws CloneNotSupportedException {
+	public InhibitorCondition deepClone() {
 		InhibitorCondition cloned = new InhibitorCondition(super.deepClone());
 		return cloned;
 	}

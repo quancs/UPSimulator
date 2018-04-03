@@ -55,23 +55,29 @@ public class PositionResult implements Result, Dimension, Condition {
 
 	private PositionResult cloned = null;
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public PositionResult deepClone() throws CloneNotSupportedException {
-		/* 因为PositionResult既是Result、又是Condition，因此此方法会被调用两次，第一次clone，第二次直接返回 */
-		if (cloned == null) {
-			// MemPropertyCondition没必要clone
-			cloned = (PositionResult) super.clone();
-			cloned.ors = new ArrayList<>();
-			for (ObjectResult or : ors)
-				cloned.addObjectResult(or.deepClone());
-			cloned.evaluator = null;
-			cloned.dimensions = (ArrayList<String>) dimensions.clone();
-			return cloned;
-		} else {
-			PositionResult temp = cloned;
-			cloned = null;
-			return temp;
+	public PositionResult deepClone() {
+		try {
+			/* 因为PositionResult既是Result、又是Condition，因此此方法会被调用两次，第一次clone，第二次直接返回 */
+			if (cloned == null) {
+				// MemPropertyCondition没必要clone
+				cloned = (PositionResult) super.clone();
+				cloned.ors = new ArrayList<>();
+				for (ObjectResult or : ors)
+					cloned.addObjectResult(or.deepClone());
+				cloned.evaluator = null;
+				cloned.dimensions = (ArrayList<String>) dimensions.clone();
+				return cloned;
+			} else {
+				PositionResult temp = cloned;
+				cloned = null;
+				return temp;
+			}
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
 		}
+		return null;
 	}
 
 	@Override

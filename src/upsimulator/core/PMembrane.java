@@ -50,7 +50,7 @@ public class PMembrane implements Membrane {
 	}
 
 	@Override
-	public PMembrane deepClone() throws CloneNotSupportedException, InstantiationException, IllegalAccessException {
+	public PMembrane deepClone() {
 		// no need to clone name , they won't change.
 		// rules, objects and properties need to be cloned
 
@@ -76,7 +76,12 @@ public class PMembrane implements Membrane {
 				}
 			}
 
-			Membrane cloned = m.getClass().newInstance();
+			Membrane cloned = null;
+			try {
+				cloned = m.getClass().newInstance();
+			} catch (InstantiationException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
 			m2mMap.put(m, cloned);
 			// clone name & dimension
 			cloned.setName(m.getNameDim());
@@ -103,7 +108,12 @@ public class PMembrane implements Membrane {
 
 		// clone tunnels
 		for (Tunnel t : tunnels) {
-			Tunnel cloned = t.getClass().newInstance();
+			Tunnel cloned = null;
+			try {
+				cloned = t.getClass().newInstance();
+			} catch (InstantiationException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
 			cloned.setSource(m2mMap.get(t.getSource()));
 			for (Membrane target : t.getTargets())
 				cloned.addTarget(m2mMap.get(target));
@@ -133,9 +143,6 @@ public class PMembrane implements Membrane {
 				objects.put(object, num);
 			}
 		}
-		// else {
-		// fatherMembrane.addObject(object, num);
-		// }
 	}
 
 	@Override
@@ -169,35 +176,10 @@ public class PMembrane implements Membrane {
 		return objects;
 	}
 
-	// @Override
-	// public void addSon(Membrane sonMembrane) {
-	// if (!deleted) {
-	// sonMembranes.add(sonMembrane);
-	// sonMembrane.setFather(this);
-	// } else {
-	// fatherMembrane.addSon(sonMembrane);
-	// }
-	// }
-
-	// @Override
-	// public void setFather(Membrane fatherMembrane) {
-	// this.fatherMembrane = fatherMembrane;
-	// }
-	//
-	// @Override
-	// public List<Membrane> getSons() {
-	// return sonMembranes;
-	// }
-	//
-	// @Override
-	// public Membrane getFather() {
-	// return fatherMembrane;
-	// }
-
 	private ArrayList<Rule> urules;
 
 	@Override
-	public List<Rule> getUseableRules() throws UnpredictableDimensionException, CloneNotSupportedException {
+	public List<Rule> getUsableRules() throws UnpredictableDimensionException, CloneNotSupportedException {
 		urules.clear();
 
 		for (Rule rule : rules) {
@@ -209,10 +191,6 @@ public class PMembrane implements Membrane {
 		}
 		return urules;
 	}
-
-	/*
-	 * @Override public List<Rule> getKnownUseableRules() { return urules; }
-	 */
 
 	private ArrayList<Rule> fetchedRules;
 
@@ -414,22 +392,17 @@ public class PMembrane implements Membrane {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
 				e.printStackTrace();
-			} catch (CloneNotSupportedException e) {
-				e.printStackTrace();
 			}
 		}
 
 		for (Rule rule : template.getRules()) {
-			try {
-				addRule((Rule) rule.deepClone());
-			} catch (CloneNotSupportedException e) {
-				e.printStackTrace();
-			}
+			addRule((Rule) rule.deepClone());
 		}
 
 		HashMap<Obj, Integer> objmap = template.getObjects();
 		Iterator<?> iter = objmap.entrySet().iterator();
 		while (iter.hasNext()) {
+			@SuppressWarnings("rawtypes")
 			Map.Entry entry = (Map.Entry) iter.next();
 			addObject((Obj) entry.getKey(), (Integer) entry.getValue());
 		}
@@ -494,12 +467,6 @@ public class PMembrane implements Membrane {
 	public boolean isDeleted() {
 		return deleted;
 	}
-
-	// @Override
-	// public void deleteSon(Membrane sonMembrane) {
-	// sonMembranes.remove(sonMembrane);
-	// sonMembrane.setDeleted();
-	// }
 
 	@Override
 	public void newStepInit() {

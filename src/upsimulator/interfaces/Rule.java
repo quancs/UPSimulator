@@ -41,8 +41,7 @@ public interface Rule extends Dimension, Name, Cloneable {
 	 * @throws UnpredictableDimensionException
 	 * @throws CloneNotSupportedException
 	 */
-	public List<Rule> satisfiedRules(Membrane membrane)
-			throws UnpredictableDimensionException, CloneNotSupportedException;
+	public List<Rule> satisfiedRules(Membrane membrane) throws UnpredictableDimensionException, CloneNotSupportedException;
 
 	/**
 	 * 第二步：执行所有前提
@@ -95,7 +94,7 @@ public interface Rule extends Dimension, Name, Cloneable {
 	 * @return
 	 * @throws CloneNotSupportedException
 	 */
-	public Rule deepClone() throws CloneNotSupportedException;
+	public Rule deepClone();
 
 	/**
 	 * 设置规则的优先级

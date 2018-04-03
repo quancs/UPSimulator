@@ -115,7 +115,7 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 		for (UPLanguageParser.MembraneContentContext mcc : ctx.membraneContent()) {
 			visitMembraneContent(mcc);
 		}
-		Membrane.addMemClass(memType, membrane);
+		Membrane.registMemClass(memType, membrane);
 		return null;
 	}
 

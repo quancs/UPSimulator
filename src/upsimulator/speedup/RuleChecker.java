@@ -25,19 +25,15 @@ public class RuleChecker extends Worker {
 
 	@Override
 	public void doWork() {
-		try {
-			for (Integer[] pv : pValues) {
-				Rule rule = source.deepClone();
-				for (int i = 0; i < pv.length; i++)
-					rule.getEval().putVariable(dims.get(i), pv[i].toString());
+		for (Integer[] pv : pValues) {
+			Rule rule = source.deepClone();
+			for (int i = 0; i < pv.length; i++)
+				rule.getEval().putVariable(dims.get(i), pv[i].toString());
 
-				if (rule.satisfy(target)) {
-					rule.fixDimension();
-					satisfiedRules.add(rule);
-				}
+			if (rule.satisfy(target)) {
+				rule.fixDimension();
+				satisfiedRules.add(rule);
 			}
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
 		}
 	}
 

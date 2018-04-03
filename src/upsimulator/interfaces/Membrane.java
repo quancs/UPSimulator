@@ -9,28 +9,23 @@ import upsimulator.exceptions.TunnelNotExistException;
 import upsimulator.exceptions.UnpredictableDimensionException;
 import upsimulator.interfaces.Tunnel.TunnelType;
 
+/**
+ * Represents a membrane which contains objects, rules, dimensions
+ * 
+ * @author quan
+ *
+ */
 public interface Membrane extends Name, Cloneable, Dimension {
 
 	public static HashMap<String, Membrane> membraneClass = new HashMap<>();
 
-	public static void addMemClass(String name, Membrane membrane) {
+	public static void registMemClass(String name, Membrane membrane) {
 		membraneClass.put(name, membrane);
 	}
 
 	public static Membrane getMemInstanceOf(String membraneName) {
 		if (membraneClass.containsKey(membraneName)) {
-			try {
-				return membraneClass.get(membraneName).deepClone();
-			} catch (CloneNotSupportedException e) {
-				e.printStackTrace();
-				return null;
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-				return null;
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-				return null;
-			}
+			return membraneClass.get(membraneName).deepClone();
 		} else {
 			return null;
 		}
@@ -40,50 +35,61 @@ public interface Membrane extends Name, Cloneable, Dimension {
 		return membraneClass.get(name);
 	}
 
+	/**
+	 * Remove runtime properties and initialize this membrane for a new simulation
+	 */
 	public void newStepInit();
 
 	/**
-	 * 获取object的数量
+	 * Get the quantity of object
 	 * 
 	 * @param object
-	 * @return
+	 *            P object
+	 * @return the quantity of object
 	 */
 	public int getNumOf(Obj object);
 
 	/**
-	 * 增加obj的数量
+	 * Add object to this membrane
 	 * 
 	 * @param object
+	 *            the new added object
 	 * @param num
+	 *            the quantity of object
 	 */
 	public void addObject(Obj object, int num);
 
 	/**
-	 * 减少obj的数量
+	 * Reduce object in this membrane
 	 * 
 	 * @param object
+	 *            the object which will be reduced
 	 * @param num
+	 *            the reduced quantity
+	 * @return if the object's quantity is greater than num, then reduce it and
+	 *         return {@code true}
 	 */
 	public boolean reduceObject(Obj object, int num);
 
 	/**
-	 * 获取全部的对象
+	 * Get all the objects contained in this membrane
 	 * 
-	 * @return
+	 * @return objects and their quantity
 	 */
 	public HashMap<Obj, Integer> getObjects();
 
 	/**
-	 * 增加rule
+	 * Add a new rule
 	 * 
-	 * @param rule
+	 * @param a
+	 *            new rule
 	 */
 	public void addRule(Rule rule);
 
 	/**
-	 * 获取所有的规则
+	 * Get all the rule contained in this membrane
 	 * 
-	 * @return 全部的规则
+	 * @return All the rules
 	 */
 	public List<Rule> getRules();
 
@@ -115,121 +121,101 @@ public interface Membrane extends Name, Cloneable, Dimension {
 	 */
 	public List<Tunnel> getTunnels();
 
-	// /**
-	// * 新增子膜
-	// *
-	// * @param sonMembrane
-	// */
-	// public void addSon(Membrane sonMembrane);
-	//
-	// /**
-	// * 从膜中删除子膜
-	// *
-	// * @param sonMembrane
-	// */
-	// public void deleteSon(Membrane sonMembrane);
-	//
-	// /**
-	// * 获取所有子膜
-	// *
-	// * @return
-	// */
-	// public List<Membrane> getSons();
-
 	/**
-	 * 设置膜处于被删除状态
+	 * Delete a membrane.
+	 * <p>
+	 * Close all the tunnels and set current membrane deleted
 	 */
 	public void delete();
 
 	/**
-	 * 获取膜的状态
+	 * Return if this membrane is deleted.
 	 * 
-	 * @return 膜是否处于被删除了的状态
+	 * @return if this membrane is deleted, return {@code true}
 	 */
 	public boolean isDeleted();
 
-	// /**
-	// * 设置父膜，需要注意的是，PositionResult里面用到的父膜也是需要更改的
-	// *
-	// * @param fatherMembrane
-	// */
-	// public void setFather(Membrane fatherMembrane);
-	//
-	// /**
-	// * 获取父膜
-	// *
-	// * @return 父膜
-	// */
-	// public Membrane getFather();
-
 	/**
-	 * 设置此方法的目的：<br>
-	 * 1.为了实现极大并行性、极小并行性 <br>
-	 * 2.为了使得催化剂、抑制剂等不参与反应的物质条件，能同时参与反应和发挥促进抑制效果（因为检查物质条件是此步【先发生】，发生反应是fetch这一步【后发生】）
-	 * 获取所有可用的规则
+	 * Check all the rules inside if they are satisfied, and return all the usable
+	 * rules.
+	 * <p>
+	 * <ul>
+	 * <li>Maximum parallelism and minimum parallelism can be controlled by editing
+	 * the returned list.</li>
+	 * <li>Inhibitors and promoters and other nonconsumption conditions can be
+	 * checked first.</li>
+	 * </ul>
 	 * 
-	 * @return 所有可用的规则
+	 * @return All the usable rules
 	 * @throws CloneNotSupportedException
+	 *             if some rules, objects, cannot be cloned
 	 * @throws UnpredictableDimensionException
+	 *             if there exist unpredictable dimension, such as the dimension of
+	 *             one rule only appears at a inhibitor
 	 */
-	public List<Rule> getUseableRules() throws UnpredictableDimensionException, CloneNotSupportedException;
+	public List<Rule> getUsableRules() throws UnpredictableDimensionException, CloneNotSupportedException;
 
 	/**
-	 * 设置此方法的目的：检查是否存在规则不兼容，比如优先级规则，1优先级的规则和2优先级的规则之间是不兼容的，需要从可用列表删除2优先级的规则
-	 * 获取所有可用的规则
+	 * All the satisfied rules try to fetch the objects they need
 	 * 
-	 * @return 所有已知的可用的规则
-	 */
-	// public List<Rule> getKnownUseableRules();
-
-	/**
-	 * 从 所有可用的规则中尝试取出所有需要的对象
-	 * 
-	 * @return 规则数
+	 * @return the quantity of rules which have fetched the objects
 	 * @throws TunnelNotExistException
+	 *             If one rule want to get a neighbor of this membrane and no tunnel
+	 *             was found
 	 */
 	public int fetch() throws TunnelNotExistException;
 
 	/**
-	 * 设置结果
+	 * Set products of rules
 	 * 
-	 * @return 规则数
+	 * @return the rules have set their product successfully
 	 */
 	public List<Rule> setProducts();
 
+	/**
+	 * 
+	 * @return return a string with membrane rules
+	 */
 	public String toStringWithRule();
 
 	/**
-	 * 用于实现对象的深拷贝，因为膜的类型声明，所以声明一个膜的时候需要深拷贝
+	 * Deep clone a membrane
 	 * 
-	 * @return
-	 * @throws CloneNotSupportedException
-	 * @throws IllegalAccessException
-	 * @throws InstantiationException
+	 * @return the cloned membrane
 	 */
-	public Membrane deepClone() throws CloneNotSupportedException, InstantiationException, IllegalAccessException;
+	public Membrane deepClone();
 
+	/**
+	 * Set property of membrane
+	 * 
+	 * @param propertyName
+	 *            the name of property
+	 * @param propertyValue
+	 *            the value of property
+	 */
 	public void setProperty(String propertyName, Object propertyValue);
 
+	/**
+	 * Get the property's value of this membrane
+	 * 
+	 * @param propertyName
+	 *            the name of property
+	 * @return property's value. If property doesn't exist in this membrane,
+	 *         {@code null} will be returned.
+	 */
 	public Object getProperty(String propertyName);
 
+	/**
+	 * 
+	 * @return all the properties of this membrane
+	 */
 	public Map<String, Object> getProperties();
 
+	/**
+	 * 
+	 * @param template
+	 */
 	public void extend(Membrane template);
-	//
-	// public default void addChild(Membrane child) {
-	// Tunnel cloneIn = t.getClass().newInstance();
-	// cloneIn.setSource(this);
-	// cloneIn.addTarget(sonClone);
-	// cloneIn.setType(TunnelType.In);
-	// addTunnel(cloneIn);
-	//
-	// Tunnel cloneOut = t.getClass().newInstance();
-	// cloneOut.setSource(sonClone);
-	// cloneOut.addTarget(this);
-	// cloneOut.setType(TunnelType.Out);
-	// sonClone.addTunnel(cloneOut);
-	// }
 
 	public default List<Membrane> getChildren() {
 		ArrayList<Membrane> children = new ArrayList<Membrane>();

@@ -17,8 +17,13 @@ public class MembranePropertyCondition implements Condition {
 	}
 
 	@Override
-	public MembranePropertyCondition deepClone() throws CloneNotSupportedException {
-		return (MembranePropertyCondition) super.clone();
+	public MembranePropertyCondition deepClone() {
+		try {
+			return (MembranePropertyCondition) super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override

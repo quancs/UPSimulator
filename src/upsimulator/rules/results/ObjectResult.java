@@ -53,7 +53,7 @@ public class ObjectResult extends PObject implements Result {
 	}
 
 	@Override
-	public ObjectResult deepClone() throws CloneNotSupportedException {
+	public ObjectResult deepClone() {
 		return (ObjectResult) super.deepClone();
 	}
 
