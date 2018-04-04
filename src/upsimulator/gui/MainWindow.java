@@ -848,8 +848,7 @@ public class MainWindow implements TreeSelectionListener, ItemListener {
 	}
 
 	public static void appendLogMsg(String msg) {
-		// Util.addMsgToJTextPane(console, msg + "\n", Color.black, false,
-		// console.getFont().getSize());
+		Util.addMsgToJTextPane(console, msg + "\n", Color.black, false, console.getFont().getSize());
 	}
 
 	@Override
@@ -860,7 +859,7 @@ public class MainWindow implements TreeSelectionListener, ItemListener {
 		if (membrane != null)
 			textResultPane.setText(membrane.toString());
 		else if (selectedNode != null)
-			System.err.println("非膜节点：" + selectedNode.toString());
+			System.err.println("Not a membrane node：" + selectedNode.toString());
 	}
 
 	@Override

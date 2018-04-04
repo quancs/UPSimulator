@@ -323,7 +323,7 @@ public class PRule implements Rule {
 			if (!criteria.fetch(membrane))
 				break;
 		}
-		if (i != conditions.size()) {
+		if (i >= 0) {
 			for (i = i + 1; i < conditions.size(); i++) {
 				Condition criteria = conditions.get(i);
 				criteria.withdrawFetch(membrane);
@@ -509,33 +509,34 @@ public class PRule implements Rule {
 
 		for (Condition condition : conditions) {
 			if (condition instanceof MembraneStatusCondition) {
-				sBuilder.append(condition);
+				sBuilder.append(condition + " ");
 			}
 		}
 		for (Condition condition : conditions) {
 			if (condition instanceof ObjectCondition) {
-				sBuilder.append(condition);
+				sBuilder.append(condition + " ");
 			}
 		}
-		sBuilder.append(" -> ");
+		sBuilder.append("-> ");
 		for (Result result : results) {
 			if (result instanceof MembraneStatusResult) {
-				sBuilder.append(result);
+				sBuilder.append(result + " ");
 			}
 		}
 		for (Result result : results) {
 			if (!(result instanceof MembraneStatusResult)) {
-				sBuilder.append(result);
+				sBuilder.append(result + " ");
 			}
 		}
-		sBuilder.append(" | ");
+		sBuilder.append("| ");
 
 		for (Condition condition : conditions) {
 			if (condition instanceof MembraneStatusCondition || condition instanceof ObjectCondition || condition instanceof Result)
 				continue;
-			sBuilder.append(condition);
+			sBuilder.append(condition + " ");
 		}
 
+		sBuilder.replace(sBuilder.length() - 1, sBuilder.length(), ";");
 		return sBuilder.toString();
 	}
 

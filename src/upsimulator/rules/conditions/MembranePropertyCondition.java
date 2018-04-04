@@ -60,4 +60,9 @@ public class MembranePropertyCondition implements Condition {
 		this.value = value;
 	}
 
+	@Override
+	public String toString() {
+		return "m." + getName() + "==" + getValue();
+	}
+
 }

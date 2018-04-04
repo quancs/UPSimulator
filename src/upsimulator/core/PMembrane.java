@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -64,7 +65,7 @@ public class PMembrane implements Membrane {
 			Membrane m = membranes.get(i);
 			List<Tunnel> tList = m.getTunnels();
 			for (Tunnel t : tList) {
-				if (t.getType() != TunnelType.In || t.getSource() != m)
+				if (!(t.getType() == TunnelType.In || (t.getType() == TunnelType.Out && t.getSource() != this)))
 					continue;
 				if (tunnels.contains(t))
 					continue;
@@ -98,7 +99,7 @@ public class PMembrane implements Membrane {
 				cloned.addObject(key.deepClone(), val.intValue());
 			}
 			// clone properties
-			Iterator<Entry<String, Object>> iter2 = properties.entrySet().iterator();
+			Iterator<Entry<String, Object>> iter2 = m.getProperties().entrySet().iterator();
 			while (iter2.hasNext()) {
 				Entry<String, Object> entry = iter2.next();
 				String key = entry.getKey();
@@ -115,6 +116,7 @@ public class PMembrane implements Membrane {
 			} catch (InstantiationException | IllegalAccessException e) {
 				e.printStackTrace();
 			}
+			cloned.setType(t.getType());
 			cloned.setSource(m2mMap.get(t.getSource()));
 			for (Membrane target : t.getTargets())
 				cloned.addTarget(m2mMap.get(target));
@@ -187,7 +189,7 @@ public class PMembrane implements Membrane {
 	private ArrayList<Rule> fetchedRules;
 
 	@Override
-	public int fetch() throws TunnelNotExistException {
+	public List<Rule> fetch() throws TunnelNotExistException {
 		fetchedRules.clear();
 
 		for (int i = 0; i < urules.size(); i++) {
@@ -208,7 +210,7 @@ public class PMembrane implements Membrane {
 				}
 			}
 		}
-		return fetchedRules.size();
+		return fetchedRules;
 	}
 
 	@Override
@@ -226,12 +228,7 @@ public class PMembrane implements Membrane {
 			nameDim = new String(name);
 			boolean first = true;
 			for (Integer dim : dimensions) {
-				if (first) {
-					nameDim += dim;
-					first = false;
-				} else {
-					nameDim += "," + dim;
-				}
+				nameDim += "[" + dim + "]";
 			}
 		}
 		return nameDim;
@@ -244,61 +241,92 @@ public class PMembrane implements Membrane {
 
 	@Override
 	public String toString() {
-		String objs = "";
-		Iterator<Entry<Obj, Integer>> iter = objects.entrySet().iterator();
-		while (iter.hasNext()) {
-			Entry<Obj, Integer> entry = iter.next();
-			Obj key = entry.getKey();
-			Object val = entry.getValue();
-			objs += key.getNameDim() + "^" + val + " ";
-		}
-
-		String membranes = "";
-		for (Membrane son : getChildren()) {
-			membranes += son.toString() + " ";
-		}
-
-		String properties = "";
-		Iterator<Entry<String, Object>> piter = this.properties.entrySet().iterator();
-		while (piter.hasNext()) {
-			Entry<String, Object> entry = piter.next();
-			Object key = entry.getKey();
-			Object val = entry.getValue();
-			if (!key.toString().startsWith("$"))
-				properties += "." + key + "=" + val;
-		}
-
-		return "[ " + objs + membranes + "]" + getNameDim() + properties;
+		// return toString(" ", true, true, false, true, false);
+		return toString("  ", true, true, true, true, true);
 	}
 
 	@Override
-	public String toStringWithRule() {
-		String objs = "";
-		Iterator<Entry<Obj, Integer>> iter = objects.entrySet().iterator();
-		while (iter.hasNext()) {
-			Entry<Obj, Integer> entry = iter.next();
-			Obj key = entry.getKey();
-			Object val = entry.getValue();
-			objs += key.getNameDim() + "^" + val + " ";
+	public String toString(String space, boolean withObject, boolean withProp, boolean withRule, boolean withSubmembrane, boolean withTunnel) {
+		StringBuilder mBuilder = new StringBuilder("Membrane " + getNameDim() + " {\n");
+
+		if (withObject && objects.size() > 0) {
+			StringBuilder oBuilder = new StringBuilder(space + "Object ");
+			Iterator<Entry<Obj, Integer>> iter = objects.entrySet().iterator();
+			while (iter.hasNext()) {
+				Entry<Obj, Integer> entry = iter.next();
+				Obj key = entry.getKey();
+				Object val = entry.getValue();
+				if (iter.hasNext()) {
+					if ((Integer) val > 1) {
+						oBuilder.append(key + "^" + val + ", ");
+					} else {
+						oBuilder.append(key + ", ");
+					}
+				} else {
+					if ((Integer) val > 1) {
+						oBuilder.append(key + "^" + val + "; \n");
+					} else {
+						oBuilder.append(key + "; \n");
+					}
+				}
+			}
+			if (objects.size() > 0)
+				mBuilder.append(oBuilder);
 		}
 
-		// 子膜还是按照包含关系进行输出，邻接关系则输出为通道
-		String membranes = "";
-		for (Membrane son : getChildren()) {
-			membranes += son.toStringWithRule() + "\n";
+		if (withProp && properties.size() > 0) {
+			StringBuilder pBuilder = new StringBuilder(space + "Property ");
+			Iterator<Entry<String, Object>> piter = this.properties.entrySet().iterator();
+			while (piter.hasNext()) {
+				Entry<String, Object> entry = piter.next();
+				Object key = entry.getKey();
+				Object val = entry.getValue();
+				if (!key.toString().startsWith("$")) {
+					pBuilder.append(key + "=" + val);
+					if (piter.hasNext())
+						pBuilder.append(", ");
+					else
+						pBuilder.append(";\n");
+				}
+			}
+			mBuilder.append(pBuilder);
 		}
 
-		String properties = "";
-		Iterator<Entry<String, Object>> piter = this.properties.entrySet().iterator();
-		while (piter.hasNext()) {
-			Entry<String, Object> entry = piter.next();
-			Object key = entry.getKey();
-			Object val = entry.getValue();
-			if (!key.toString().startsWith("$"))
-				properties += "." + key + "=" + val;
+		if (withSubmembrane && getChildren().size() > 0) {
+			StringBuilder smBuilder = new StringBuilder();
+			for (Membrane son : getChildren()) {
+				String smString = son.toString(space, withObject, withProp, withRule, withSubmembrane, withTunnel);
+				Scanner scanner = new Scanner(smString);
+				while (scanner.hasNextLine()) {
+					smBuilder.append(space);
+					smBuilder.append(scanner.nextLine());
+					smBuilder.append("\n");
+				}
+				scanner.close();
+			}
+			mBuilder.append(smBuilder);
 		}
 
-		return "[ \nObject " + objs + ";  \n" + rules.toString() + "  ; \nMembrane " + membranes + ";\n]" + getNameDim() + properties;
+		if (withTunnel && tunnels.size() > 0) {
+			mBuilder.append(space + "Tunnel ");
+			for (int i = 0; i < tunnels.size(); i++) {
+				mBuilder.append(tunnels.get(i));
+				if (i == tunnels.size() - 1) {
+					mBuilder.append(";\n");
+				} else {
+					mBuilder.append(", ");
+				}
+			}
+		}
+
+		if (withRule) {
+			for (Rule rule : rules) {
+				mBuilder.append(space + rule + "\n");
+			}
+		}
+
+		mBuilder.append("}");
+		return mBuilder.toString();
 	}
 
 	@Override

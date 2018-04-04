@@ -189,11 +189,11 @@ public class PController extends Thread {
 			Membrane membrane = fmList.get(i);
 			try {
 				MainWindow.appendLogMsg("Membrane " + membrane.getNameDim() + " are fetching objects");
-				membrane.fetch();
+				List<Rule> fetchedRules = membrane.fetch();
+				rmList.add(membrane);
 			} catch (TunnelNotExistException e) {
 				e.printStackTrace();
 			}
-			rmList.add(membrane);
 		}
 
 		clock.nextSubstep();
@@ -202,7 +202,8 @@ public class PController extends Thread {
 		for (int i = 0; i < rmList.size(); i++) {
 			Membrane membrane = rmList.get(i);
 			MainWindow.appendLogMsg("Membrane " + membrane.getNameDim() + " are setting products");
-			uList.addAll(membrane.setProducts());
+			List<Rule> rList = membrane.setProducts();
+			uList.addAll(rList);
 		}
 
 		clock.nextStep();
@@ -214,9 +215,10 @@ public class PController extends Thread {
 		long timeUsed = endTime.getTimeInMillis() - startTime.getTimeInMillis();
 		MainWindow.appendMsg("rule used : " + uList.size() + "\t\ttime used:" + timeUsed + "ms");
 		MainWindow.appendMsg(uList.toString());
-		MainWindow.appendMsg(environment.toString()+"\n");
+		MainWindow.appendMsg(environment.toString() + "\n");
 
-		records.add((Membrane) environment.deepClone());
+		Membrane eClone = environment.deepClone();
+		records.add(eClone);
 
 		return uList.size();
 	}

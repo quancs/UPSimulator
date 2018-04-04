@@ -164,7 +164,7 @@ public interface Membrane extends Name, Cloneable, Dimension {
 	 *             If one rule want to get a neighbor of this membrane and no tunnel
 	 *             was found
 	 */
-	public int fetch() throws TunnelNotExistException;
+	public List<Rule> fetch() throws TunnelNotExistException;
 
 	/**
 	 * Set products of rules
@@ -175,9 +175,19 @@ public interface Membrane extends Name, Cloneable, Dimension {
 
 	/**
 	 * 
-	 * @return return a string with membrane rules
+	 * @param space
+	 *            put in the front of items
+	 * @param withObject
+	 *            whether show objects or not
+	 * @param withProp
+	 *            whether show properties or not
+	 * @param withRule
+	 *            whether show rules or not
+	 * @param withSubmembrane
+	 *            whether show sub-membranes or not
+	 * @return a string which represents this membrane
 	 */
-	public String toStringWithRule();
+	public String toString(String space, boolean withObject, boolean withProp, boolean withRule, boolean withSubmembrane, boolean withTunnel);
 
 	/**
 	 * Deep clone a membrane

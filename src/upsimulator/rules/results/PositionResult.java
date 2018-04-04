@@ -159,36 +159,25 @@ public class PositionResult implements Result, Dimension, Condition {
 	}
 
 	private String getNameDim() {
-		String name = membraneName + "";
+		StringBuilder name = new StringBuilder(membraneName);
 		if (evaluator != null && dimensions != null) {
-			for (int i = 0; i < dimensions.size(); i++) {
-				String formula = dimensions.get(i);
-				int dimension;
-				try {
+			try {
+				for (int i = 0; i < dimensions.size(); i++) {
+					String formula = dimensions.get(i);
+					int dimension;
 					dimension = (int) Double.parseDouble(evaluator.evaluate(formula));
-					if (i == 0)
-						name += dimension;
-					else
-						name += "," + dimension;
-				} catch (Exception e) {
-					name = membraneName + "";
-					for (int j = 0; j < dimensions.size(); j++) {
-						if (j == 0)
-							name += dimensions.get(j);
-						else
-							name += "," + dimensions.get(j);
-					}
+					name.append("[" + dimension + "]");
 				}
+			} catch (Exception e) {
+				name.delete(membraneName.length(), name.length());
+				for (int j = 0; j < dimensions.size(); j++)
+					name.append("[" + dimensions.get(j) + "]");
 			}
 		} else if (dimensions != null) {
-			for (int i = 0; i < dimensions.size(); i++) {
-				if (i == 0)
-					name += dimensions.get(i);
-				else
-					name += "," + dimensions.get(i);
-			}
+			for (int i = 0; i < dimensions.size(); i++)
+				name.append("[" + dimensions.get(i) + "]");
 		}
-		return name;
+		return name.toString();
 	}
 
 	@Override

@@ -15,7 +15,7 @@ import upsimulator.interfaces.Tunnel;
 
 public class PTunnel implements Tunnel {
 	private static final long serialVersionUID = -7893633024003440550L;
-	
+
 	private Membrane source;
 	private ArrayList<Membrane> targets;
 	private String name;
@@ -33,6 +33,7 @@ public class PTunnel implements Tunnel {
 	public PTunnel() {
 		heldResults = new ArrayList<Result>();
 		targets = new ArrayList<Membrane>();
+		this.type = TunnelType.Here;
 		open();
 	}
 
@@ -159,5 +160,12 @@ public class PTunnel implements Tunnel {
 		out.setSource(child);
 		out.addTarget(father);
 		child.addTunnel(out);
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sBuilder = new StringBuilder();
+		sBuilder.append(getType().toString() + " " + getTargetsName());
+		return sBuilder.toString();
 	}
 }
