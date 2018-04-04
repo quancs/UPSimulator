@@ -67,8 +67,9 @@ import upsimulator.gui.FileDescriber.State;
 import upsimulator.gui.FileDescriber.Type;
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Obj;
+import upsimulator.interfaces.UPSLogger;
 
-public class MainWindow implements TreeSelectionListener, ItemListener {
+public class MainWindow extends UPSLogger implements TreeSelectionListener, ItemListener {
 
 	private JFrame frmUpsimulator;
 	private JSplitPane splitPane;
@@ -86,7 +87,7 @@ public class MainWindow implements TreeSelectionListener, ItemListener {
 	private FileDescriber fileInEditor;
 	private JTabbedPane tabbedPane;
 	private JComboBox<String> singleInstance;
-	private static JTextPane console;
+	private static JTextPane resultConsole;
 	private HashMap<String, PController> controllerMap = new HashMap<>();
 	private JComboBox<String> instanceSelected;
 	private JSpinner cycleSelected;
@@ -105,6 +106,8 @@ public class MainWindow implements TreeSelectionListener, ItemListener {
 				try {
 					MainWindow window = new MainWindow();
 					window.frmUpsimulator.setVisible(true);
+					UPSLogger.setLogger(window);
+					UPSLogger.setEnable(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -195,7 +198,7 @@ public class MainWindow implements TreeSelectionListener, ItemListener {
 
 	private void initMembrane() {
 		if (singleInstance.getSelectedIndex() < 0) {
-			appendMsg("No instance selected!!!");
+			resultLog(this, "No instance selected!!!");
 			return;
 		}
 
@@ -206,7 +209,7 @@ public class MainWindow implements TreeSelectionListener, ItemListener {
 		}
 
 		String fileName = instances.getFileDescriber(singleInstance.getSelectedIndex()).getFile().getName();
-		PController controller = new PController(files, PMethod.maximum);
+		PController controller = new PController(Util.filesToString(files), PMethod.maximum);
 		controller.start();
 		controllerMap.put(fileName, controller);
 	}
@@ -596,11 +599,11 @@ public class MainWindow implements TreeSelectionListener, ItemListener {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {
-					console.setText("");
+					resultConsole.setText("");
 					initMembrane();
 				} catch (Exception e2) {
 					e2.printStackTrace();
-					appendMsg(e2.toString());
+					resultLog(this, e2.toString());
 				}
 			}
 		});
@@ -619,7 +622,7 @@ public class MainWindow implements TreeSelectionListener, ItemListener {
 				if (controller != null)
 					controller.runToStop();
 				else
-					appendMsg("Instance is not selected.");
+					resultLog(this, "Instance is not selected.");
 			}
 		});
 		GridBagConstraints gbc_btnPause = new GridBagConstraints();
@@ -654,11 +657,57 @@ public class MainWindow implements TreeSelectionListener, ItemListener {
 		simulatePanel.add(consolePanel, gbc_consolePanel);
 		consolePanel.setLayout(new BorderLayout(0, 0));
 
-		JScrollPane scrollPane_1 = new JScrollPane();
-		consolePanel.add(scrollPane_1);
+		consoleSplitPane = new JSplitPane();
+		consoleSplitPane.setResizeWeight(0.8);
+		consoleSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		consolePanel.add(consoleSplitPane);
 
-		console = new JTextPane();
-		scrollPane_1.setViewportView(console);
+		JScrollPane scrollPane_1 = new JScrollPane();
+		consoleSplitPane.setLeftComponent(scrollPane_1);
+
+		resultConsole = new JTextPane();
+		scrollPane_1.setViewportView(resultConsole);
+
+		JPopupMenu popupMenu_2 = new JPopupMenu();
+		addPopup(resultConsole, popupMenu_2);
+
+		resultConsoleEnable = new JCheckBoxMenuItem("Enable Log");
+		resultConsoleEnable.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+			}
+		});
+		resultConsoleEnable.setSelected(true);
+		popupMenu_2.add(resultConsoleEnable);
+
+		JMenuItem mntmClear_1 = new JMenuItem("Clear All");
+		mntmClear_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				resultConsole.setText("");
+			}
+		});
+		popupMenu_2.add(mntmClear_1);
+
+		JScrollPane scrollPane_3 = new JScrollPane();
+		consoleSplitPane.setRightComponent(scrollPane_3);
+
+		debugConsole = new JTextPane();
+		scrollPane_3.setViewportView(debugConsole);
+
+		JPopupMenu popupMenu_1 = new JPopupMenu();
+		addPopup(debugConsole, popupMenu_1);
+
+		JMenuItem mntmClear = new JMenuItem("Clear All");
+		mntmClear.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				debugConsole.setText("");
+			}
+		});
+
+		debugConsoleEnable = new JCheckBoxMenuItem("Enable Log");
+		debugConsoleEnable.setSelected(true);
+		popupMenu_1.add(debugConsoleEnable);
+		popupMenu_1.add(mntmClear);
 
 		JPanel editorPanel = new JPanel();
 		tabbedPane.addTab("Editor", null, editorPanel, null);
@@ -823,6 +872,10 @@ public class MainWindow implements TreeSelectionListener, ItemListener {
 
 	private HashMap<DefaultMutableTreeNode, Membrane> treeNodeToMembraneMap = new HashMap<>();
 	private JTextPane textResultPane;
+	private JSplitPane consoleSplitPane;
+	private JCheckBoxMenuItem resultConsoleEnable;
+	private JCheckBoxMenuItem debugConsoleEnable;
+	private JTextPane debugConsole;
 
 	private DefaultMutableTreeNode genTreeNode(Membrane membrane, DefaultMutableTreeNode node) {
 		if (node == null)
@@ -837,18 +890,6 @@ public class MainWindow implements TreeSelectionListener, ItemListener {
 		}
 
 		return node;
-	}
-
-	public static void appendErrMsg(String msg) {
-		Util.addMsgToJTextPane(console, msg + "\n", Color.red, true, console.getFont().getSize());
-	}
-
-	public static void appendMsg(String msg) {
-		Util.addMsgToJTextPane(console, msg + "\n", Color.black, false, console.getFont().getSize());
-	}
-
-	public static void appendLogMsg(String msg) {
-		Util.addMsgToJTextPane(console, msg + "\n", Color.black, false, console.getFont().getSize());
 	}
 
 	@Override
@@ -891,5 +932,39 @@ public class MainWindow implements TreeSelectionListener, ItemListener {
 				popup.show(e.getComponent(), e.getX(), e.getY());
 			}
 		});
+	}
+
+	public JSplitPane getConsoleSplitPane() {
+		return consoleSplitPane;
+	}
+
+	@Override
+	public void debugLog(Object who, String msg) {
+		if (getDebugConsoleEnable().isSelected())
+			Util.addMsgToJTextPane(debugConsole, msg + "\n", Color.black, false, resultConsole.getFont().getSize());
+	}
+
+	@Override
+	public void errorLog(Object who, String msg) {
+		if (getDebugConsoleEnable().isSelected())
+			Util.addMsgToJTextPane(debugConsole, msg + "\n", Color.red, true, resultConsole.getFont().getSize());
+	}
+
+	@Override
+	public void resultLog(Object who, String msg) {
+		if (getResultConsoleEnable().isSelected())
+			Util.addMsgToJTextPane(resultConsole, msg + "\n", Color.black, false, resultConsole.getFont().getSize());
+	}
+
+	public JCheckBoxMenuItem getResultConsoleEnable() {
+		return resultConsoleEnable;
+	}
+
+	public JCheckBoxMenuItem getDebugConsoleEnable() {
+		return debugConsoleEnable;
+	}
+
+	public JTextPane getDebugConsole() {
+		return debugConsole;
 	}
 }

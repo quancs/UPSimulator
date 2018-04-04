@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.JTextField;
@@ -46,6 +48,13 @@ public class Util {
 		String string = new String(fileContent);
 
 		return string;
+	}
+
+	public static String filesToString(List<File> fList) {
+		StringBuilder stringBuilder = new StringBuilder();
+		for (File file : fList)
+			stringBuilder.append(Util.fileToString(file));
+		return stringBuilder.toString();
 	}
 
 	public static void addMsgToJTextPane(JTextPane pane, String str, Color col, boolean bold, int fontSize) {

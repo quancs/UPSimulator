@@ -16,10 +16,9 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 import upsimulator.exceptions.TunnelNotExistException;
 import upsimulator.exceptions.UnpredictableDimensionException;
-import upsimulator.gui.MainWindow;
-import upsimulator.gui.Util;
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Rule;
+import upsimulator.interfaces.UPSLogger;
 import upsimulator.recognizer.UPLanguageLexer;
 import upsimulator.recognizer.UPLanguageParser;
 import upsimulator.recognizer.UPLanguageRecognizer;
@@ -29,42 +28,30 @@ import upsimulator.recognizer.UPLanguageRecognizer;
  * Not completely finished yet. <br>
  * 优先级规则，还未确认满足
  * 
- * @author quan, pxx
+ * @author quan
  *
  */
 @SuppressWarnings("deprecation")
 public class PController extends Thread {
-
 	public enum PMethod {
 		maximum, minmum
 	}
 
-	/**
-	 * model files & an instance file
-	 */
-	private ArrayList<File> files;
-	private ArrayList<Membrane> records;
+	private ArrayList<Membrane> records = new ArrayList<>();
 
-	/**
-	 * 模拟方式：极大并行与极小并行
-	 */
 	private PMethod method;
 
 	private Membrane environment;
-	private PClock clock;
 
-	public PController(ArrayList<File> files, PMethod method) {
-		this.clock = PClock.getClock();
-		this.files = files;
+	private int leftStep = 0;
+
+	private ArrayList<Membrane> smList = new ArrayList<>();// run satisfy step.
+	private ArrayList<Membrane> fmList = new ArrayList<>();// run fetch step.
+	private ArrayList<Membrane> rmList = new ArrayList<>();// run setResult step.
+
+	public PController(String string, PMethod method) {
 		this.method = method;
-
-		StringBuilder stringBuilder = new StringBuilder();
-		for (File file : files)
-			stringBuilder.append(Util.fileToString(file));
-
-		environment = getEnvironment(stringBuilder.toString());
-
-		records = new ArrayList<>();
+		environment = getEnvironment(string);
 		records.add((Membrane) environment.deepClone());
 	}
 
@@ -107,19 +94,17 @@ public class PController extends Thread {
 		try {
 			Scanner scanner = new Scanner(errFile);
 			if (scanner.hasNextLine())
-				MainWindow.appendErrMsg(scanner.nextLine());
+				UPSLogger.error(PController.class, scanner.nextLine());
 			scanner.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 
-		MainWindow.appendMsg("init the environment : ");
-		MainWindow.appendMsg(membrane.toString() + "\n\n");
+		UPSLogger.debug(PController.class, "Recogize environment done.\n");
+		UPSLogger.result(PController.class, membrane.toString() + "\n\n");
 
 		return membrane;
 	}
-
-	private int leftStep = 0;
 
 	@Override
 	public void run() {
@@ -131,9 +116,8 @@ public class PController extends Thread {
 				leftStep--;
 			}
 
-			for (; leftStep == -1 && runOneStep() > 0;) {
-
-			}
+			for (; leftStep == -1 && runOneStep() > 0;)
+				;
 
 			leftStep = 0;
 			try {
@@ -152,12 +136,7 @@ public class PController extends Thread {
 		leftStep = steps;
 	}
 
-	private ArrayList<Membrane> smList = new ArrayList<>();// run satisfy step.
-	private ArrayList<Membrane> fmList = new ArrayList<>();// run fetch step.
-	private ArrayList<Membrane> rmList = new ArrayList<>();// run setResult
-															// step.
-
-	public int runOneStep() {
+	private int runOneStep() {
 		Calendar startTime, endTime;
 		startTime = Calendar.getInstance();
 
@@ -169,26 +148,24 @@ public class PController extends Thread {
 		for (int i = 0; i < smList.size(); i++) {
 			Membrane membrane = smList.get(i);
 			try {
-				MainWindow.appendLogMsg("Membrane " + membrane.getNameDim() + " are checking usable rules");
+				UPSLogger.debug(this, "Membrane " + membrane.getNameDim() + " are checking usable rules");
 				List<Rule> uRules = membrane.getUsableRules();
 				// 此处控制极大和极小并行，以及随机执行也是在此控制
 				smList.addAll(((PMembrane) membrane).getChildren());
 				fmList.add(membrane);
 			} catch (UnpredictableDimensionException e) {
 				e.printStackTrace();
-				MainWindow.appendErrMsg(e.getMessage());
+				UPSLogger.error(this, e.getMessage());
 			} catch (CloneNotSupportedException e) {
 				e.printStackTrace();
-				MainWindow.appendErrMsg(e.getMessage());
+				UPSLogger.error(this, e.getMessage());
 			}
 		}
-
-		clock.nextSubstep();
 
 		for (int i = 0; i < fmList.size(); i++) {
 			Membrane membrane = fmList.get(i);
 			try {
-				MainWindow.appendLogMsg("Membrane " + membrane.getNameDim() + " are fetching objects");
+				UPSLogger.debug(this, "Membrane " + membrane.getNameDim() + " are fetching objects");
 				List<Rule> fetchedRules = membrane.fetch();
 				rmList.add(membrane);
 			} catch (TunnelNotExistException e) {
@@ -196,26 +173,24 @@ public class PController extends Thread {
 			}
 		}
 
-		clock.nextSubstep();
-
 		List<Rule> uList = new LinkedList<>();
 		for (int i = 0; i < rmList.size(); i++) {
 			Membrane membrane = rmList.get(i);
-			MainWindow.appendLogMsg("Membrane " + membrane.getNameDim() + " are setting products");
+			UPSLogger.debug(this, "Membrane " + membrane.getNameDim() + " are setting products");
 			List<Rule> rList = membrane.setProducts();
 			uList.addAll(rList);
 		}
 
-		clock.nextStep();
 		for (Membrane m : smList) {
 			m.newStepInit();
 		}
 
 		endTime = Calendar.getInstance();
 		long timeUsed = endTime.getTimeInMillis() - startTime.getTimeInMillis();
-		MainWindow.appendMsg("rule used : " + uList.size() + "\t\ttime used:" + timeUsed + "ms");
-		MainWindow.appendMsg(uList.toString());
-		MainWindow.appendMsg(environment.toString() + "\n");
+		UPSLogger.result(this, "rules used : " + uList.size() + "\t\ttime used:" + timeUsed + "ms");
+		UPSLogger.debug(this, "\n\nRules used:");
+		UPSLogger.debug(this, uList.toString());
+		UPSLogger.result(this, environment.toString() + "\n");
 
 		Membrane eClone = environment.deepClone();
 		records.add(eClone);

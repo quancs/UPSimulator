@@ -20,6 +20,7 @@ import upsimulator.interfaces.Obj;
 import upsimulator.interfaces.Result;
 import upsimulator.interfaces.Rule;
 import upsimulator.interfaces.Tunnel;
+import upsimulator.interfaces.UPSLogger;
 import upsimulator.interfaces.Tunnel.TunnelType;
 
 public class PMembrane implements Membrane {
@@ -194,7 +195,7 @@ public class PMembrane implements Membrane {
 
 		for (int i = 0; i < urules.size(); i++) {
 			if (urules.size() > 100 && ((urules.size() - i) % 1000 == 0)) {
-				MainWindow.appendLogMsg("Membrane " + getNameDim() + " fetched " + i + "/" + urules.size() + " rules");
+				UPSLogger.debug(this, "Membrane " + getNameDim() + " fetched " + i + "/" + urules.size() + " rules");
 			}
 
 			Rule rule = urules.get(i);
@@ -241,8 +242,7 @@ public class PMembrane implements Membrane {
 
 	@Override
 	public String toString() {
-		// return toString(" ", true, true, false, true, false);
-		return toString("  ", true, true, true, true, true);
+		return toString(" ", true, true, false, true, false);
 	}
 
 	@Override

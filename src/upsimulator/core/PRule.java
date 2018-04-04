@@ -20,6 +20,7 @@ import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Obj;
 import upsimulator.interfaces.Result;
 import upsimulator.interfaces.Rule;
+import upsimulator.interfaces.UPSLogger;
 import upsimulator.rules.conditions.InhibitorCondition;
 import upsimulator.rules.conditions.MembraneStatusCondition;
 import upsimulator.rules.conditions.ObjectCondition;
@@ -210,7 +211,7 @@ public class PRule implements Rule {
 				PossibleValueCombiner worker = PossibleValueCombiner.getWorker(last, lastComp, lastDims, lastDimsComp);
 				worker.start();
 				workers.add(worker);
-				MainWindow.appendLogMsg("Thread " + worker.getWorkerId() + " " + getNameDim() + " search possible values : " + current + "/" + total + " " + last.size() + "*" + lastComp.size());
+				UPSLogger.debug(this, "Thread " + worker.getWorkerId() + " " + getNameDim() + " search possible values : " + current + "/" + total + " " + last.size() + "*" + lastComp.size());
 				current++;
 			}
 			for (int i = 0; i < workers.size(); i++) {
@@ -220,7 +221,7 @@ public class PRule implements Rule {
 					pValuesDim.add(worker.getDims());
 					workers.remove(i);
 					i--;
-					MainWindow.appendLogMsg("Thread " + worker.getWorkerId() + " finished, time spend= " + worker.getTimeSpend() + " find " + worker.getPValues().size() + " new possible values.");
+					UPSLogger.debug(this, "Thread " + worker.getWorkerId() + " finished, time spend= " + worker.getTimeSpend() + " find " + worker.getPValues().size() + " new possible values.");
 				}
 			}
 			try {
@@ -598,7 +599,7 @@ public class PRule implements Rule {
 			try {
 				checker.join();
 				satisfiedRules.addAll(checker.getSatisfiedRules());
-				MainWindow.appendLogMsg("RuleChecker " + checker.getWorkerId() + " checked " + checker.getSatisfiedRules().size() + "/" + checker.getTotal() + "  " + checker.getTimeSpend() + "ms");
+				UPSLogger.debug(this, "RuleChecker " + checker.getWorkerId() + " checked " + checker.getSatisfiedRules().size() + "/" + checker.getTotal() + "  " + checker.getTimeSpend() + "ms");
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} catch (Exception e) {
@@ -607,7 +608,7 @@ public class PRule implements Rule {
 		}
 
 		Calendar t3 = Calendar.getInstance();
-		MainWindow.appendLogMsg(
+		UPSLogger.debug(this,
 				getNameDim() + " getPossibleValues=" + (t2.getTimeInMillis() - t1.getTimeInMillis()) + "ms\t\t" + " satisfyCheck=" + (t3.getTimeInMillis() - t2.getTimeInMillis()) + "ms");
 		return satisfiedRules;
 	}
