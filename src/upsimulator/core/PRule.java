@@ -21,6 +21,14 @@ import upsimulator.interfaces.Obj;
 import upsimulator.interfaces.Result;
 import upsimulator.interfaces.Rule;
 import upsimulator.rules.conditions.InhibitorCondition;
+import upsimulator.rules.conditions.MembraneStatusCondition;
+import upsimulator.rules.conditions.ObjectCondition;
+import upsimulator.rules.conditions.PriorityCondition;
+import upsimulator.rules.results.MembraneCreateResult;
+import upsimulator.rules.results.MembraneDissolveResult;
+import upsimulator.rules.results.MembranePropertyResult;
+import upsimulator.rules.results.MembraneStatusResult;
+import upsimulator.rules.results.ObjectResult;
 import upsimulator.speedup.PossibleValueCombiner;
 import upsimulator.speedup.RuleChecker;
 
@@ -301,15 +309,22 @@ public class PRule implements Rule {
 		}
 	}
 
+	/**
+	 * Let conditions fetch, and PriorityCondition & MembraneStatusCondition will
+	 * fetch first to make sure their semantic meaning right.
+	 * 
+	 * @param membrane
+	 * @return
+	 */
 	private boolean doFetch(Membrane membrane) {
-		int i = 0;
-		for (; i < conditions.size(); i++) {
+		int i = conditions.size() - 1;
+		for (; i >= 0; i--) {
 			Condition criteria = conditions.get(i);
 			if (!criteria.fetch(membrane))
 				break;
 		}
 		if (i != conditions.size()) {
-			for (i = i - 1; i >= 0; i--) {
+			for (i = i + 1; i < conditions.size(); i++) {
 				Condition criteria = conditions.get(i);
 				criteria.withdrawFetch(membrane);
 			}
@@ -327,7 +342,17 @@ public class PRule implements Rule {
 
 	@Override
 	public void addCondition(Condition condition) {
-		conditions.add(condition);
+		if (condition instanceof PriorityCondition) {
+			if (conditions.size() >= 1 && conditions.get(conditions.size() - 1) instanceof MembraneStatusResult) {
+				conditions.add(conditions.size() - 1, condition);
+			} else {
+				conditions.add(condition);
+			}
+		} else if (condition instanceof MembraneStatusResult) {
+			conditions.add(condition);
+		} else {
+			conditions.add(0, condition);
+		}
 		if (condition instanceof Dimension)
 			((Dimension) condition).setEval(evaluator);
 	}
@@ -473,7 +498,45 @@ public class PRule implements Rule {
 
 	@Override
 	public String toString() {
-		return "Rule " + getNameDim() + " = " + conditions.toString() + " -> " + results.toString();
+		StringBuilder sBuilder = new StringBuilder("Rule ");
+		sBuilder.append(getName());
+		for (String d : dimensions) {
+			sBuilder.append("[");
+			sBuilder.append(d);
+			sBuilder.append("]");
+		}
+		sBuilder.append(" = ");
+
+		for (Condition condition : conditions) {
+			if (condition instanceof MembraneStatusCondition) {
+				sBuilder.append(condition);
+			}
+		}
+		for (Condition condition : conditions) {
+			if (condition instanceof ObjectCondition) {
+				sBuilder.append(condition);
+			}
+		}
+		sBuilder.append(" -> ");
+		for (Result result : results) {
+			if (result instanceof MembraneStatusResult) {
+				sBuilder.append(result);
+			}
+		}
+		for (Result result : results) {
+			if (!(result instanceof MembraneStatusResult)) {
+				sBuilder.append(result);
+			}
+		}
+		sBuilder.append(" | ");
+
+		for (Condition condition : conditions) {
+			if (condition instanceof MembraneStatusCondition || condition instanceof ObjectCondition || condition instanceof Result)
+				continue;
+			sBuilder.append(condition);
+		}
+
+		return sBuilder.toString();
 	}
 
 	@Override
@@ -486,19 +549,7 @@ public class PRule implements Rule {
 		return results;
 	}
 
-	private int priority = 1;
-
-	@Override
-	public void setPriority(int pri) {
-		priority = pri;
-	}
-
-	@Override
-	public int getPriority() {
-		return priority;
-	}
-
-	boolean fixed = false;
+	private boolean fixed = false;
 
 	@Override
 	public void fixDimension() {

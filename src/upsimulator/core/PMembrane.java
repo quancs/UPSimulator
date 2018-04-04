@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.sourceforge.jeval.Evaluator;
 import upsimulator.exceptions.TunnelNotExistException;
@@ -24,7 +25,7 @@ public class PMembrane implements Membrane {
 	private static final long serialVersionUID = -1932793470654198760L;
 
 	private String name;
-	private HashMap<Obj, Integer> objects = new HashMap<Obj, Integer>();
+	private ConcurrentHashMap<Obj, Integer> objects = new ConcurrentHashMap<Obj, Integer>();
 	private ArrayList<Rule> rules = new ArrayList<>();
 
 	public PMembrane(String name) {
@@ -159,20 +160,11 @@ public class PMembrane implements Membrane {
 
 	@Override
 	public void addRule(Rule rule) {
-		boolean added = false;
-		for (int i = 0; i < rules.size(); i++) {
-			if (rules.get(i).getPriority() >= rule.getPriority()) {
-				rules.add(i, rule);
-				added = true;
-				break;
-			}
-		}
-		if (!added)
-			rules.add(rule);
+		rules.add(rule);
 	}
 
 	@Override
-	public HashMap<Obj, Integer> getObjects() {
+	public Map<Obj, Integer> getObjects() {
 		return objects;
 	}
 
@@ -314,12 +306,10 @@ public class PMembrane implements Membrane {
 		this.name = name;
 	}
 
-	private HashMap<String, Object> properties = new HashMap<>();
+	private ConcurrentHashMap<String, Object> properties = new ConcurrentHashMap<>();
 
 	@Override
 	public void setProperty(String propertyName, Object propertyValue) {
-		if (properties == null)
-			properties = new HashMap<>();
 		properties.put(propertyName, propertyValue);
 	}
 
@@ -399,10 +389,9 @@ public class PMembrane implements Membrane {
 			addRule((Rule) rule.deepClone());
 		}
 
-		HashMap<Obj, Integer> objmap = template.getObjects();
+		Map<Obj, Integer> objmap = template.getObjects();
 		Iterator<?> iter = objmap.entrySet().iterator();
 		while (iter.hasNext()) {
-			@SuppressWarnings("rawtypes")
 			Map.Entry entry = (Map.Entry) iter.next();
 			addObject((Obj) entry.getKey(), (Integer) entry.getValue());
 		}
@@ -418,7 +407,7 @@ public class PMembrane implements Membrane {
 	}
 
 	@Override
-	public HashMap<String, Object> getProperties() {
+	public Map<String, Object> getProperties() {
 		return properties;
 	}
 

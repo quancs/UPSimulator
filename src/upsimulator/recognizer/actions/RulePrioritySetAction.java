@@ -5,7 +5,7 @@ import upsimulator.interfaces.Rule;
 import upsimulator.rules.conditions.PriorityCondition;
 
 /**
- * Set the priority of rule to make the priority codition meaning right.
+ * Set the priority of rule to make the priority condition meaning right.
  * 
  * @author quan
  *
@@ -36,7 +36,6 @@ public class RulePrioritySetAction extends RecognizerAction {
 	public void doAction() {
 		PriorityCondition pCondition = new PriorityCondition(priority);
 		rule.addCondition(pCondition);
-		rule.setPriority(priority);
 		minusUnreadyCount(to);
 	}
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import upsimulator.exceptions.TunnelNotExistException;
 import upsimulator.exceptions.UnpredictableDimensionException;
@@ -76,7 +77,7 @@ public interface Membrane extends Name, Cloneable, Dimension {
 	 * 
 	 * @return objects and their quantity
 	 */
-	public HashMap<Obj, Integer> getObjects();
+	public Map<Obj, Integer> getObjects();
 
 	/**
 	 * Add a new rule

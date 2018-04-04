@@ -164,8 +164,7 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 	@Override
 	public T visitRuleSetDeclare(UPLanguageParser.RuleSetDeclareContext ctx) {
 		logger.info("visitRuleSetDeclare");
-		RuleSetDeclareAction rsdAction = new RuleSetDeclareAction(ctx.ruleSetType().getText(),
-				ctx.ruleSetNamePrefix().getText(), currMembrane);
+		RuleSetDeclareAction rsdAction = new RuleSetDeclareAction(ctx.ruleSetType().getText(), ctx.ruleSetNamePrefix().getText(), currMembrane);
 		actions.add(rsdAction);
 		return null;
 	}
@@ -259,7 +258,6 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 		}
 		if (priorityCondition != null) {
 			rule.addCondition(priorityCondition);
-			rule.setPriority(priorityCondition.getPriority());
 		}
 		currRule = null;
 		return (T) rule;
@@ -344,8 +342,7 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 				pResult.setMove(PositionResult.here);
 				break;
 			default:
-				throw new RuntimeException("unknown PositionResult move direction : "
-						+ ctx.getChild(ctx.getChildCount() - 2).getText() + "   \n" + ctx.toStringTree());
+				throw new RuntimeException("unknown PositionResult move direction : " + ctx.getChild(ctx.getChildCount() - 2).getText() + "   \n" + ctx.toStringTree());
 			}
 
 		for (UPLanguageParser.ObjResultContext orc : ctx.objResult())
@@ -385,8 +382,7 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 
 	@Override
 	public T visitMemPropertyCondition(UPLanguageParser.MemPropertyConditionContext ctx) {
-		MembranePropertyCondition mpCondition = new MembranePropertyCondition(ctx.propertyName().getText(),
-				ctx.propertyValue().getText());
+		MembranePropertyCondition mpCondition = new MembranePropertyCondition(ctx.propertyName().getText(), ctx.propertyValue().getText());
 
 		return (T) mpCondition;
 	}

@@ -96,27 +96,17 @@ public interface Rule extends Dimension, Name, Cloneable {
 	 */
 	public Rule deepClone();
 
-	/**
-	 * 设置规则的优先级
-	 * 
-	 */
-	public void setPriority(int pri);
+	// /**
+	// * 设置规则的优先级
+	// *
+	// */
+	// public void setPriority(int pri);
+	//
+	// /**
+	// * 优先级越高，数字越小
+	// *
+	// * @return 规则的优先级
+	// */
+	// public int getPriority();
 
-	/**
-	 * 优先级越高，数字越小
-	 * 
-	 * @return 规则的优先级
-	 */
-	public int getPriority();
-
-	/**
-	 * 比较两条规则的优先级大小
-	 * 
-	 * @param r1
-	 * @param r2
-	 * @return 规则优先级的降序，优先级数字的升序，如果r1>r2返回<0
-	 */
-	public static int compare(Rule r1, Rule r2) {
-		return r1.getPriority() - r2.getPriority();
-	}
 }

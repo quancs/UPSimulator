@@ -21,7 +21,7 @@ public class MembranePropertyResult implements Result {
 	}
 
 	@Override
-	public Result deepClone() throws CloneNotSupportedException {
+	public Result deepClone() {
 		return this;
 	}
 
@@ -59,6 +59,11 @@ public class MembranePropertyResult implements Result {
 		} else {
 			return tunnel;
 		}
+	}
+
+	@Override
+	public String toString() {
+		return getValue();
 	}
 
 }
