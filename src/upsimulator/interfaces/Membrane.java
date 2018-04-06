@@ -19,9 +19,11 @@ import upsimulator.interfaces.Tunnel.TunnelType;
 public interface Membrane extends Name, Cloneable, Dimension {
 
 	public static HashMap<String, Membrane> membraneClass = new HashMap<>();
+	public static HashMap<String, Boolean> membraneClassStatus = new HashMap<>();
 
-	public static void registMemClass(String name, Membrane membrane) {
+	public static void registMemClass(String name, Membrane membrane, boolean predefined) {
 		membraneClass.put(name, membrane);
+		membraneClassStatus.put(name, predefined);
 	}
 
 	public static Membrane getMemInstanceOf(String membraneName) {
@@ -30,6 +32,14 @@ public interface Membrane extends Name, Cloneable, Dimension {
 		} else {
 			return null;
 		}
+	}
+
+	public static boolean isPredefinedMem(String membraneName) {
+		Boolean fBoolean = membraneClassStatus.get(membraneName);
+		if (fBoolean == null) {
+			return false;
+		} else
+			return fBoolean;
 	}
 
 	public static Membrane getMemClass(String name) {
@@ -236,6 +246,16 @@ public interface Membrane extends Name, Cloneable, Dimension {
 			}
 		}
 		return children;
+	}
+
+	public default List<Membrane> getNeighbors() {
+		ArrayList<Membrane> neighbors = new ArrayList<Membrane>();
+		for (Tunnel tunnel : getTunnels()) {
+			if (tunnel.getType() == TunnelType.Go && !neighbors.contains(tunnel.getTargets().get(0))) {
+				neighbors.add(tunnel.getTargets().get(0));
+			}
+		}
+		return neighbors;
 	}
 
 	public default Membrane getParent() {

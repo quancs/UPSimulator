@@ -1,8 +1,11 @@
 package upsimulator.rules.results;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 
+import net.sourceforge.jeval.EvaluationException;
 import net.sourceforge.jeval.Evaluator;
 import upsimulator.exceptions.TunnelNotExistException;
 import upsimulator.exceptions.UnknownTargetMembraneException;
@@ -11,40 +14,81 @@ import upsimulator.interfaces.Dimension;
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Result;
 import upsimulator.interfaces.Tunnel;
+import upsimulator.interfaces.UPSLogger;
 import upsimulator.interfaces.Tunnel.TunnelType;
 import upsimulator.rules.conditions.MembranePropertyCondition;
 
 //既是结果也是条件
 public class PositionResult implements Result, Dimension, Condition {
 
-	public static final int in = 1;
-	public static final int here = 0;
-	public static final int out = 2;
+	public class Target {
+		public String name;
+		public String nameDim;
+		public ArrayList<String> formulaDims = new ArrayList<>();
+		public ArrayList<MembranePropertyCondition> conditions = new ArrayList<>();
 
-	private int move;
+		private String unfixedNameDim;
 
-	private String membraneName;
+		public Target deepClone() {
+			try {
+				Target cloned = (Target) this.clone();
+				cloned.conditions = new ArrayList<>(conditions.size());
+				for (MembranePropertyCondition condition : conditions)
+					cloned.conditions.add(condition.deepClone());
+				return cloned;
+			} catch (CloneNotSupportedException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		@Override
+		public String toString() {
+			if (nameDim != null) {
+				String string = nameDim;
+				for (MembranePropertyCondition mpc : conditions)
+					string += mpc.toString();
+				return string;
+			}
+
+			if (unfixedNameDim == null) {
+				unfixedNameDim = name;
+				for (String fString : formulaDims)
+					unfixedNameDim += "[" + fString + "]";
+				for (MembranePropertyCondition mpc : conditions)
+					unfixedNameDim += mpc.toString();
+			}
+			return unfixedNameDim;
+		}
+	}
+
+	private TunnelType move;
+	private ArrayList<Target> targets = new ArrayList<>();
 	private ArrayList<ObjectResult> ors = new ArrayList<>();
-	private ArrayList<MembranePropertyCondition> mpConditions = new ArrayList<>();// 子膜应当满足的膜属性条件
+	private boolean checkSubmembraneProp;
+	private boolean fixed;
 
 	public PositionResult() {
 		super();
+		move = TunnelType.Here;
+		checkSubmembraneProp = false;
+		fixed = false;
 	}
 
-	public PositionResult(int move, String membraneName) {
+	public PositionResult(TunnelType move) {
 		this.move = move;
-		this.membraneName = membraneName;
+		checkSubmembraneProp = false;
+		fixed = false;
 	}
 
 	public void addObjectResult(ObjectResult or) {
-		if (or == null) {
-			System.err.println(" null ");
-		}
 		ors.add(or);
 	}
 
-	public void addMemPropCondition(MembranePropertyCondition mpc) {
-		mpConditions.add(mpc);
+	public void addTarget(Target target) {
+		targets.add(target);
+		if (target.conditions.size() > 0)
+			checkSubmembraneProp = true;
 	}
 
 	@Override
@@ -67,7 +111,9 @@ public class PositionResult implements Result, Dimension, Condition {
 				for (ObjectResult or : ors)
 					cloned.addObjectResult(or.deepClone());
 				cloned.evaluator = null;
-				cloned.dimensions = (ArrayList<String>) dimensions.clone();
+				cloned.targets = new ArrayList<>(targets.size());
+				for (Target target : targets)
+					cloned.targets.add(target.deepClone());
 				return cloned;
 			} else {
 				PositionResult temp = cloned;
@@ -85,43 +131,94 @@ public class PositionResult implements Result, Dimension, Condition {
 		return 1;
 	}
 
-	public int getMove() {
+	public TunnelType getMove() {
 		return move;
 	}
 
-	public void setMove(int move) {
+	public void setMove(TunnelType move) {
 		this.move = move;
 	}
 
-	public String getMembraneName() {
-		return membraneName;
-	}
-
-	public void setMembraneName(String membraneName) {
-		this.membraneName = membraneName;
+	public ArrayList<Target> getTargets() {
+		return targets;
 	}
 
 	@Override
 	public String toString() {
-		String mString = null;
+		String position = null;
 		switch (move) {
-		case in:
-			mString = "in " + getNameDim();
+		case Here:
+			position = "here";
 			break;
-		case out:
-			mString = "out";
+		case Out:
+			position = "out";
 			break;
-		case here:
-			mString = "here";
+		case In_all:
+			position = "in all";
 			break;
+		case Go_all:
+			position = "go all";
+			break;
+		case Go_one_of_all:
+			position = "go random";
+			break;
+		case In_one_of_all:
+			position = "in random";
+			break;
+		case In:
+			position = "in " + targets.get(0).toString();
+			break;
+		case Go:
+			position = "go " + targets.get(0).toString();
+			break;
+		case In_all_of_specified: {
+			StringBuilder sBuilder = new StringBuilder("in ");
+			for (int i = 0; i < targets.size() - 1; i++) {
+				sBuilder.append(targets.get(i).toString());
+				sBuilder.append("&");
+			}
+			sBuilder.append(targets.get(targets.size() - 1).toString());
+			position = sBuilder.toString();
+			break;
+		}
+		case Go_all_of_specified: {
+			StringBuilder sBuilder = new StringBuilder("go ");
+			for (int i = 0; i < targets.size() - 1; i++) {
+				sBuilder.append(targets.get(i).toString());
+				sBuilder.append("&");
+			}
+			sBuilder.append(targets.get(targets.size() - 1).toString());
+			position = sBuilder.toString();
+			break;
+		}
+		case In_one_of_specified: {
+			StringBuilder sBuilder = new StringBuilder("in ");
+			for (int i = 0; i < targets.size() - 1; i++) {
+				sBuilder.append(targets.get(i).toString());
+				sBuilder.append("|");
+			}
+			sBuilder.append(targets.get(targets.size() - 1).toString());
+			position = sBuilder.toString();
+			break;
+		}
+		case Go_one_of_specified: {
+			StringBuilder sBuilder = new StringBuilder("go ");
+			for (int i = 0; i < targets.size() - 1; i++) {
+				sBuilder.append(targets.get(i).toString());
+				sBuilder.append("|");
+			}
+			sBuilder.append(targets.get(targets.size() - 1).toString());
+			position = sBuilder.toString();
+			break;
+		}
 		default:
 			break;
 		}
 
-		String string = "( ";
+		String string = "(";
 		for (ObjectResult or : ors)
-			string += or + " ";
-		string += " ," + mString + ")";
+			string += " " + or;
+		string += ", " + position + ")";
 		return string;
 	}
 
@@ -134,59 +231,59 @@ public class PositionResult implements Result, Dimension, Condition {
 			or.setEval(evaluator);
 	}
 
-	private ArrayList<String> dimensions = new ArrayList<>();
-
 	@Override
 	public void addDimension(Integer... dimensions) {
-		for (Integer d : dimensions)
-			this.dimensions.add(String.valueOf(d));
+
 	}
 
 	@Override
 	public void addDimension(String... formulas) {
-		for (String d : formulas)
-			dimensions.add(d);
+
 	}
 
 	@Override
 	public int dimensionCount() {
-		return dimensions.size();
+		return 1;
 	}
 
 	@Override
 	public List<String> getDimensions() {
-		return dimensions;
+		return null;
 	}
 
-	private String getNameDim() {
-		StringBuilder name = new StringBuilder(membraneName);
-		if (evaluator != null && dimensions != null) {
-			try {
-				for (int i = 0; i < dimensions.size(); i++) {
-					String formula = dimensions.get(i);
-					int dimension;
-					dimension = (int) Double.parseDouble(evaluator.evaluate(formula));
-					name.append("[" + dimension + "]");
-				}
-			} catch (Exception e) {
-				name.delete(membraneName.length(), name.length());
-				for (int j = 0; j < dimensions.size(); j++)
-					name.append("[" + dimensions.get(j) + "]");
-			}
-		} else if (dimensions != null) {
-			for (int i = 0; i < dimensions.size(); i++)
-				name.append("[" + dimensions.get(i) + "]");
-		}
-		return name.toString();
+	private String getNameDim() throws EvaluationException {
+		return getTargetsName();
 	}
 
 	@Override
 	public void fixDimension() {
+		if (fixed)
+			return;
+
 		for (ObjectResult or : ors)
 			if (or instanceof Dimension)
 				or.fixDimension();
 
-		Dimension.super.fixDimension();
+		ArrayList<String> nameDims = new ArrayList<>();
+		for (Target target : targets) {
+			target.nameDim = target.name;
+			for (String dim : target.formulaDims) {
+				try {
+					target.nameDim += "[" + evaluator.evaluate(dim) + "]";
+				} catch (EvaluationException e) {
+					e.printStackTrace();
+					UPSLogger.error(this, e.getStackTrace().toString());
+				}
+			}
+			nameDims.add(target.nameDim);
+		}
+		nameDims.sort(new Comparator<String>() {
+			@Override
+			public int compare(String o1, String o2) {
+				return o1.compareTo(o2);
+			}
+		});
+		fixed = true;
 	}
 
 	@Override
@@ -194,30 +291,113 @@ public class PositionResult implements Result, Dimension, Condition {
 		return evaluator;
 	}
 
-	private ArrayList<Membrane> satisfiedSons = new ArrayList<>();
+	private final boolean satisfy(Membrane membrane, List<MembranePropertyCondition> mpcs) {
+		for (MembranePropertyCondition mpc : mpcs) {
+			if (!mpc.satisfy(membrane))
+				return false;
+		}
+		return true;
+	}
 
-	@Override
-	public boolean satisfy(Membrane membrane) {
-		if (move == in) {
-			satisfiedSons.clear();
-			String nameDim = getNameDim();// 有可能是带有维度的膜
-			for (Membrane son : membrane.getChildren()) {
-				if (son.getNameDim().equals(nameDim)) {// 允许重名膜的出现
-					boolean satisfied = true;
-					for (MembranePropertyCondition mpc : mpConditions) {
-						if (!mpc.satisfy(son)) {
-							satisfied = false;
-							break;
-						}
-					}
-					if (satisfied)
-						satisfiedSons.add(son);
+	private final boolean satisfyAll(List<Target> targets, List<Membrane> membranes) {
+		for (Membrane membrane : membranes) {
+			boolean satisfy = false;
+			for (Target target : targets) {
+				if (target.nameDim.equals(membrane.getNameDim())) {
+					satisfy = satisfy(membrane, target.conditions);
+					break;
 				}
 			}
-			return satisfiedSons.size() > 0;
-		} else {
-			return true;
+			if (satisfy == false)
+				return false;
 		}
+		return true;
+	}
+
+	private final boolean satisfyOne(List<Target> targets, List<Membrane> membranes) {
+		for (Membrane membrane : membranes) {
+			boolean satisfy = false;
+			for (Target target : targets) {
+				if (target.nameDim.equals(membrane.getNameDim())) {
+					satisfy = satisfy(membrane, target.conditions);
+					break;
+				}
+			}
+			if (satisfy)
+				return true;
+		}
+		return false;
+	}
+
+	// private Membrane satisfiedMem;
+
+	// Check MembranePropertyCondition
+	@Override
+	public boolean satisfy(Membrane membrane) {
+		if (checkSubmembraneProp == false || move == TunnelType.Here || move == TunnelType.Out)
+			return true;
+
+		switch (move) {
+		case Go_one_of_all:
+		case Go_all:
+		case In_one_of_all:
+		case In_all:
+			return true;
+		case In:
+			return satisfyAll(targets, membrane.getChildren());
+		case Go:
+			return satisfyAll(targets, membrane.getNeighbors());
+		case In_all_of_specified:
+			return satisfyAll(targets, membrane.getChildren());
+		case Go_all_of_specified:
+			return satisfyAll(targets, membrane.getNeighbors());
+		case In_one_of_specified:
+			return satisfyOne(targets, membrane.getChildren());
+		case Go_one_of_specified:
+			return satisfyOne(targets, membrane.getNeighbors());
+
+		default:
+			break;
+		}
+		return false;
+	}
+
+	private final String getTargetsName() throws EvaluationException {
+		switch (move) {
+		case Here:
+		case Out:
+		case In_all:
+		case Go_all:
+		case Go_one_of_all:
+		case In_one_of_all:
+			return move.toString();
+		case In:
+		case Go:
+			return targets.get(0).nameDim;
+		case In_all_of_specified:
+		case Go_all_of_specified: {
+			String targetsName = "";
+			for (int i = 0; i < targets.size() - 1; i++) {
+				Target target = targets.get(i);
+				targetsName += target.nameDim + "&";
+			}
+			targetsName += targets.get(targets.size() - 1).nameDim;
+			return targetsName;
+		}
+		case In_one_of_specified:
+		case Go_one_of_specified: {
+			String targetsName = "";
+			for (int i = 0; i < targets.size() - 1; i++) {
+				Target target = targets.get(i);
+				targetsName += target.nameDim + "|";
+			}
+			targetsName += targets.get(targets.size() - 1).nameDim;
+			return targetsName;
+		}
+		default:
+			break;
+		}
+		return null;
 	}
 
 	@Override
@@ -232,30 +412,30 @@ public class PositionResult implements Result, Dimension, Condition {
 	@Override
 	public Tunnel selectTunnel(Membrane current) throws TunnelNotExistException {
 		switch (move) {
-		case in:
-			int index = (int) Math.round(Math.random() * (satisfiedSons.size() - 1));
-			for (Tunnel t : current.getTunnels())
-				if (t.getTargetsName() == satisfiedSons.get(index).getNameDim())
-					return t;
-			throw new TunnelNotExistException(this.toString() + " wants " + satisfiedSons.get(index).getNameDim() + ", which is not in " + current.getTunnels());
-		case out:
-			Tunnel tunnel = current.getTunnel(TunnelType.Out, null);
-			if (tunnel == null) {
-				throw new TunnelNotExistException(TunnelType.Out + " tunnel does not exist in " + current);
-			} else {
-				return tunnel;
+		case Here:
+		case Out:
+		case In_all:
+		case In_one_of_all:
+		case Go_all:
+		case Go_one_of_all:
+			return current.getTunnel(move, null);
+
+		case Go:
+		case In:
+		case In_all_of_specified:
+		case In_one_of_specified:
+		case Go_all_of_specified:
+		case Go_one_of_specified:
+			try {
+				return current.getTunnel(move, getTargetsName());
+			} catch (EvaluationException e) {
+				e.printStackTrace();
+				UPSLogger.error(this, e.toString());
 			}
-		case here:
-			Tunnel tunnel1 = current.getTunnel(TunnelType.Here, null);
-			if (tunnel1 == null) {
-				throw new TunnelNotExistException(TunnelType.Here + " tunnel does not exist in " + current);
-			} else {
-				return tunnel1;
-			}
+
 		default:
 			break;
 		}
-
 		return null;
 	}
 }

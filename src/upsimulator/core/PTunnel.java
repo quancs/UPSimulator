@@ -1,12 +1,14 @@
 package upsimulator.core;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import upsimulator.exceptions.UnknownTargetMembraneException;
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Result;
 import upsimulator.interfaces.Tunnel;
+import upsimulator.interfaces.UPSLogger;
 
 /*
  * Membrane's connection between A and B.
@@ -69,6 +71,12 @@ public class PTunnel implements Tunnel {
 
 	public void addTarget(Membrane target) {
 		targets.add(target);
+		targets.sort(new Comparator<Membrane>() {
+			@Override
+			public int compare(Membrane o1, Membrane o2) {
+				return o1.getNameDim().compareTo(o2.getNameDim());
+			}
+		});
 	}
 
 	public void holdResult(Result result) {
@@ -79,41 +87,75 @@ public class PTunnel implements Tunnel {
 		return heldResults;
 	}
 
-	public void pushResult() {
-		if (getType() == TunnelType.One2ManyRandom) {
-			Membrane target = targets.get(((int) (Math.random() * targets.size()) % targets.size()));
-			for (Result result : heldResults) {
-				try {
-					result.setResult(target);
-				} catch (UnknownTargetMembraneException e) {
-					e.printStackTrace();
-				}
-			}
-		} else {
-			for (Result result : heldResults) {
-				try {
-					for (Membrane target : targets)
-						result.setResult(target);
-				} catch (UnknownTargetMembraneException e) {
-					e.printStackTrace();
-				}
-			}
+	private final void pushResultsTo(Membrane membrane) {
+		try {
+			for (Result result : heldResults)
+				result.setResult(membrane);
+		} catch (UnknownTargetMembraneException e) {
+			e.printStackTrace();
+			UPSLogger.error(this, e.getStackTrace().toString());
 		}
+	}
+
+	private final void pushResultsToAll(List<Membrane> membranes) {
+		for (Membrane sm : membranes)
+			pushResultsTo(sm);
+	}
+
+	private final void pushResultsToOne(List<Membrane> membranes) {
+		Membrane target = membranes.get((int) (Math.random() * membranes.size()));
+		pushResultsTo(target);
+	}
+
+	public void pushResult() {
+		switch (type) {
+		case Out:
+		case Here:
+		case In:
+		case Go:
+			pushResultsTo(targets.get(0));
+			break;
+		case In_all:
+			pushResultsToAll(source.getChildren());
+			break;
+		case In_all_of_specified:
+			pushResultsToAll(targets);
+			break;
+		case In_one_of_all:
+			pushResultsToOne(source.getChildren());
+			break;
+		case In_one_of_specified:
+			pushResultsToOne(targets);
+			break;
+		case Go_all:
+			pushResultsToAll(source.getNeighbors());
+			break;
+		case Go_all_of_specified:
+			pushResultsToAll(targets);
+			break;
+		case Go_one_of_all:
+			pushResultsToOne(source.getNeighbors());
+			break;
+		case Go_one_of_specified:
+			pushResultsToOne(targets);
+			break;
+
+		default:
+			break;
+		}
+
 		heldResults.clear();
 
 		// Check if need to close this Tunnel
 		if (source.isDeleted())
 			close();
 
-		for (int i = 0; i < targets.size();) {
+		for (int i = 0; i < targets.size(); i++) {
 			if (targets.get(i).isDeleted()) {
-				targets.remove(i);
-			} else {
-				i++;
+				close();
+				break;
 			}
 		}
-		if (targets.size() == 0)
-			close();
 	}
 
 	public void open() {
@@ -128,26 +170,35 @@ public class PTunnel implements Tunnel {
 		return isOpen;
 	}
 
+	private String targetsName;
+
 	@Override
 	public String getTargetsName() {
+		if (targetsName != null)
+			return targetsName;
+		if (type == TunnelType.In_all || type == TunnelType.Go_all || type == TunnelType.Go_one_of_all || type == TunnelType.In_one_of_all || type == TunnelType.Out || type == TunnelType.Here) {
+			targetsName = type.toString();
+			return targetsName;
+		}
+
 		if (targets.size() == 0) {
 			return null;
 		} else if (targets.size() == 1) {
-			return targets.get(0).getNameDim();
+			targetsName = targets.get(0).getNameDim();
 		} else {
 			String split = "?";
-			if (getType() == TunnelType.One2Many)
+			if (type == TunnelType.In_all_of_specified || type == TunnelType.In_all_of_specified)
 				split = "&";
-			else if (getType() == TunnelType.One2ManyRandom) {
+			else if (type == TunnelType.In_one_of_specified || type == TunnelType.In_one_of_specified) {
 				split = "|";
 			}
-			String name = "";
+			targetsName = "";
 			for (int i = 0; i < targets.size() - 1; i++) {
-				name += targets.get(i).getNameDim() + split;
+				targetsName += targets.get(i).getNameDim() + split;
 			}
-			name += targets.get(targets.size() - 1).getNameDim();
-			return name;
+			targetsName += targets.get(targets.size() - 1).getNameDim();
 		}
+		return targetsName;
 	}
 
 	public static void addChildParentTunnel(Membrane father, Membrane child) {

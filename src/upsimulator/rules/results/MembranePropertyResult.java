@@ -63,7 +63,7 @@ public class MembranePropertyResult implements Result {
 
 	@Override
 	public String toString() {
-		return "m." + getProperty() + "=" + getValue();
+		return "<" + getProperty() + "=" + getValue() + ">";
 	}
 
 }

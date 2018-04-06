@@ -140,12 +140,15 @@ public class MembraneCreateResult implements Result, Dimension {
 
 	@Override
 	public String toString() {
-		String str = "{ ";
-		for (Result result : extraResults)
-			str += result + " ";
-		str += "}" + templateMemName;
+		String str = templateMemName;
 		if (name != null)
 			str += ":" + getNameDim();
+		if (extraResults.size() > 0) {
+			str += "{ ";
+			for (Result result : extraResults)
+				str += result + " ";
+			str += "}";
+		}
 		return str;
 	}
 

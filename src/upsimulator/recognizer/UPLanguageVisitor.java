@@ -47,17 +47,11 @@ public interface UPLanguageVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitMembraneType(UPLanguageParser.MembraneTypeContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link UPLanguageParser#membraneContent}.
+	 * Visit a parse tree produced by {@link UPLanguageParser#properties}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitMembraneContent(UPLanguageParser.MembraneContentContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link UPLanguageParser#memProperty}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMemProperty(UPLanguageParser.MemPropertyContext ctx);
+	T visitProperties(UPLanguageParser.PropertiesContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link UPLanguageParser#propertyInit}.
 	 * @param ctx the parse tree
@@ -77,6 +71,18 @@ public interface UPLanguageVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPropertyValue(UPLanguageParser.PropertyValueContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link UPLanguageParser#tunnels}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTunnels(UPLanguageParser.TunnelsContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link UPLanguageParser#tunnelTarget}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTunnelTarget(UPLanguageParser.TunnelTargetContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link UPLanguageParser#ruleSetDeclare}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -89,11 +95,11 @@ public interface UPLanguageVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitRuleSetNamePrefix(UPLanguageParser.RuleSetNamePrefixContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link UPLanguageParser#memDeclare}.
+	 * Visit a parse tree produced by {@link UPLanguageParser#submembrane}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitMemDeclare(UPLanguageParser.MemDeclareContext ctx);
+	T visitSubmembrane(UPLanguageParser.SubmembraneContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link UPLanguageParser#membraneName}.
 	 * @param ctx the parse tree
@@ -101,11 +107,11 @@ public interface UPLanguageVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitMembraneName(UPLanguageParser.MembraneNameContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link UPLanguageParser#objDef}.
+	 * Visit a parse tree produced by {@link UPLanguageParser#objects}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitObjDef(UPLanguageParser.ObjDefContext ctx);
+	T visitObjects(UPLanguageParser.ObjectsContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link UPLanguageParser#objAssign}.
 	 * @param ctx the parse tree
@@ -125,11 +131,11 @@ public interface UPLanguageVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitObjNum(UPLanguageParser.ObjNumContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link UPLanguageParser#ruleDef}.
+	 * Visit a parse tree produced by {@link UPLanguageParser#prule}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitRuleDef(UPLanguageParser.RuleDefContext ctx);
+	T visitPrule(UPLanguageParser.PruleContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link UPLanguageParser#ruleName}.
 	 * @param ctx the parse tree
@@ -161,11 +167,11 @@ public interface UPLanguageVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitMemDissolveResult(UPLanguageParser.MemDissolveResultContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link UPLanguageParser#memPropertyResult}.
+	 * Visit a parse tree produced by {@link UPLanguageParser#propertyResult}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitMemPropertyResult(UPLanguageParser.MemPropertyResultContext ctx);
+	T visitPropertyResult(UPLanguageParser.PropertyResultContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link UPLanguageParser#objResult}.
 	 * @param ctx the parse tree
@@ -178,6 +184,60 @@ public interface UPLanguageVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitPositionResult(UPLanguageParser.PositionResultContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link UPLanguageParser#in}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIn(UPLanguageParser.InContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link UPLanguageParser#out}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitOut(UPLanguageParser.OutContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link UPLanguageParser#here}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitHere(UPLanguageParser.HereContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link UPLanguageParser#go}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitGo(UPLanguageParser.GoContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link UPLanguageParser#andOpt}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAndOpt(UPLanguageParser.AndOptContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link UPLanguageParser#orOpt}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitOrOpt(UPLanguageParser.OrOptContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link UPLanguageParser#all}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAll(UPLanguageParser.AllContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link UPLanguageParser#random}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRandom(UPLanguageParser.RandomContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link UPLanguageParser#target}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTarget(UPLanguageParser.TargetContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link UPLanguageParser#boolCondition}.
 	 * @param ctx the parse tree
@@ -197,11 +257,11 @@ public interface UPLanguageVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitInhibitorCondition(UPLanguageParser.InhibitorConditionContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link UPLanguageParser#memPropertyCondition}.
+	 * Visit a parse tree produced by {@link UPLanguageParser#propertyCondition}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitMemPropertyCondition(UPLanguageParser.MemPropertyConditionContext ctx);
+	T visitPropertyCondition(UPLanguageParser.PropertyConditionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link UPLanguageParser#objCondtion}.
 	 * @param ctx the parse tree

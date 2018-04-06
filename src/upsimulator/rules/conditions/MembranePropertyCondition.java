@@ -62,7 +62,7 @@ public class MembranePropertyCondition implements Condition {
 
 	@Override
 	public String toString() {
-		return "m." + getName() + "==" + getValue();
+		return "<" + getName() + "=" + getValue() + ">";
 	}
 
 }

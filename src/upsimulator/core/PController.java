@@ -101,6 +101,8 @@ public class PController extends Thread {
 		}
 
 		UPSLogger.debug(PController.class, "Recogize environment done.\n");
+		UPSLogger.debug(PController.class, membrane.toString("  ",true,true,true,true,true) + "\n\n");
+
 		UPSLogger.result(PController.class, membrane.toString() + "\n\n");
 
 		return membrane;

@@ -5,7 +5,16 @@ import java.util.List;
 public interface Tunnel extends Cloneable {
 
 	public enum TunnelType {
-		Out, Here, In, One2Many, One2ManyRandom
+		Out, Here, In, // one target
+		In_all, // no target
+		In_one_of_all, // no target
+		In_one_of_specified, // more than one targets connected with "|"
+		In_all_of_specified, // more than one targets connected with "&"
+		Go, // one target
+		Go_all, // no target
+		Go_one_of_all, // no target
+		Go_all_of_specified, // more than one targets connected with "&"
+		Go_one_of_specified// more than one targets connected with "|"
 	};// son->father, self->self, a->(b,c,d)
 
 	public void setType(TunnelType type);
@@ -15,6 +24,8 @@ public interface Tunnel extends Cloneable {
 	public String getName();// son->parent, self->self, a->b
 
 	/**
+	 * Target's names are combined by "|" or "&", according to the tunnel type, and
+	 * all the names are sorted by {@code String.compareTo}
 	 * 
 	 * @return the united name of all the targets
 	 */

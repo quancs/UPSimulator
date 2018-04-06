@@ -22,6 +22,7 @@ import upsimulator.interfaces.Result;
 import upsimulator.interfaces.Rule;
 import upsimulator.interfaces.UPSLogger;
 import upsimulator.rules.conditions.InhibitorCondition;
+import upsimulator.rules.conditions.MembranePropertyCondition;
 import upsimulator.rules.conditions.MembraneStatusCondition;
 import upsimulator.rules.conditions.ObjectCondition;
 import upsimulator.rules.conditions.PriorityCondition;
@@ -343,6 +344,9 @@ public class PRule implements Rule {
 
 	@Override
 	public void addCondition(Condition condition) {
+		if (conditions.contains(condition))
+			return;
+
 		if (condition instanceof PriorityCondition) {
 			if (conditions.size() >= 1 && conditions.get(conditions.size() - 1) instanceof MembraneStatusResult) {
 				conditions.add(conditions.size() - 1, condition);
@@ -356,11 +360,20 @@ public class PRule implements Rule {
 		}
 		if (condition instanceof Dimension)
 			((Dimension) condition).setEval(evaluator);
+
+		if (condition instanceof Result)
+			addResult((Result) condition);
 	}
 
 	@Override
 	public void addResult(Result result) {
+		if (results.contains(result))
+			return;
+
 		results.add(result);
+		if (result instanceof Condition)
+			addCondition((Condition) result);
+
 		if (result instanceof Dimension)
 			((Dimension) result).setEval(evaluator);
 	}
@@ -509,7 +522,7 @@ public class PRule implements Rule {
 		sBuilder.append(" = ");
 
 		for (Condition condition : conditions) {
-			if (condition instanceof MembraneStatusCondition) {
+			if (condition instanceof MembranePropertyCondition) {
 				sBuilder.append(condition + " ");
 			}
 		}
@@ -520,22 +533,24 @@ public class PRule implements Rule {
 		}
 		sBuilder.append("-> ");
 		for (Result result : results) {
-			if (result instanceof MembraneStatusResult) {
+			if (result instanceof MembranePropertyResult) {
 				sBuilder.append(result + " ");
 			}
 		}
 		for (Result result : results) {
-			if (!(result instanceof MembraneStatusResult)) {
+			if (!(result instanceof MembranePropertyResult)) {
 				sBuilder.append(result + " ");
 			}
 		}
-		sBuilder.append("| ");
 
+		StringBuilder otherBuilder = new StringBuilder("| ");
 		for (Condition condition : conditions) {
 			if (condition instanceof MembraneStatusCondition || condition instanceof ObjectCondition || condition instanceof Result)
 				continue;
-			sBuilder.append(condition + " ");
+			otherBuilder.append(condition + " ");
 		}
+		if (otherBuilder.length() > 2)
+			sBuilder.append(otherBuilder);
 
 		sBuilder.replace(sBuilder.length() - 1, sBuilder.length(), ";");
 		return sBuilder.toString();

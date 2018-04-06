@@ -49,7 +49,11 @@ public class ObjectResult extends PObject implements Result {
 
 	@Override
 	public String toString() {
-		return getNameDim() + "^" + num;
+		if (num > 1) {
+			return getNameDim() + "^" + num;
+		} else {
+			return getNameDim();
+		}
 	}
 
 	@Override

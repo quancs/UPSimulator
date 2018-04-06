@@ -13,24 +13,53 @@ import upsimulator.core.PRule;
 import upsimulator.core.PTunnel;
 import upsimulator.interfaces.Condition;
 import upsimulator.interfaces.Membrane;
+import upsimulator.interfaces.Obj;
 import upsimulator.interfaces.Result;
 import upsimulator.interfaces.Rule;
+import upsimulator.interfaces.Tunnel.TunnelType;
+import upsimulator.recognizer.UPLanguageParser.AllContext;
+import upsimulator.recognizer.UPLanguageParser.AndOptContext;
+import upsimulator.recognizer.UPLanguageParser.FormulaDimContext;
+import upsimulator.recognizer.UPLanguageParser.GoContext;
+import upsimulator.recognizer.UPLanguageParser.HereContext;
+import upsimulator.recognizer.UPLanguageParser.InContext;
+import upsimulator.recognizer.UPLanguageParser.IntDimContext;
 import upsimulator.recognizer.UPLanguageParser.MemDissolveResultContext;
 import upsimulator.recognizer.UPLanguageParser.MembraneTypeContext;
+import upsimulator.recognizer.UPLanguageParser.ObjAssignContext;
+import upsimulator.recognizer.UPLanguageParser.ObjResultContext;
+import upsimulator.recognizer.UPLanguageParser.ObjectsContext;
+import upsimulator.recognizer.UPLanguageParser.OrOptContext;
+import upsimulator.recognizer.UPLanguageParser.OutContext;
+import upsimulator.recognizer.UPLanguageParser.PropertiesContext;
+import upsimulator.recognizer.UPLanguageParser.PropertyConditionContext;
+import upsimulator.recognizer.UPLanguageParser.PropertyInitContext;
+import upsimulator.recognizer.UPLanguageParser.PropertyResultContext;
+import upsimulator.recognizer.UPLanguageParser.PruleContext;
+import upsimulator.recognizer.UPLanguageParser.RandomContext;
+import upsimulator.recognizer.UPLanguageParser.RuleSetDeclareContext;
+import upsimulator.recognizer.UPLanguageParser.SubmembraneContext;
+import upsimulator.recognizer.UPLanguageParser.TargetContext;
+import upsimulator.recognizer.UPLanguageParser.TunnelTargetContext;
+import upsimulator.recognizer.UPLanguageParser.TunnelsContext;
 import upsimulator.recognizer.actions.MembraneExtendAction;
 import upsimulator.recognizer.actions.RecognizerAction;
 import upsimulator.recognizer.actions.RuleSetDeclareAction;
+import upsimulator.recognizer.actions.TunnelCreateAction;
 import upsimulator.rules.conditions.BooleanCondition;
 import upsimulator.rules.conditions.InhibitorCondition;
 import upsimulator.rules.conditions.MembranePropertyCondition;
+import upsimulator.rules.conditions.MembraneStatusCondition;
 import upsimulator.rules.conditions.ObjectCondition;
 import upsimulator.rules.conditions.PriorityCondition;
 import upsimulator.rules.conditions.PromoterCondition;
 import upsimulator.rules.results.MembraneCreateResult;
 import upsimulator.rules.results.MembraneDissolveResult;
 import upsimulator.rules.results.MembranePropertyResult;
+import upsimulator.rules.results.MembraneStatusResult;
 import upsimulator.rules.results.ObjectResult;
 import upsimulator.rules.results.PositionResult;
+import upsimulator.rules.results.PositionResult.Target;
 
 /**
  * This class provides an empty implementation of {@link UPLanguageVisitor},
@@ -76,6 +105,28 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 		skin = new PMembrane();
 		skin.setName("Environment");
 		currMembrane = skin;
+		for (ObjectsContext oc : ctx.objects()) {
+			List<Object[]> objects = (List<Object[]>) visitObjects(oc);
+			for (Object[] obj : objects)
+				currMembrane.addObject((Obj) obj[0], (Integer) obj[1]);
+		}
+		for (PruleContext pc : ctx.prule()) {
+			currMembrane.addRule((Rule) visitPrule(pc));
+		}
+
+		for (SubmembraneContext sc : ctx.submembrane()) {
+			PTunnel.addChildParentTunnel(currMembrane, (Membrane) visitSubmembrane(sc));
+		}
+
+		for (RuleSetDeclareContext rsdc : ctx.ruleSetDeclare())
+			visitRuleSetDeclare(rsdc);// may be this rule set has not been recognized, so need actions to do this job
+
+		for (PropertiesContext pc : ctx.properties()) {
+			List<Object[]> properties = (List<Object[]>) visitProperties(pc);
+			for (Object[] property : properties)
+				currMembrane.setProperty((String) property[0], property[1]);
+		}
+
 		visitChildren(ctx);
 		currMembrane = null;
 		return null;
@@ -86,8 +137,8 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 		logger.info("visitRuleSetDef");
 		String ruleSetType = ctx.ruleSetType().getText();
 		ArrayList<Rule> ruleSet = new ArrayList<>();
-		for (UPLanguageParser.RuleDefContext rdc : ctx.ruleDef()) {
-			Rule rule = (Rule) visitRuleDef(rdc);
+		for (UPLanguageParser.PruleContext rdc : ctx.prule()) {
+			Rule rule = (Rule) visitPrule(rdc);
 			ruleSet.add(rule);
 		}
 		Rule.addRuleSet(ruleSetType, ruleSet);
@@ -102,20 +153,47 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 
 	@Override
 	public T visitMembraneDef(UPLanguageParser.MembraneDefContext ctx) {
-		PMembrane membrane = new PMembrane();
-		currMembrane = membrane;
-
 		List<MembraneTypeContext> memTypes = ctx.membraneType();
-
 		String memType = memTypes.get(0).getText();
-		for (int i = 1; i < memTypes.size(); i++) {
+
+		Membrane membrane;
+		int i = 1;
+		if (memTypes.size() >= 2 && Membrane.isPredefinedMem(memTypes.get(2).toString())) {
+			membrane = Membrane.getMemInstanceOf(memTypes.get(2).toString());
+			i = 2;
+		} else {
+			membrane = new PMembrane();
+		}
+
+		currMembrane = membrane;
+		for (; i < memTypes.size(); i++) {
 			MembraneExtendAction mea = new MembraneExtendAction(membrane, memTypes.get(i).getText());
 			actions.add(mea);
 		}
-		for (UPLanguageParser.MembraneContentContext mcc : ctx.membraneContent()) {
-			visitMembraneContent(mcc);
+
+		for (ObjectsContext oc : ctx.objects()) {
+			List<Object[]> objects = (List<Object[]>) visitObjects(oc);
+			for (Object[] obj : objects)
+				currMembrane.addObject((Obj) obj[0], (Integer) obj[1]);
 		}
-		Membrane.registMemClass(memType, membrane);
+		for (PruleContext pc : ctx.prule()) {
+			currMembrane.addRule((Rule) visitPrule(pc));
+		}
+
+		for (SubmembraneContext sc : ctx.submembrane()) {
+			PTunnel.addChildParentTunnel(currMembrane, (Membrane) visitSubmembrane(sc));
+		}
+
+		for (RuleSetDeclareContext rsdc : ctx.ruleSetDeclare())
+			visitRuleSetDeclare(rsdc);// may be this rule set has not been recognized, so need actions to do this job
+
+		for (PropertiesContext pc : ctx.properties()) {
+			List<Object[]> properties = (List<Object[]>) visitProperties(pc);
+			for (Object[] property : properties)
+				currMembrane.setProperty((String) property[0], property[1]);
+		}
+
+		Membrane.registMemClass(memType, membrane, false);
 		return null;
 	}
 
@@ -125,30 +203,19 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 	}
 
 	@Override
-	public T visitMembraneContent(UPLanguageParser.MembraneContentContext ctx) {
-		Object object = visitChildren(ctx);
-		if (object != null) {// objDef,memProperty,ruleSetDeclare return null
-			if (object instanceof Rule) {
-				currMembrane.addRule((Rule) object);
-			} else if (object instanceof Membrane) {
-				PTunnel.addChildParentTunnel(currMembrane, (Membrane) object);
-			} else {
-				throw new RuntimeException("未知的返回类型：" + object);
-			}
-		}
-
-		return null;// 直接返回给调用的函数
-	}
-
-	@Override
-	public T visitMemProperty(UPLanguageParser.MemPropertyContext ctx) {
-		return visitChildren(ctx);// 不需要处理,PropertyInit处理
+	public T visitProperties(UPLanguageParser.PropertiesContext ctx) {
+		LinkedList<Object[]> properties = new LinkedList<>();
+		for (PropertyInitContext pic : ctx.propertyInit())
+			properties.add((Object[]) visitPropertyInit(pic));
+		return (T) properties;
 	}
 
 	@Override
 	public T visitPropertyInit(UPLanguageParser.PropertyInitContext ctx) {
-		currMembrane.setProperty(ctx.propertyName().getText(), ctx.propertyValue().getText());
-		return null;
+		Object[] property = new Object[2];
+		property[0] = ctx.propertyName().getText();
+		property[1] = ctx.propertyValue().getText();
+		return (T) property;
 	}
 
 	@Override
@@ -175,18 +242,55 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 	}
 
 	@Override
-	public T visitMemDeclare(UPLanguageParser.MemDeclareContext ctx) {
+	public T visitSubmembrane(UPLanguageParser.SubmembraneContext ctx) {
 		logger.info("visitMemDeclare");
-		PMembrane membrane = new PMembrane();
+
+		Membrane membrane = null;
+		if (ctx.membraneType() != null) {
+			if (Membrane.isPredefinedMem(ctx.membraneType().getText())) {
+				membrane = Membrane.getMemInstanceOf(ctx.membraneType().getText());
+			} else {
+				membrane = new PMembrane();
+				MembraneExtendAction meAction = new MembraneExtendAction(membrane, ctx.membraneType().getText());
+				actions.add(meAction);
+			}
+		} else
+			membrane = new PMembrane();
+
 		Membrane father = currMembrane;
 		currMembrane = membrane;
 
 		membrane.setName(ctx.membraneName().getText());
-		for (UPLanguageParser.MembraneContentContext mcc : ctx.membraneContent())
-			visitMembraneContent(mcc);
 
-		MembraneExtendAction meAction = new MembraneExtendAction(membrane, ctx.membraneType().getText());
-		actions.add(meAction);
+		for (ObjectsContext oc : ctx.objects()) {
+			List<Object[]> objects = (List<Object[]>) visitObjects(oc);
+			for (Object[] obj : objects)
+				currMembrane.addObject((Obj) obj[0], (Integer) obj[1]);
+		}
+		for (PruleContext pc : ctx.prule()) {
+			currMembrane.addRule((Rule) visitPrule(pc));
+		}
+
+		for (SubmembraneContext sc : ctx.submembrane()) {
+			PTunnel.addChildParentTunnel(currMembrane, (Membrane) visitSubmembrane(sc));
+		}
+
+		for (RuleSetDeclareContext rsdc : ctx.ruleSetDeclare())
+			visitRuleSetDeclare(rsdc);// may be this rule set has not been recognized, so need actions to do this job
+
+		for (PropertiesContext pc : ctx.properties()) {
+			List<Object[]> properties = (List<Object[]>) visitProperties(pc);
+			for (Object[] property : properties)
+				currMembrane.setProperty((String) property[0], property[1]);
+		}
+
+		for (TunnelsContext tc : ctx.tunnels()) {
+			List<String> tunnels = (List<String>) visitTunnels(tc);
+			for (String tunnel : tunnels) {
+				TunnelCreateAction action = new TunnelCreateAction(currMembrane, tunnel);
+				actions.add(action);
+			}
+		}
 
 		currMembrane = father;
 		return (T) membrane;
@@ -198,18 +302,24 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 	}
 
 	@Override
-	public T visitObjDef(UPLanguageParser.ObjDefContext ctx) {
-		return visitChildren(ctx);// 不需要处理，下级会处理
+	public T visitObjects(UPLanguageParser.ObjectsContext ctx) {
+		LinkedList<Object[]> objects = new LinkedList<>();
+		for (ObjAssignContext oac : ctx.objAssign())
+			objects.add((Object[]) visitObjAssign(oac));
+		return (T) objects;// 不需要处理，下级会处理
 	}
 
 	@Override
 	public T visitObjAssign(UPLanguageParser.ObjAssignContext ctx) {
-		PObject object = new PObject();
-		object.setName(ctx.objName().getText());
+		PObject pobject = new PObject();
+		pobject.setName(ctx.objName().getText());
 		for (UPLanguageParser.IntDimContext idc : ctx.intDim())
-			object.addDimension(Integer.parseInt(idc.getText()));
-		currMembrane.addObject(object, (int) visitObjNum(ctx.objNum()));
-		return null;
+			pobject.addDimension(Integer.parseInt(idc.getText()));
+
+		Object object[] = new Object[2];
+		object[0] = pobject;
+		object[1] = (int) visitObjNum(ctx.objNum());
+		return (T) object;
 	}
 
 	@Override
@@ -228,7 +338,7 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 	private Rule currRule;
 
 	@Override
-	public T visitRuleDef(UPLanguageParser.RuleDefContext ctx) {
+	public T visitPrule(UPLanguageParser.PruleContext ctx) {
 		logger.info("visitRuleDef");
 		PRule rule = new PRule();
 		currRule = rule;
@@ -244,21 +354,27 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 		for (UPLanguageParser.ResultContext rc : ctx.result()) {
 			Result result = (Result) visitResult(rc);
 			rule.addResult(result);
-			if (result instanceof Condition)
-				rule.addCondition((Condition) result);
 		}
 		// 获取condition
-		PriorityCondition priorityCondition = null;
 		for (UPLanguageParser.ConditionContext cc : ctx.condition()) {
 			Condition condition = (Condition) visitCondition(cc);
-			if (condition instanceof PriorityCondition)
-				priorityCondition = (PriorityCondition) condition;
-			else
-				rule.addCondition(condition);
+			rule.addCondition(condition);
 		}
-		if (priorityCondition != null) {
+		if (ctx.priorityCondition() != null) {
+			PriorityCondition priorityCondition = (PriorityCondition) visitPriorityCondition(ctx.priorityCondition());
 			rule.addCondition(priorityCondition);
 		}
+
+		for (PropertyConditionContext mpctx : ctx.propertyCondition()) {
+			MembranePropertyCondition membranePropertyCondition = (MembranePropertyCondition) visitPropertyCondition(mpctx);
+			rule.addCondition(membranePropertyCondition);
+		}
+
+		for (PropertyResultContext mprctx : ctx.propertyResult()) {
+			MembranePropertyResult mPropertyResult = (MembranePropertyResult) visitPropertyResult(mprctx);
+			rule.addResult(mPropertyResult);
+		}
+
 		currRule = null;
 		return (T) rule;
 	}
@@ -283,8 +399,6 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 		MembraneCreateResult mcr = new MembraneCreateResult();
 		for (UPLanguageParser.ObjResultContext orc : ctx.objResult())
 			mcr.addResult((Result) visitObjResult(orc));
-		for (UPLanguageParser.MemPropertyResultContext mprc : ctx.memPropertyResult())
-			mcr.addResult((Result) visitMemPropertyResult(mprc));
 
 		mcr.setTemplateMemName(ctx.membraneType().getText());
 		if (ctx.membraneName() == null) {
@@ -307,10 +421,19 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 	}
 
 	@Override
-	public T visitMemPropertyResult(UPLanguageParser.MemPropertyResultContext ctx) {
-		MembranePropertyResult mpr = new MembranePropertyResult();
-		mpr.setProperty(ctx.propertyName().getText());
-		mpr.setValue(ctx.propertyValue().getText());
+	public T visitPropertyResult(UPLanguageParser.PropertyResultContext ctx) {
+		String pn = ctx.propertyName().getText();
+		String pv = ctx.propertyValue().getText();
+		if (pn.length() == 0)
+			pn = "Status";
+		MembranePropertyResult mpr;
+
+		if (pn.equalsIgnoreCase("Status")) {
+			mpr = new MembraneStatusResult(pv);
+		} else {
+			mpr = new MembranePropertyResult(pn, pv);
+		}
+
 		return (T) mpr;
 	}
 
@@ -324,32 +447,54 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 		return (T) or;
 	}
 
+	private PositionResult currPositionResult;
+
 	@Override
 	public T visitPositionResult(UPLanguageParser.PositionResultContext ctx) {
 		PositionResult pResult = new PositionResult();
+		currPositionResult = pResult;
+		for (ObjResultContext orc : ctx.objResult()) {
+			pResult.addObjectResult((ObjectResult) visitObjResult(orc));
+		}
 
-		if (ctx.membraneName() != null) {
-			pResult.setMove(PositionResult.in);
-			pResult.setMembraneName(ctx.membraneName().getText());
-			for (UPLanguageParser.FormulaDimContext fdc : ctx.formulaDim())
-				pResult.addDimension((String) visitFormulaDim(fdc));
-		} else
-			switch (ctx.getChild(ctx.getChildCount() - 2).getText()) {
-			case "out":
-				pResult.setMove(PositionResult.out);
-				break;
-			case "here":
-				pResult.setMove(PositionResult.here);
-				break;
-			default:
-				throw new RuntimeException("unknown PositionResult move direction : " + ctx.getChild(ctx.getChildCount() - 2).getText() + "   \n" + ctx.toStringTree());
-			}
+		for (TargetContext tc : ctx.target()) {
+			pResult.addTarget((Target) visitTarget(tc));
+		}
 
 		for (UPLanguageParser.ObjResultContext orc : ctx.objResult())
 			pResult.addObjectResult((ObjectResult) visitObjResult(orc));
 
-		for (UPLanguageParser.MemPropertyConditionContext mpcc : ctx.memPropertyCondition())
-			pResult.addMemPropCondition((MembranePropertyCondition) visitMemPropertyCondition(mpcc));
+		if (ctx.here() != null) {
+			pResult.setMove(TunnelType.Here);
+		} else if (ctx.out() != null) {
+			pResult.setMove(TunnelType.Out);
+		} else if (ctx.in() != null) {
+			if (ctx.all() != null) {
+				pResult.setMove(TunnelType.In_all);
+			} else if (ctx.random() != null) {
+				pResult.setMove(TunnelType.In_one_of_all);
+			} else if (ctx.andOpt() != null) {
+				pResult.setMove(TunnelType.In_all_of_specified);
+			} else if (ctx.orOpt() != null) {
+				pResult.setMove(TunnelType.In_one_of_specified);
+			} else {
+				pResult.setMove(TunnelType.In);
+			}
+		} else {
+			if (ctx.all() != null) {
+				pResult.setMove(TunnelType.Go_all);
+			} else if (ctx.random() != null) {
+				pResult.setMove(TunnelType.Go_one_of_all);
+			} else if (ctx.andOpt() != null) {
+				pResult.setMove(TunnelType.Go_all_of_specified);
+			} else if (ctx.orOpt() != null) {
+				pResult.setMove(TunnelType.Go_one_of_specified);
+			} else {
+				pResult.setMove(TunnelType.Go);
+			}
+		}
+
+		currPositionResult = null;
 
 		return (T) pResult;
 	}
@@ -381,8 +526,18 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 	}
 
 	@Override
-	public T visitMemPropertyCondition(UPLanguageParser.MemPropertyConditionContext ctx) {
-		MembranePropertyCondition mpCondition = new MembranePropertyCondition(ctx.propertyName().getText(), ctx.propertyValue().getText());
+	public T visitPropertyCondition(UPLanguageParser.PropertyConditionContext ctx) {
+		String pn = ctx.propertyName().getText();
+		String pv = ctx.propertyValue().getText();
+		if (pn.length() == 0)
+			pn = "Status";
+
+		MembranePropertyCondition mpCondition;
+		if (pn.equalsIgnoreCase("Status")) {
+			mpCondition = new MembraneStatusCondition(pv);
+		} else {
+			mpCondition = new MembranePropertyCondition(pn, pv);
+		}
 
 		return (T) mpCondition;
 	}
@@ -458,6 +613,74 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 		}
 
 		return text.trim();
+	}
+
+	@Override
+	public T visitTunnels(TunnelsContext ctx) {
+		LinkedList<String> tunnels = new LinkedList<>();
+		for (TunnelTargetContext ttc : ctx.tunnelTarget())
+			tunnels.add((String) visitTunnelTarget(ttc));
+		return (T) tunnels;
+	}
+
+	@Override
+	public T visitTunnelTarget(TunnelTargetContext ctx) {
+		String mName = ctx.membraneName().getText();
+		for (IntDimContext intDimContext : ctx.intDim()) {
+			mName += "[" + intDimContext.toString() + "]";
+		}
+		return (T) mName;
+	}
+
+	@Override
+	public T visitTarget(TargetContext ctx) {
+		Target target = currPositionResult.new Target();
+		for (FormulaDimContext fdc : ctx.formulaDim()) {
+			target.formulaDims.add((String) visitFormulaDim(fdc));
+		}
+		for (PropertyConditionContext pcc : ctx.propertyCondition())
+			target.conditions.add((MembranePropertyCondition) visitPropertyCondition(pcc));
+		return (T) target;
+	}
+
+	@Override
+	public T visitIn(InContext ctx) {
+		return null;
+	}
+
+	@Override
+	public T visitOut(OutContext ctx) {
+		return null;
+	}
+
+	@Override
+	public T visitHere(HereContext ctx) {
+		return null;
+	}
+
+	@Override
+	public T visitGo(GoContext ctx) {
+		return null;
+	}
+
+	@Override
+	public T visitAndOpt(AndOptContext ctx) {
+		return null;
+	}
+
+	@Override
+	public T visitOrOpt(OrOptContext ctx) {
+		return null;
+	}
+
+	@Override
+	public T visitAll(AllContext ctx) {
+		return null;
+	}
+
+	@Override
+	public T visitRandom(RandomContext ctx) {
+		return null;
 	}
 
 }
