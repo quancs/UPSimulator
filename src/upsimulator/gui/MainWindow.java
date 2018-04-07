@@ -957,8 +957,11 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 
 	@Override
 	public void resultLog(Object who, Object msg) {
-		if (getResultConsoleEnable().isSelected())
+		if (getResultConsoleEnable().isSelected()) {
 			Util.addMsgToJTextPane(resultConsole, msg.toString() + "\n", Color.black, false, resultConsole.getFont().getSize());
+			if(msg instanceof Membrane)
+				Util.addMsgToJTextPane(resultConsole, "\n\n", Color.black, false, resultConsole.getFont().getSize());
+		}
 	}
 
 	public JCheckBoxMenuItem getResultConsoleEnable() {

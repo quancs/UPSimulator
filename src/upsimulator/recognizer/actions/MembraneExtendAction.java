@@ -35,4 +35,9 @@ public class MembraneExtendAction extends RecognizerAction {
 	public void init() {
 		addUnreadyCount(to);
 	}
+
+	@Override
+	public String toString() {
+		return "MembraneExtendAction : " + to.getNameDim() + " extends " + from;
+	}
 }

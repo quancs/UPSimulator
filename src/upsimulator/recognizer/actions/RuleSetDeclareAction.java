@@ -41,4 +41,8 @@ public class RuleSetDeclareAction extends RecognizerAction {
 		minusUnreadyCount(to);
 	}
 
+	@Override
+	public String toString() {
+		return "RulePrioritySetAction : add ruleset with name prefix to " + to.getNameDim() + ", where name's prefix= " + prefix;
+	}
 }

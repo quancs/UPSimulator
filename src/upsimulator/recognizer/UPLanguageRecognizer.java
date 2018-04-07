@@ -16,6 +16,7 @@ import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Obj;
 import upsimulator.interfaces.Result;
 import upsimulator.interfaces.Rule;
+import upsimulator.interfaces.UPSLogger;
 import upsimulator.interfaces.Tunnel.TunnelType;
 import upsimulator.recognizer.UPLanguageParser.AllContext;
 import upsimulator.recognizer.UPLanguageParser.AndOptContext;
@@ -87,21 +88,31 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 		for (RecognizerAction action : actions)
 			action.init();
 
-		for (; actions.size() > 0;) {
-			RecognizerAction action = actions.get(0);
-			if (action.ready()) {
-				action.doAction();
-				actions.remove(0);
-			} else {
-				actions.add(actions.remove(0));
+		for (boolean reduce = true; reduce;) {
+			reduce = false;
+			for (int i = 0; i < actions.size(); i++) {
+				RecognizerAction action = actions.get(i);
+				if (action.ready()) {
+					action.doAction();
+					actions.remove(i);
+					i--;
+					reduce = true;
+				}
 			}
 		}
+
+		if (actions.size() > 0) {
+			UPSLogger.error(this, "Cannot finish following recognize jobs:");
+			for (RecognizerAction action : actions)
+				UPSLogger.error(this, action);
+		}
+
 		return (T) skin;
 	}
 
 	@Override
 	public T visitEnvironmentDef(UPLanguageParser.EnvironmentDefContext ctx) {
-		logger.info("visitEnvironmentDef");
+		logger.info("visitEnvironmentDef " + ctx.getText());
 		skin = new PMembrane();
 		skin.setName("Environment");
 		currMembrane = skin;
@@ -127,7 +138,6 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 				currMembrane.setProperty((String) property[0], property[1]);
 		}
 
-		visitChildren(ctx);
 		currMembrane = null;
 		return null;
 	}
@@ -243,7 +253,7 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 
 	@Override
 	public T visitSubmembrane(UPLanguageParser.SubmembraneContext ctx) {
-		logger.info("visitMemDeclare");
+		logger.info("visitSubmembrane " + ctx.getText());
 
 		Membrane membrane = null;
 		if (ctx.membraneType() != null) {
@@ -617,6 +627,8 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 
 	@Override
 	public T visitTunnels(TunnelsContext ctx) {
+		logger.info("visitTunnels " + ctx.getText());
+		
 		LinkedList<String> tunnels = new LinkedList<>();
 		for (TunnelTargetContext ttc : ctx.tunnelTarget())
 			tunnels.add((String) visitTunnelTarget(ttc));

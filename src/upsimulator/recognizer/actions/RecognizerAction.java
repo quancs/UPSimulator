@@ -74,8 +74,8 @@ public abstract class RecognizerAction {
 	}
 
 	protected boolean ready(String memName) {
-		if (Membrane.getMemClass(memName) == null)
-			throw new RuntimeException("发现未被定义的膜类：" + memName);
+		// if (Membrane.getMemClass(memName) == null)
+		// throw new RuntimeException("发现未被定义的膜类：" + memName);
 
 		if (unreadyMembranes.containsKey(memName)) {
 			return false;

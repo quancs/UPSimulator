@@ -42,4 +42,9 @@ public class TunnelCreateAction extends RecognizerAction {
 		}
 		minusUnreadyCount(source);
 	}
+
+	@Override
+	public String toString() {
+		return "TunnelCreateAction : create tunnel " + source.getNameDim() + " to " + target;
+	}
 }

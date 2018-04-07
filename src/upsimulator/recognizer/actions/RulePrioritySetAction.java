@@ -39,4 +39,8 @@ public class RulePrioritySetAction extends RecognizerAction {
 		minusUnreadyCount(to);
 	}
 
+	@Override
+	public String toString() {
+		return "RulePrioritySetAction : add rule with priority to " + to.getNameDim() + ", where priority= " + priority;
+	}
 }
