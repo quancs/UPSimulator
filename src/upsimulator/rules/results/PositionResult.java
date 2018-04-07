@@ -30,6 +30,12 @@ public class PositionResult implements Result, Dimension, Condition {
 
 		private String unfixedNameDim;
 
+		public String getNameDim() {
+			if (nameDim == null)
+				return name;
+			return nameDim;
+		}
+
 		public Target deepClone() {
 			try {
 				Target cloned = (Target) this.clone();
@@ -447,7 +453,7 @@ public class PositionResult implements Result, Dimension, Condition {
 					LinkedList<Membrane> targetsMem = new LinkedList<>();
 					for (Target target : targets) {
 						for (Membrane m : scope) {
-							if (target.nameDim.equals(m.getNameDim())) {
+							if (target.getNameDim().equals(m.getNameDim())) {
 								targetsMem.add(m);
 								break;
 							}
