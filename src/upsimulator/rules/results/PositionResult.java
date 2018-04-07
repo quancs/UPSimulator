@@ -273,9 +273,7 @@ public class PositionResult implements Result, Dimension, Condition {
 					target.nameDim += "[" + evaluator.evaluate(dim) + "]";
 				} catch (EvaluationException e) {
 					e.printStackTrace();
-					UPSLogger.error(this, e.getStackTrace().toString());
-					// TODO delete this code
-					throw new RuntimeException(e);
+					UPSLogger.error(this, e);
 				}
 			}
 			nameDims.add(target.nameDim);
@@ -466,9 +464,7 @@ public class PositionResult implements Result, Dimension, Condition {
 				break;
 			} catch (EvaluationException e) {
 				e.printStackTrace();
-				UPSLogger.error(this, e.toString());
-				// TODO delete this code
-				throw new RuntimeException(e);
+				UPSLogger.error(this, e);
 			}
 
 		default:
@@ -480,7 +476,7 @@ public class PositionResult implements Result, Dimension, Condition {
 				throw new TunnelNotExistException(getTargetsName());
 			} catch (EvaluationException e) {
 				e.printStackTrace();
-				UPSLogger.error(this, e.toString());
+				UPSLogger.error(this, e);
 			}
 			return null;
 		} else

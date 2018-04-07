@@ -44,6 +44,7 @@ public class PController extends Thread {
 	private Membrane environment;
 
 	private int leftStep = 0;
+	private int step;
 
 	private ArrayList<Membrane> smList = new ArrayList<>();// run satisfy step.
 	private ArrayList<Membrane> fmList = new ArrayList<>();// run fetch step.
@@ -53,6 +54,7 @@ public class PController extends Thread {
 		this.method = method;
 		environment = getEnvironment(string);
 		records.add((Membrane) environment.deepClone());
+		step = 1;
 	}
 
 	public static Membrane getEnvironment(String modelInstanceStr) {
@@ -67,12 +69,12 @@ public class PController extends Thread {
 				e1.printStackTrace();
 			}
 
-//		PrintStream syserr = System.err;
-//		try {
-//			System.setErr(new PrintStream(errFile));
-//		} catch (FileNotFoundException e) {
-//			e.printStackTrace();
-//		}
+		PrintStream syserr = System.err;
+		try {
+			System.setErr(new PrintStream(errFile));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 
 		// recoginze
 		UPLanguageLexer lexer = new UPLanguageLexer(new ANTLRInputStream(modelInstanceStr));
@@ -89,21 +91,21 @@ public class PController extends Thread {
 		PMembrane membrane = (PMembrane) visitor.visit(tree);
 
 		// read error messages
-//		System.err.close();
-//		System.setErr(syserr);
-//		try {
-//			Scanner scanner = new Scanner(errFile);
-//			if (scanner.hasNextLine())
-//				UPSLogger.error(PController.class, scanner.nextLine());
-//			scanner.close();
-//		} catch (FileNotFoundException e) {
-//			e.printStackTrace();
-//		}
+		System.err.close();
+		System.setErr(syserr);
+		try {
+			Scanner scanner = new Scanner(errFile);
+			if (scanner.hasNextLine())
+				UPSLogger.error(PController.class, scanner.nextLine());
+			scanner.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 
 		UPSLogger.debug(PController.class, "Recogize environment done.\n");
-		UPSLogger.debug(PController.class, membrane.toString("  ",true,true,true,true,true) + "\n\n");
+		UPSLogger.debug(PController.class, membrane);
 
-		UPSLogger.result(PController.class, membrane.toString() + "\n\n");
+		UPSLogger.result(PController.class, membrane);
 
 		return membrane;
 	}
@@ -157,7 +159,7 @@ public class PController extends Thread {
 				fmList.add(membrane);
 			} catch (UnpredictableDimensionException e) {
 				e.printStackTrace();
-				UPSLogger.error(this, e.getMessage());
+				UPSLogger.error(this, e);
 				// TODO delete this code
 				throw new RuntimeException(e);
 			} catch (CloneNotSupportedException e) {
@@ -191,13 +193,14 @@ public class PController extends Thread {
 
 		endTime = Calendar.getInstance();
 		long timeUsed = endTime.getTimeInMillis() - startTime.getTimeInMillis();
-		UPSLogger.result(this, "rules used : " + uList.size() + "\t\ttime used:" + timeUsed + "ms");
+		UPSLogger.result(this, "step:" + step + "\t\trules used : " + uList.size() + "\t\ttime used:" + timeUsed + "ms");
 		UPSLogger.debug(this, "\n\nRules used:");
-		UPSLogger.debug(this, uList.toString());
+		UPSLogger.debug(this, uList);
 		UPSLogger.result(this, environment.toString() + "\n");
 
 		Membrane eClone = environment.deepClone();
 		records.add(eClone);
+		step++;
 
 		return uList.size();
 	}

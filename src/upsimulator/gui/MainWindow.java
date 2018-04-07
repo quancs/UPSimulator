@@ -940,21 +940,25 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 	}
 
 	@Override
-	public void debugLog(Object who, String msg) {
-		if (getDebugConsoleEnable().isSelected())
-			Util.addMsgToJTextPane(debugConsole, msg + "\n", Color.black, false, resultConsole.getFont().getSize());
+	public void debugLog(Object who, Object msg) {
+		if (getDebugConsoleEnable().isSelected()) {
+			if (msg instanceof PMembrane) {
+				Util.addMsgToJTextPane(debugConsole, ((PMembrane) msg).toString("  ", true, true, true, true, true) + "\n\n\n", Color.black, false, resultConsole.getFont().getSize());
+			} else
+				Util.addMsgToJTextPane(debugConsole, msg.toString() + "\n", Color.black, false, resultConsole.getFont().getSize());
+		}
 	}
 
 	@Override
-	public void errorLog(Object who, String msg) {
+	public void errorLog(Object who, Object msg) {
 		if (getDebugConsoleEnable().isSelected())
-			Util.addMsgToJTextPane(debugConsole, msg + "\n", Color.red, true, resultConsole.getFont().getSize());
+			Util.addMsgToJTextPane(debugConsole, msg.toString() + "\n", Color.red, true, resultConsole.getFont().getSize());
 	}
 
 	@Override
-	public void resultLog(Object who, String msg) {
+	public void resultLog(Object who, Object msg) {
 		if (getResultConsoleEnable().isSelected())
-			Util.addMsgToJTextPane(resultConsole, msg + "\n", Color.black, false, resultConsole.getFont().getSize());
+			Util.addMsgToJTextPane(resultConsole, msg.toString() + "\n", Color.black, false, resultConsole.getFont().getSize());
 	}
 
 	public JCheckBoxMenuItem getResultConsoleEnable() {

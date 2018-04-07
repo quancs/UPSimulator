@@ -545,7 +545,7 @@ public class PRule implements Rule {
 
 		StringBuilder otherBuilder = new StringBuilder("| ");
 		for (Condition condition : conditions) {
-			if (condition instanceof MembraneStatusCondition || condition instanceof ObjectCondition || condition instanceof Result)
+			if (condition instanceof MembranePropertyCondition || condition instanceof ObjectCondition || condition instanceof Result)
 				continue;
 			otherBuilder.append(condition + " ");
 		}
@@ -596,7 +596,7 @@ public class PRule implements Rule {
 		List<Rule> satisfiedRules = new LinkedList<>();
 
 		LinkedList<RuleChecker> checkers = new LinkedList<>();
-		int n = pValues.size() / 600;
+		int n = pValues.size() / 400;
 		if (n <= 0)
 			n = 1;
 		n = pValues.size() / n;

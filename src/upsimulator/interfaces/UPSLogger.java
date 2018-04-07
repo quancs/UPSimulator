@@ -6,7 +6,7 @@ public abstract class UPSLogger {
 	protected static UPSLogger upsLogger = null;
 	protected static boolean logEnable = true;
 
-	public static void debug(Object who, String msg) {
+	public static void debug(Object who, Object msg) {
 		if (upsLogger == null) {
 			if (logEnable)
 				Logger.getLogger(who.getClass()).debug(msg);
@@ -15,7 +15,7 @@ public abstract class UPSLogger {
 		}
 	}
 
-	public static void error(Object who, String msg) {
+	public static void error(Object who, Object msg) {
 		if (upsLogger == null) {
 			if (logEnable)
 				Logger.getLogger(who.getClass()).debug(msg);
@@ -24,7 +24,7 @@ public abstract class UPSLogger {
 		}
 	}
 
-	public static void result(Object who, String msg) {
+	public static void result(Object who, Object msg) {
 		if (upsLogger == null) {
 			if (logEnable)
 				Logger.getLogger(who.getClass()).debug(msg);
@@ -33,11 +33,35 @@ public abstract class UPSLogger {
 		}
 	}
 
-	public abstract void debugLog(Object who, String msg);
+	/**
+	 * Log debug informations
+	 * 
+	 * @param who
+	 *            who want to send the information
+	 * @param msg
+	 *            the msg object
+	 */
+	public abstract void debugLog(Object who, Object msg);
 
-	public abstract void errorLog(Object who, String msg);
+	/**
+	 * Log exceptions or errors
+	 * 
+	 * @param who
+	 *            where the error occurred
+	 * @param msg
+	 *            the msg object, can be exception or string
+	 */
+	public abstract void errorLog(Object who, Object msg);
 
-	public abstract void resultLog(Object who, String msg);
+	/**
+	 * Log results
+	 * 
+	 * @param who
+	 *            who want to send to msg
+	 * @param msg
+	 *            the msg object
+	 */
+	public abstract void resultLog(Object who, Object msg);
 
 	public static UPSLogger getLogger() {
 		return upsLogger;
