@@ -70,4 +70,9 @@ public class MembraneStatusResult extends MembranePropertyResult implements Cond
 			}
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "<" + getValue() + ">";
+	}
 }

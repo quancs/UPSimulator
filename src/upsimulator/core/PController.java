@@ -67,12 +67,12 @@ public class PController extends Thread {
 				e1.printStackTrace();
 			}
 
-		PrintStream syserr = System.err;
-		try {
-			System.setErr(new PrintStream(errFile));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+//		PrintStream syserr = System.err;
+//		try {
+//			System.setErr(new PrintStream(errFile));
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		}
 
 		// recoginze
 		UPLanguageLexer lexer = new UPLanguageLexer(new ANTLRInputStream(modelInstanceStr));
@@ -89,16 +89,16 @@ public class PController extends Thread {
 		PMembrane membrane = (PMembrane) visitor.visit(tree);
 
 		// read error messages
-		System.err.close();
-		System.setErr(syserr);
-		try {
-			Scanner scanner = new Scanner(errFile);
-			if (scanner.hasNextLine())
-				UPSLogger.error(PController.class, scanner.nextLine());
-			scanner.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+//		System.err.close();
+//		System.setErr(syserr);
+//		try {
+//			Scanner scanner = new Scanner(errFile);
+//			if (scanner.hasNextLine())
+//				UPSLogger.error(PController.class, scanner.nextLine());
+//			scanner.close();
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		}
 
 		UPSLogger.debug(PController.class, "Recogize environment done.\n");
 		UPSLogger.debug(PController.class, membrane.toString("  ",true,true,true,true,true) + "\n\n");
@@ -158,6 +158,8 @@ public class PController extends Thread {
 			} catch (UnpredictableDimensionException e) {
 				e.printStackTrace();
 				UPSLogger.error(this, e.getMessage());
+				// TODO delete this code
+				throw new RuntimeException(e);
 			} catch (CloneNotSupportedException e) {
 				e.printStackTrace();
 				UPSLogger.error(this, e.getMessage());

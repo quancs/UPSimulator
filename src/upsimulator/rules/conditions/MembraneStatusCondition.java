@@ -13,6 +13,6 @@ public class MembraneStatusCondition extends MembranePropertyCondition {
 
 	@Override
 	public String toString() {
-		return getValue();
+		return "<" + getValue() + ">";
 	}
 }

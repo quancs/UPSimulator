@@ -36,9 +36,7 @@ public class MembraneDissolveResult implements Result {
 
 	@Override
 	public String toString() {
-		String str = "";
-		// TODO 需要确定输出的形式
-		return str;
+		return "dissolve";
 	}
 
 	@Override

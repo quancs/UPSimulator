@@ -1,5 +1,6 @@
-// Generated from UPLanguage.g4 by ANTLR 4.7
 package upsimulator.recognizer;
+
+// Generated from UPLanguage.g4 by ANTLR 4.7.1
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 /**

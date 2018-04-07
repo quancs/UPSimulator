@@ -600,6 +600,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 			public void mouseClicked(MouseEvent e) {
 				try {
 					resultConsole.setText("");
+					debugConsole.setText("");
 					initMembrane();
 				} catch (Exception e2) {
 					e2.printStackTrace();

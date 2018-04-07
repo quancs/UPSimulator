@@ -46,7 +46,12 @@ memCreateResult	: 	membraneType ':' membraneName ('[' formulaDim ']')* ('{' objR
 memDissolveResult:	'dissolve';
 propertyResult:	'<' (propertyName '=')? propertyValue '>';//Default propertyName=Status
 objResult		:	objName ('[' formulaDim ']')* ('^' objNum)?;
-positionResult	:	'(' objResult+ ',' (out | here | ( in | go ) target (andOpt target)* | ( in | go ) target (orOpt target)* | ( in | go ) (all | random ) )')';
+positionResult	:	'(' objResult+ ',' (out | here | 
+					( in | go ) 
+					( 	target ( ( andOpt target)+ | (orOpt target)+ )?
+						| all 
+						| random
+					))')';
 in				:	'in';
 out				:	'out';
 here			:	'here';

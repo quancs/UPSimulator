@@ -94,6 +94,8 @@ public class PTunnel implements Tunnel {
 		} catch (UnknownTargetMembraneException e) {
 			e.printStackTrace();
 			UPSLogger.error(this, e.getStackTrace().toString());
+			// TODO delete this code
+			throw new RuntimeException(e);
 		}
 	}
 

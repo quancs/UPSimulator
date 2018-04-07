@@ -158,7 +158,7 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 
 		Membrane membrane;
 		int i = 1;
-		if (memTypes.size() >= 2 && Membrane.isPredefinedMem(memTypes.get(2).toString())) {
+		if (memTypes.size() >= 2 && Membrane.isPredefinedMem(memTypes.get(1).toString())) {
 			membrane = Membrane.getMemInstanceOf(memTypes.get(2).toString());
 			i = 2;
 		} else {
@@ -422,10 +422,13 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 
 	@Override
 	public T visitPropertyResult(UPLanguageParser.PropertyResultContext ctx) {
-		String pn = ctx.propertyName().getText();
+		String pn;
 		String pv = ctx.propertyValue().getText();
-		if (pn.length() == 0)
+		if (ctx.propertyName() == null)
 			pn = "Status";
+		else
+			pn = ctx.propertyName().getText();
+
 		MembranePropertyResult mpr;
 
 		if (pn.equalsIgnoreCase("Status")) {
@@ -453,16 +456,11 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 	public T visitPositionResult(UPLanguageParser.PositionResultContext ctx) {
 		PositionResult pResult = new PositionResult();
 		currPositionResult = pResult;
-		for (ObjResultContext orc : ctx.objResult()) {
+		for (ObjResultContext orc : ctx.objResult())
 			pResult.addObjectResult((ObjectResult) visitObjResult(orc));
-		}
 
-		for (TargetContext tc : ctx.target()) {
+		for (TargetContext tc : ctx.target())
 			pResult.addTarget((Target) visitTarget(tc));
-		}
-
-		for (UPLanguageParser.ObjResultContext orc : ctx.objResult())
-			pResult.addObjectResult((ObjectResult) visitObjResult(orc));
 
 		if (ctx.here() != null) {
 			pResult.setMove(TunnelType.Here);
@@ -473,9 +471,9 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 				pResult.setMove(TunnelType.In_all);
 			} else if (ctx.random() != null) {
 				pResult.setMove(TunnelType.In_one_of_all);
-			} else if (ctx.andOpt() != null) {
+			} else if (ctx.andOpt().size() > 0) {
 				pResult.setMove(TunnelType.In_all_of_specified);
-			} else if (ctx.orOpt() != null) {
+			} else if (ctx.orOpt().size() > 0) {
 				pResult.setMove(TunnelType.In_one_of_specified);
 			} else {
 				pResult.setMove(TunnelType.In);
@@ -485,9 +483,9 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 				pResult.setMove(TunnelType.Go_all);
 			} else if (ctx.random() != null) {
 				pResult.setMove(TunnelType.Go_one_of_all);
-			} else if (ctx.andOpt() != null) {
+			} else if (ctx.andOpt().size() > 0) {
 				pResult.setMove(TunnelType.Go_all_of_specified);
-			} else if (ctx.orOpt() != null) {
+			} else if (ctx.orOpt().size() > 0) {
 				pResult.setMove(TunnelType.Go_one_of_specified);
 			} else {
 				pResult.setMove(TunnelType.Go);
@@ -527,10 +525,12 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 
 	@Override
 	public T visitPropertyCondition(UPLanguageParser.PropertyConditionContext ctx) {
-		String pn = ctx.propertyName().getText();
+		String pn;
 		String pv = ctx.propertyValue().getText();
-		if (pn.length() == 0)
+		if (ctx.propertyName() == null)
 			pn = "Status";
+		else
+			pn = ctx.propertyName().getText();
 
 		MembranePropertyCondition mpCondition;
 		if (pn.equalsIgnoreCase("Status")) {
@@ -634,12 +634,20 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 
 	@Override
 	public T visitTarget(TargetContext ctx) {
+		String tString = ctx.getText();
+		logger.info("TargetString:" + tString);
+
 		Target target = currPositionResult.new Target();
+		target.name = ctx.membraneName().getText();
+
 		for (FormulaDimContext fdc : ctx.formulaDim()) {
 			target.formulaDims.add((String) visitFormulaDim(fdc));
 		}
 		for (PropertyConditionContext pcc : ctx.propertyCondition())
 			target.conditions.add((MembranePropertyCondition) visitPropertyCondition(pcc));
+
+		logger.info("TargetString:" + target.toString() + " ==null? " + (target == null));
+
 		return (T) target;
 	}
 

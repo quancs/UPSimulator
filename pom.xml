@@ -16,7 +16,10 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+			
 		</plugins>
+		
+		
 	</build>
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/org.antlr/antlr4 -->
@@ -38,4 +41,6 @@
 			<version>1.2.17</version>
 		</dependency>
 	</dependencies>
+	
+	
 </project>

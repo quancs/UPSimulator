@@ -7,6 +7,7 @@ import java.util.List;
 
 import net.sourceforge.jeval.EvaluationException;
 import net.sourceforge.jeval.Evaluator;
+import upsimulator.core.PTunnel;
 import upsimulator.exceptions.TunnelNotExistException;
 import upsimulator.exceptions.UnknownTargetMembraneException;
 import upsimulator.interfaces.Condition;
@@ -21,7 +22,7 @@ import upsimulator.rules.conditions.MembranePropertyCondition;
 //既是结果也是条件
 public class PositionResult implements Result, Dimension, Condition {
 
-	public class Target {
+	public class Target implements Cloneable {
 		public String name;
 		public String nameDim;
 		public ArrayList<String> formulaDims = new ArrayList<>();
@@ -273,6 +274,8 @@ public class PositionResult implements Result, Dimension, Condition {
 				} catch (EvaluationException e) {
 					e.printStackTrace();
 					UPSLogger.error(this, e.getStackTrace().toString());
+					// TODO delete this code
+					throw new RuntimeException(e);
 				}
 			}
 			nameDims.add(target.nameDim);
@@ -411,6 +414,7 @@ public class PositionResult implements Result, Dimension, Condition {
 
 	@Override
 	public Tunnel selectTunnel(Membrane current) throws TunnelNotExistException {
+		Tunnel tunnel = null;
 		switch (move) {
 		case Here:
 		case Out:
@@ -418,24 +422,68 @@ public class PositionResult implements Result, Dimension, Condition {
 		case In_one_of_all:
 		case Go_all:
 		case Go_one_of_all:
-			return current.getTunnel(move, null);
-
-		case Go:
+			tunnel = current.getTunnel(move, null);
+			if (tunnel == null && move != TunnelType.Out) {
+				tunnel = new PTunnel(move);
+				tunnel.setSource(current);
+				if (move == TunnelType.Here)
+					tunnel.addTarget(current);
+				current.addTunnel(tunnel);
+			}
+			break;
 		case In:
 		case In_all_of_specified:
 		case In_one_of_specified:
+		case Go:
 		case Go_all_of_specified:
 		case Go_one_of_specified:
 			try {
-				return current.getTunnel(move, getTargetsName());
+				tunnel = current.getTunnel(move, getTargetsName());
+				if (tunnel == null) {
+					List<Membrane> scope;
+					if (move == TunnelType.In || move == TunnelType.In_all_of_specified || move == TunnelType.In_one_of_specified) {
+						scope = current.getChildren();
+					} else {
+						scope = current.getNeighbors();
+					}
+					LinkedList<Membrane> targetsMem = new LinkedList<>();
+					for (Target target : targets) {
+						for (Membrane m : scope) {
+							if (target.nameDim.equals(m.getNameDim())) {
+								targetsMem.add(m);
+								break;
+							}
+						}
+					}
+					if (targetsMem.size() == targets.size()) {
+						tunnel = new PTunnel(move);
+						tunnel.setSource(current);
+						for (Membrane target : targetsMem)
+							tunnel.addTarget(target);
+						current.addTunnel(tunnel);
+					}
+				}
+				break;
 			} catch (EvaluationException e) {
 				e.printStackTrace();
 				UPSLogger.error(this, e.toString());
+				// TODO delete this code
+				throw new RuntimeException(e);
 			}
 
 		default:
 			break;
 		}
-		return null;
+		if (tunnel == null) {
+			try {
+				UPSLogger.error(this, "Tunnel does not exist and cannot be created : " + getTargetsName());
+				throw new TunnelNotExistException(getTargetsName());
+			} catch (EvaluationException e) {
+				e.printStackTrace();
+				UPSLogger.error(this, e.toString());
+			}
+			return null;
+		} else
+			return tunnel;
 	}
 }
