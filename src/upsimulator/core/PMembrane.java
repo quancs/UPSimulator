@@ -338,7 +338,10 @@ public class PMembrane implements Membrane {
 
 	@Override
 	public void setProperty(String propertyName, Object propertyValue) {
-		properties.put(propertyName, propertyValue);
+		if (propertyValue != null)
+			properties.put(propertyName, propertyValue);
+		else
+			properties.remove(propertyName);
 	}
 
 	@Override

@@ -35,6 +35,7 @@ public class MembraneStatusResult extends MembranePropertyResult implements Cond
 		if (endStatus != null) {
 			synchronized (endStatus) {
 				if (endStatus.equals(getValue())) {
+					membrane.setProperty(endStatusCountStr, (Integer) membrane.getProperty(endStatusCountStr) + 1);
 					return true;
 				} else {
 					return false;
@@ -47,11 +48,15 @@ public class MembraneStatusResult extends MembranePropertyResult implements Cond
 					membrane.setProperty(endStatusStr, getValue());
 					membrane.setProperty(endStatusCountStr, 1);
 					return true;
-				} else if (endStatus.equals(getValue())) {
-					membrane.setProperty(endStatusCountStr, (Integer) membrane.getProperty(endStatusCountStr) + 1);
-					return true;
 				} else {
-					return false;
+					synchronized (endStatus) {
+						if (endStatus.equals(getValue())) {
+							membrane.setProperty(endStatusCountStr, (Integer) membrane.getProperty(endStatusCountStr) + 1);
+							return true;
+						} else {
+							return false;
+						}
+					}
 				}
 			}
 		}
