@@ -1,5 +1,5 @@
 # UPSimulator
-UPSimulator is an universal and high performance simulator for membrane computing. Now, we have supported most features of cell-like P system & tissue-like P system.
+UPSimulator is an universal and high performance simulator for membrane computing. Now, we have supported most features of cell-like P system & tissue-like P system. The [latest version](https://github.com/quancs/UPSimulator/releases) is 1.0.0.
 
 # Usage
 ### UPLanguage
