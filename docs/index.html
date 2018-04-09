@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>渝值</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        a.disabled {
+            color: gray;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body class="container-fluid">
+    <!--    头部   -->
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">渝值</a>
+            </div>
+
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="/login.html" th:href="'/login'">登录|注册</a></li>
+                    <li><a href="#">会员中心</a></li>
+                    <li><a href="#">推荐规则</a></li>
+                    <li><a href="#">联系我们</a></li>
+                </ul>
+                <form class="navbar-form navbar-right">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="搜索">
+                    </div>
+                    <button type="submit" class="btn btn-default">搜索</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+    <!--    轮播   -->
+    <div id="myCarousel" class="carousel slide" data-ride="carousel">
+        <!-- 轮播（Carousel）指标 -->
+        <ol class="carousel-indicators">
+            <li data-target="#myCarousel" th:each="ad,adStat : ${ads}" th:class="${adStat.index==0}?'active':''" th:data-slide-to="${adStat.index}" data-slide-to="0" class="active"></li>
+            <li data-target="#myCarousel" data-slide-to="1" th:remove="all"></li>
+            <li data-target="#myCarousel" data-slide-to="2" th:remove="all"></li>
+        </ol>
+        <!-- 轮播（Carousel）项目 -->
+        <div class="carousel-inner">
+            <div class="item active" th:each="ad,adStat : ${ads}" th:class="${adStat.index==0}?'item active':'item'">
+                <a href="#" th:href="'/ad?id='+${ad.id}">
+                    <img src="/img/1s.svg" th:src="${ad.adPic}" class="img-responsive center-block" style="width:100%;max-height:250px;">
+                </a>
+            </div>
+            <div class="item" th:remove="all">
+                <img src="/img/2s.svg" class="img-responsive center-block" style="width:100%;max-height:250px;" alt="Second slide">
+            </div>
+            <div class="item" th:remove="all">
+                <img src="/img/3s.svg" class="img-responsive center-block" style="width:100%;max-height:250px;" alt="Third slide">
+            </div>
+        </div>
+        <!-- 轮播（Carousel）导航 -->
+        <a class="carousel-control left" href="#myCarousel" data-slide="prev">
+            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control right" href="#myCarousel" data-slide="next">
+            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+    <br>
+
+    <!--  分类  -->
+    <div class="row">
+        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-1 text-left">分类：</div>
+        <div class="col-xs-2 col-sm-1 col-md-1 text-center">
+            <a href="#" th:href="'?mainClass=1&type='+${type}+'&page=1'" th:class="${mainClass==1}?'disabled':''">母婴</a>
+        </div>
+        <div class="col-xs-2 col-sm-1 col-md-1 text-center">
+            <a href="#" th:href="'?mainClass=2&type='+${type}+'&page=1'" th:class="${mainClass==2}?'disabled':''">医疗</a>
+        </div>
+        <div class="col-xs-2 col-sm-1 col-md-1 text-center">
+            <a href="#" th:href="'?mainClass=3&type='+${type}+'&page=1'" th:class="${mainClass==3}?'disabled':''">建材</a>
+        </div>
+        <div class="col-xs-2 col-sm-1 col-md-1 text-center">
+            <a href="#" th:href="'?mainClass=4&type='+${type}+'&page=1'" th:class="${mainClass==4}?'disabled':''">食品</a>
+        </div>
+        <div class="col-xs-2 col-sm-1 col-md-1 text-center">
+            <a href="#" th:href="'?mainClass=5&type='+${type}+'&page=1'" th:class="${mainClass==5}?'disabled':''">法律</a>
+        </div>
+        <div class="col-xs-2 col-sm-1 col-md-1 text-center">
+            <a href="#" th:href="'?mainClass=6&type='+${type}+'&page=1'" th:class="${mainClass==6}?'disabled':''">其他</a>
+        </div>
+        <div class="col-xs-2 col-sm-1 col-md-1 text-center">
+            <a href="#" th:href="'?mainClass=0&type='+${type}+'&page=1'" th:class="${mainClass==0}?'disabled':''">全部</a>
+        </div>
+    </div>
+
+    <br>
+    <div class="row">
+        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-1 text-left">优惠类型：</div>
+        <div class="col-xs-2 col-sm-1 col-md-1 text-center">
+            <a href="#" th:href="'?mainClass='+${mainClass}+'&type=1&page=1'" th:class="${type==1}?'disabled':''">开业</a>
+        </div>
+        <div class="col-xs-2 col-sm-1 col-md-1 text-center">
+            <a href="#" th:href="'?mainClass='+${mainClass}+'&type=2&page=1'" th:class="${type==2}?'disabled':''">促销</a>
+        </div>
+        <div class="col-xs-2 col-sm-1 col-md-1 text-center">
+            <a href="#" th:href="'?mainClass='+${mainClass}+'&type=3&page=1'" th:class="${type==3}?'disabled':''">团购</a>
+        </div>
+        <div class="col-xs-2 col-sm-1 col-md-1 text-center">
+            <a href="#" th:href="'?mainClass='+${mainClass}+'&type=4&page=1'" th:class="${type==4}?'disabled':''">清仓</a>
+        </div>
+        <div class="col-xs-2 col-sm-1 col-md-1 text-center">
+            <a href="#" th:href="'?mainClass='+${mainClass}+'&type=5&page=1'" th:class="${type==5}?'disabled':''">厂家活动</a>
+        </div>
+        <div class="col-xs-2 col-sm-1 col-md-1 text-center">
+            <a href="#" th:href="'?mainClass='+${mainClass}+'&type=6&page=1'" th:class="${type==6}?'disabled':''">其他</a>
+        </div>
+        <div class="col-xs-2 col-sm-1 col-md-1 text-center">
+            <a href="#" th:href="'?mainClass='+${mainClass}+'&type=0&page=1'" th:class="${type==0}?'disabled':''">全部</a>
+        </div>
+    </div>
+    <hr>
+    <div>网友精选推荐</div>
+
+    <div class="row">
+        <div class="col-xs-6 col-sm-3 col-md-2 col-md-offset-2" th:each="item,itemStat : ${items}" th:class="(${itemStat.index}%4==0)?'col-xs-6 col-sm-3 col-md-2 col-md-offset-2':'col-xs-6 col-sm-3 col-md-2'">
+            <div class="row">
+                <a href="#" th:href="'item?id='+${item.id}"><img src="/img/1s.svg" class="img-thumbnail" th:src="${item.images[0].path}"></a>
+            </div>
+            <div class="row" th:text="'推荐人：' + ${item.recommandPerson}">推荐人：养狗的</div>
+            <div class="row" th:text="'推荐理由：' + ${item.recommandReason}">推荐理由：老板是非常耿直的人xxxxxxxxx xxxxxxxxxxxx</div>
+        </div>
+        <div class="col-xs-6 col-sm-3 col-md-2" th:remove="all">
+            <div class="row">
+                <a href="#"><img src="/img/1s.svg" class="img-thumbnail"></a>
+            </div>
+            <div class="row">推荐人：养狗的</div>
+            <div class="row">推荐理由：老板是非常耿直的人xxxxxxxxxx xxxxxxxxxxx</div>
+        </div>
+        <div class="col-xs-6 col-sm-3 col-md-2" th:remove="all">
+            <div class="row">
+                <a href="#"><img src="/img/1s.svg" class="img-thumbnail"></a>
+            </div>
+            <div class="row">推荐人：养狗的</div>
+            <div class="row">推荐理由：老板是非常耿直的人xxxxxxxxxx xxxxxxxxxxx</div>
+        </div>
+        <div class="col-xs-6 col-sm-3 col-md-2" th:remove="all">
+            <div class="row">
+                <a href="#"><img src="/img/1s.svg" class="img-thumbnail"></a>
+            </div>
+            <div class="row">推荐人：养狗的</div>
+            <div class="row">推荐理由：老板是非常耿直的人xxxxxxxxxx xxxxxxxxxxx</div>
+        </div>
+    </div>
+
+
+    <nav style="text-align: center">
+        <ul class="pagination">
+            <li th:class="(${startPage}==null)?'disabled':''"><a href="#" th:href="(${startPage!=null})?('?mainClass=' + ${mainClass} + '&type=' + ${type} + '&page=' + ${startPage}):('javascript:void(0);')">«</a></li>
+            <li th:each="p : ${pages}" th:class="(${p}==${currentPage})?'active':''"><a href="#" th:href="'?mainClass=' + ${mainClass} + '&type=' + ${type} + '&page=' +${p}" th:text="${p}">2</a></li>
+            <li th:class="(${endPage}==null)?'disabled':''"><a href="#" th:href="(${endPage!=null})?('?mainClass=' + ${mainClass} + '&type=' + ${type} + '&page=' + ${endPage}):('javascript:void(0);')">»</a></li>
+        </ul>
+    </nav>
+
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+</body>
+
+</html>
