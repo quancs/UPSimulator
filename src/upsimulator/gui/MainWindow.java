@@ -27,6 +27,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
 
@@ -67,6 +70,7 @@ import upsimulator.gui.FileDescriber.State;
 import upsimulator.gui.FileDescriber.Type;
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Obj;
+import upsimulator.interfaces.Rule;
 import upsimulator.interfaces.UPSLogger;
 
 public class MainWindow extends UPSLogger implements TreeSelectionListener, ItemListener {
@@ -939,13 +943,38 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 		return consoleSplitPane;
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void debugLog(Object who, Object msg) {
 		if (getDebugConsoleEnable().isSelected()) {
 			if (msg instanceof PMembrane) {
 				Util.addMsgToJTextPane(debugConsole, ((PMembrane) msg).toString("  ", true, true, true, true, true) + "\n\n\n", Color.black, false, resultConsole.getFont().getSize());
-			} else
+			} else if (msg instanceof List<?>) {
+				HashMap<Rule, Integer> ruleUsedTimes = new HashMap<>(1000);
+				for (Rule rule : (List<Rule>) msg) {
+					if (ruleUsedTimes.containsKey(rule)) {
+						ruleUsedTimes.put(rule, ruleUsedTimes.get(rule) + 1);
+					} else {
+						ruleUsedTimes.put(rule, 1);
+					}
+				}
+				StringBuilder sBuilder = new StringBuilder(ruleUsedTimes.size() * 100);
+				Iterator<?> iter = ruleUsedTimes.entrySet().iterator();
+				for (int i = 0; i < 100 && iter.hasNext(); i++) {
+					Map.Entry entry = (Map.Entry) iter.next();
+					Rule key = (Rule) entry.getKey();
+					Integer val = (Integer) entry.getValue();
+					sBuilder.append(key.toString());
+					sBuilder.append(" × ");
+					sBuilder.append(val);
+					sBuilder.append("\n");
+				}
+				if (iter.hasNext())
+					sBuilder.append("...\n");
+				Util.addMsgToJTextPane(debugConsole, sBuilder.toString(), Color.black, false, resultConsole.getFont().getSize());
+			} else {
 				Util.addMsgToJTextPane(debugConsole, msg.toString() + "\n", Color.black, false, resultConsole.getFont().getSize());
+			}
 		}
 	}
 
@@ -959,7 +988,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 	public void resultLog(Object who, Object msg) {
 		if (getResultConsoleEnable().isSelected()) {
 			Util.addMsgToJTextPane(resultConsole, msg.toString() + "\n", Color.black, false, resultConsole.getFont().getSize());
-			if(msg instanceof Membrane)
+			if (msg instanceof Membrane)
 				Util.addMsgToJTextPane(resultConsole, "\n\n", Color.black, false, resultConsole.getFont().getSize());
 		}
 	}

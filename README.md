@@ -16,6 +16,11 @@ Environment{
 ## Skin Membrane or Simulation Environment
 There is a special membrane named "Environment" in UPL. "Environment" can be treated as a skin membrane or an environment, and only the membranes or rules in "Environment" will be simulated.
 
+```
+Environment{
+	//Rules, Objects, Sub-membranes, Properties can be added here. 
+}
+```
 
 ## Membrane Class
 As class in Java and C++, membrane class is encapsulation which have a certain function for some purposes. Membrane can contain properties, sub-membranes, objects, rules.
@@ -25,18 +30,20 @@ Create an instance is very simple. Three ways to create instances are showed in 
 
 ```
 Membrane A{
-
+	//Rules, Objects, Sub-membranes, Properties
 }
 
 Environment{
-	Membrane A a1;
+	Membrane A a[1];
 	
-	Membrane A a2{
+	Membrane A a[2]{
 		Object c;
+		//Rules, Objects, Sub-membranes, Properties, Tunnels
 	}
 	
-	Membrane A a3{
+	Membrane A a[3]{
 		Membrane A a4;
+		//Rules, Objects, Sub-membranes, Properties, Tunnels
 	}
 }
 ```
@@ -45,12 +52,20 @@ Environment{
 Membrane class can extends other membrane class's rules, objects, properties, sub-membranes through the following way.
 
 ```
+Membrane A{
+}
+
 Membrane B{
+	Membrane A a{
+		//Rules, Objects, Sub-membranes, Properties, Tunnels
+	}
+	//Rules, Objects, Sub-membranes, Properties
 }  
   
 Membrane C extends B{
+	//Rules, Objects, Sub-membranes, Properties
 }  
- 
+
 Environment{  
 	Membrane C c;
 }  
@@ -59,8 +74,9 @@ Environment{
 ```
 Environment{  
 	Membrane d{
-		
+		//Rules, Objects, Sub-membranes, Properties, Tunnels
 	}
+	//Rules, Objects, Sub-membranes, Properties
 }  
 ```
 
@@ -89,16 +105,17 @@ Environment{
 ```
 
 ## Membrane Property
-Membrane property is some property on the membrane, including polarity, thickness, and other properties. Membrane property can be used to restrict the execution of rules. And the execution of rules can change properties as well. In the case below, r1 will execute while property 'a' of B equals to 1, and r2 will change the property 'a' to 2.
+Membrane property is some property on the membrane, including **polarity**, **thickness**, **status in tissue-like P system**, and other properties. Membrane property can be used to restrict the execution of rules. And the execution of rules can change properties as well. In the case below, r1 will execute while property 'p' of B equals to 1, and r2 will change the property 'p' to 2.
 
 ```
 Membrane B{  
-	Property a=1;  
-	Rule r1= <a=1> a -> b;  
-	Rule r2= b -> <a=2>;  
+	Property p=1;  
+	Rule r1= <p=1> a -> b;  
+	Rule r2= b -> <p=2>;  
 }  
 ```
-Membrane properties can also be written in instances.
+Membrane properties can also be written in instances.  
+
 
 ## Tunnels
 Tunnel is a path between two membranes, and it can be used to transfer objects. Tunnels can be defined in following way:
@@ -117,7 +134,7 @@ Environment{
 	}
 }
 ```
-Invisible Tunnels : the tunnel from parent to child, the tunnel from child to parent, the tunnel from self to self. All the invisible tunnels are defined automatically.   
+**Invisible Tunnels** : the tunnel from parent to child, the tunnel from child to parent, the tunnel from self to self. All the invisible tunnels are defined automatically.   
 
 **Notice: Tunnel is a directed edge. If you want to transfer objects in two directions, you must define tunnel in both membranes.**
 
@@ -137,9 +154,10 @@ Rules are divided into two parts: conditions and results.
 #### Object Condition
 ```
 Rule r= a -> b;
+Rule r= a^2 -> b;
 Rule r[i]=a[i] -> b[i+1];
 ```
-In the code above, **a** and **a[i]** are Object Conditions.
+In the code above, **a** and **a[i]** are Object Conditions, and **a^2** means two copy of 'a'.
 
 #### Property Condition or Status Condition
 ```
@@ -204,6 +222,9 @@ In the code above, **A:subm**, **A:subm{ c }**, **A:subm[i]** and **A:subm[i]{ c
 Rule r= a -> dissolve;
 ```
 In the code above, **dissolve** is Membrane Dissolve Result. Membrane Dissolve Result will dissolve current membrane and all the content inside.
+
+## Mathematical Operators
+The mathematical expression's parsing and evaluation is done by [JEval](http://jeval.sourceforge.net/). Please check the supported operators at its website http://jeval.sourceforge.net/.
 
 # Other Projects used in UPSimulator
 ## ANTLR
