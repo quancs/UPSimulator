@@ -103,7 +103,7 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 		}
 
 		if (actions.size() > 0) {
-			UPSLogger.error(this, "Please check your code. Cannot finish following recognize jobs:");
+			UPSLogger.error(this, "Please check your code. Cannot finish following recognization jobs:");
 			for (RecognizerAction action : actions)
 				UPSLogger.error(this, action);
 		}
