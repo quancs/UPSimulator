@@ -2,7 +2,7 @@
 package upsimulator.rules.results;
 
 import upsimulator.exceptions.TunnelNotExistException;
-import upsimulator.exceptions.UnknownTargetMembraneException;
+import upsimulator.exceptions.UnknownMembraneException;
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Result;
 import upsimulator.interfaces.Tunnel;
@@ -25,13 +25,8 @@ public class MembraneDissolveResult implements Result {
 	}
 
 	@Override
-	public void setResult(Membrane membrane) throws UnknownTargetMembraneException {
+	public void setResult(Membrane membrane) throws UnknownMembraneException {
 		membrane.delete();
-	}
-
-	@Override
-	public int getPriority() {
-		return 3;
 	}
 
 	@Override

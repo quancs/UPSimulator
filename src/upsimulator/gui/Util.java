@@ -43,7 +43,7 @@ public class Util {
 			inputStream.read(fileContent);
 			inputStream.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			MainWindow.error(new Object(), e.getMessage());
 		}
 		String string = new String(fileContent);
 

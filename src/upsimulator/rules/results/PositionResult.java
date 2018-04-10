@@ -9,14 +9,13 @@ import net.sourceforge.jeval.EvaluationException;
 import net.sourceforge.jeval.Evaluator;
 import upsimulator.core.PTunnel;
 import upsimulator.exceptions.TunnelNotExistException;
-import upsimulator.exceptions.UnknownTargetMembraneException;
 import upsimulator.interfaces.Condition;
 import upsimulator.interfaces.Dimension;
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Result;
 import upsimulator.interfaces.Tunnel;
-import upsimulator.interfaces.UPSLogger;
 import upsimulator.interfaces.Tunnel.TunnelType;
+import upsimulator.interfaces.UPSLogger;
 import upsimulator.rules.conditions.MembranePropertyCondition;
 
 //既是结果也是条件
@@ -99,14 +98,13 @@ public class PositionResult implements Result, Dimension, Condition {
 	}
 
 	@Override
-	public void setResult(Membrane membrane) throws UnknownTargetMembraneException {
+	public void setResult(Membrane membrane) {
 		for (ObjectResult or : ors)
 			or.setResult(membrane);
 	}
 
 	private PositionResult cloned = null;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public PositionResult deepClone() {
 		try {
@@ -131,11 +129,6 @@ public class PositionResult implements Result, Dimension, Condition {
 			e.printStackTrace();
 		}
 		return null;
-	}
-
-	@Override
-	public int getPriority() {
-		return 1;
 	}
 
 	public TunnelType getMove() {
@@ -380,15 +373,15 @@ public class PositionResult implements Result, Dimension, Condition {
 			return move.toString();
 		case In:
 		case Go:
-			return targets.get(0).nameDim;
+			return targets.get(0).getNameDim();
 		case In_all_of_specified:
 		case Go_all_of_specified: {
 			String targetsName = "";
 			for (int i = 0; i < targets.size() - 1; i++) {
 				Target target = targets.get(i);
-				targetsName += target.nameDim + "&";
+				targetsName += target.getNameDim() + " & ";
 			}
-			targetsName += targets.get(targets.size() - 1).nameDim;
+			targetsName += targets.get(targets.size() - 1).getNameDim();
 			return targetsName;
 		}
 		case In_one_of_specified:
@@ -396,9 +389,9 @@ public class PositionResult implements Result, Dimension, Condition {
 			String targetsName = "";
 			for (int i = 0; i < targets.size() - 1; i++) {
 				Target target = targets.get(i);
-				targetsName += target.nameDim + "|";
+				targetsName += target.getNameDim() + " | ";
 			}
-			targetsName += targets.get(targets.size() - 1).nameDim;
+			targetsName += targets.get(targets.size() - 1).getNameDim();
 			return targetsName;
 		}
 		default:

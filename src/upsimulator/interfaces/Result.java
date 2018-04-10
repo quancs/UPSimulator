@@ -1,32 +1,26 @@
 package upsimulator.interfaces;
 
 import upsimulator.exceptions.TunnelNotExistException;
-import upsimulator.exceptions.UnknownTargetMembraneException;
+import upsimulator.exceptions.UnknownMembraneException;
 
 public interface Result extends Cloneable {
 	/**
-	 * 执行第二步：设置结果
+	 * Set the result to target membrane
 	 * 
 	 * @param membrane
-	 * @throws UnknownTargetMembraneException
-	 *             当设置出错的时候，抛出异常；比如，执行out的时候没有父膜
+	 *            target membrane
+	 * @throws UnknownMembraneException
+	 *             if membrane class can not be found while creating an instance
 	 */
-	public void setResult(Membrane membrane) throws UnknownTargetMembraneException;
+	public void setResult(Membrane membrane) throws UnknownMembraneException;
 
 	/**
-	 * 用于实现对象的深拷贝，因为膜的类型声明，所以声明一个膜的时候需要深拷贝
+	 * Deep clone a result
 	 * 
-	 * @return
+	 * @return the cloned result
 	 * @throws CloneNotSupportedException
 	 */
 	public Result deepClone() throws CloneNotSupportedException;
-
-	/**
-	 * 优先级越高，数字越小
-	 * 
-	 * @return 结果的优先级
-	 */
-	public int getPriority();
 
 	/**
 	 * Select which tunnel this result will go through
@@ -38,16 +32,5 @@ public interface Result extends Cloneable {
 	 * @throws TunnelNotExistException
 	 */
 	public Tunnel selectTunnel(Membrane current) throws TunnelNotExistException;
-
-	/**
-	 * 比较两个结果的优先级
-	 * 
-	 * @param result1
-	 * @param result2
-	 * @return 返回降序
-	 */
-	public static int compare(Result result1, Result result2) {
-		return result1.getPriority() - result2.getPriority();
-	}
 
 }

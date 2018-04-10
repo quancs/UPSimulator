@@ -1,7 +1,7 @@
 package upsimulator.rules.results;
 
 import upsimulator.exceptions.TunnelNotExistException;
-import upsimulator.exceptions.UnknownTargetMembraneException;
+import upsimulator.exceptions.UnknownMembraneException;
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Result;
 import upsimulator.interfaces.Tunnel;
@@ -26,13 +26,8 @@ public class MembranePropertyResult implements Result {
 	}
 
 	@Override
-	public void setResult(Membrane membrane) throws UnknownTargetMembraneException {
+	public void setResult(Membrane membrane) throws UnknownMembraneException {
 		membrane.setProperty(property, value);
-	}
-
-	@Override
-	public int getPriority() {
-		return 1;
 	}
 
 	public String getProperty() {

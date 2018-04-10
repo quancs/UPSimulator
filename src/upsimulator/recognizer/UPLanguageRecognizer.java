@@ -46,6 +46,7 @@ import upsimulator.recognizer.UPLanguageParser.TunnelsContext;
 import upsimulator.recognizer.actions.MembraneExtendAction;
 import upsimulator.recognizer.actions.RecognizerAction;
 import upsimulator.recognizer.actions.RuleSetDeclareAction;
+import upsimulator.recognizer.actions.RuleTunnelChecker;
 import upsimulator.recognizer.actions.TunnelCreateAction;
 import upsimulator.rules.conditions.BooleanCondition;
 import upsimulator.rules.conditions.InhibitorCondition;
@@ -102,7 +103,7 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 		}
 
 		if (actions.size() > 0) {
-			UPSLogger.error(this, "Cannot finish following recognize jobs:");
+			UPSLogger.error(this, "Please check your code. Cannot finish following recognize jobs:");
 			for (RecognizerAction action : actions)
 				UPSLogger.error(this, action);
 		}
@@ -151,8 +152,7 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 			Rule rule = (Rule) visitPrule(rdc);
 			ruleSet.add(rule);
 		}
-		Rule.addRuleSet(ruleSetType, ruleSet);
-		logger.debug("ruleset : " + ruleSetType + " " + ruleSet);
+		Rule.registRuleSet(ruleSetType, ruleSet);
 		return null;
 	}
 
@@ -349,7 +349,7 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 
 	@Override
 	public T visitPrule(UPLanguageParser.PruleContext ctx) {
-		logger.info("visitRuleDef");
+		logger.info("visitRuleDef:" + ctx.getText());
 		PRule rule = new PRule();
 		currRule = rule;
 		// 获取名称
@@ -628,7 +628,7 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 	@Override
 	public T visitTunnels(TunnelsContext ctx) {
 		logger.info("visitTunnels " + ctx.getText());
-		
+
 		LinkedList<String> tunnels = new LinkedList<>();
 		for (TunnelTargetContext ttc : ctx.tunnelTarget())
 			tunnels.add((String) visitTunnelTarget(ttc));
@@ -647,18 +647,27 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 	@Override
 	public T visitTarget(TargetContext ctx) {
 		String tString = ctx.getText();
-		logger.info("TargetString:" + tString);
+		logger.info("visitTarget:" + tString);
 
 		Target target = currPositionResult.new Target();
 		target.name = ctx.membraneName().getText();
 
+		boolean needCheck = true;
 		for (FormulaDimContext fdc : ctx.formulaDim()) {
-			target.formulaDims.add((String) visitFormulaDim(fdc));
+			String dim = (String) visitFormulaDim(fdc);
+			target.formulaDims.add(dim);
+			try {
+				Integer.parseInt(dim);
+			} catch (Exception e) {
+				needCheck = false;
+			}
 		}
+
+		if (needCheck)
+			actions.add(new RuleTunnelChecker(target.getNameDim(), currRule, currMembrane));
+
 		for (PropertyConditionContext pcc : ctx.propertyCondition())
 			target.conditions.add((MembranePropertyCondition) visitPropertyCondition(pcc));
-
-		logger.info("TargetString:" + target.toString() + " ==null? " + (target == null));
 
 		return (T) target;
 	}

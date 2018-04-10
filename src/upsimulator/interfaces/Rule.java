@@ -3,7 +3,7 @@ package upsimulator.interfaces;
 import java.util.HashMap;
 import java.util.List;
 
-import upsimulator.exceptions.UnknownTargetMembraneException;
+import upsimulator.exceptions.UnknownMembraneException;
 import upsimulator.exceptions.UnpredictableDimensionException;
 
 /**
@@ -15,71 +15,93 @@ import upsimulator.exceptions.UnpredictableDimensionException;
 public interface Rule extends Dimension, Name, Cloneable {
 	static HashMap<String, List<Rule>> ruleSet = new HashMap<>();// 规则集
 
-	public static void addRuleSet(String name, List<Rule> ruleSet1) {
+	/**
+	 * Register a rule set
+	 * 
+	 * @param name
+	 *            the name of rule set
+	 * @param ruleSet1
+	 *            rules in the registered rule set
+	 */
+	public static void registRuleSet(String name, List<Rule> ruleSet1) {
 		ruleSet.put(name, ruleSet1);
 	}
 
+	/**
+	 * Get rule set
+	 * 
+	 * @param name
+	 *            the name of rule set
+	 * @return rule set or {@code null} if rule set does not exist
+	 */
 	public static List<Rule> getRuleSet(String name) {
 		return ruleSet.get(name);
 	}
 
 	/**
-	 * 第一步：规则的所有前提是否满足条件
+	 * Check if all the conditions are satisfied at once.
 	 * 
 	 * @param membrane
-	 *            测试环境
-	 * @return 是否满足条件
+	 *            the test membrane
+	 * @return if satisfied
 	 */
 	public boolean satisfy(Membrane membrane);
 
 	/**
-	 * 如果当前规则是规则集（带有维度的多条规则的集合），则返回具有具体维度的规则
+	 * Check if rule with dimensions is satisfied, return the satisfied rules which
+	 * have fixed their dimensions.
 	 * 
 	 * @param membrane
-	 *            测试环境
-	 * @return 规则集中满足条件的规则
+	 *            the test membrane
+	 * @return All the satisfied rules
 	 * @throws UnpredictableDimensionException
+	 *             if rule has dimension whose value cannot be predicted
 	 * @throws CloneNotSupportedException
+	 *             if clone failed
 	 */
 	public List<Rule> satisfiedRules(Membrane membrane) throws UnpredictableDimensionException, CloneNotSupportedException;
 
 	/**
-	 * 第二步：执行所有前提
+	 * Fetch objects from membrane
 	 * 
 	 * @param membrane
-	 * @return
+	 *            target membrane
+	 * @return return {@code true} if all the conditions inside have fetched the
+	 *         objects they need
 	 */
 	public boolean fetch(Membrane membrane);
 
 	/**
-	 * 新增前提
+	 * Add new condition
 	 * 
 	 * @param condition
+	 *            new condition
 	 */
 	public void addCondition(Condition condition);
 
 	/**
-	 * 新增结果
+	 * Add new result
 	 * 
 	 * @param result
+	 *            new result
 	 */
 	public void addResult(Result result);
 
 	/**
-	 * 获取规则的全部结果
+	 * Get all the result
 	 * 
-	 * @return 规则的全部结果
+	 * @return result list
 	 */
 	public List<Result> getResults();
 
 	/**
-	 * 执行第三步：设置结果，由于结果的设置已经在Membrane中做了，因此此方法不需要了
+	 * Set all the results执行第三步：设置结果，由于结果的设置已经在Membrane中做了，因此此方法不需要了
 	 * 
 	 * @param membrane
-	 * @throws UnknownTargetMembraneException
+	 * @throws UnknownMembraneException
 	 *             当设置出错的时候，抛出异常；比如，执行out的时候没有父膜
 	 */
-	public void setResult(Membrane membrane) throws UnknownTargetMembraneException;
+	public void setResult(Membrane membrane) throws UnknownMembraneException;
 
 	/**
 	 * 获取所有的条件

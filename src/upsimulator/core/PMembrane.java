@@ -195,7 +195,7 @@ public class PMembrane implements Membrane {
 
 		for (int i = 0; i < urules.size(); i++) {
 			if (urules.size() > 100 && ((urules.size() - i) % 1000 == 0)) {
-				UPSLogger.debug(this, "Membrane " + getNameDim() + " fetched " + i + "/" + urules.size() + " rules");
+				UPSLogger.info(this, "Membrane " + getNameDim() + " fetched " + i + "/" + urules.size() + " rules");
 			}
 
 			Rule rule = urules.get(i);

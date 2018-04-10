@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
@@ -101,11 +102,13 @@ public class PController extends Thread {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-
-		UPSLogger.debug(PController.class, "Recogize environment done.\n");
-		UPSLogger.debug(PController.class, membrane);
-
-		UPSLogger.result(PController.class, membrane);
+		if (membrane != null) {
+			UPSLogger.debug(PController.class, "Recogize environment done.\n");
+			UPSLogger.debug(PController.class, membrane);
+			UPSLogger.result(PController.class, membrane);
+		} else {
+			UPSLogger.debug(PController.class, "Recogize environment failed.\n");
+		}
 
 		return membrane;
 	}
@@ -152,7 +155,7 @@ public class PController extends Thread {
 		for (int i = 0; i < smList.size(); i++) {
 			Membrane membrane = smList.get(i);
 			try {
-				UPSLogger.debug(this, "Membrane " + membrane.getNameDim() + " are checking usable rules");
+				UPSLogger.info(this, "Membrane " + membrane.getNameDim() + " are checking usable rules");
 				List<Rule> uRules = membrane.getUsableRules();
 				// 此处控制极大和极小并行，以及随机执行也是在此控制
 				smList.addAll(((PMembrane) membrane).getChildren());
@@ -160,8 +163,6 @@ public class PController extends Thread {
 			} catch (UnpredictableDimensionException e) {
 				e.printStackTrace();
 				UPSLogger.error(this, e);
-				// TODO delete this code
-				throw new RuntimeException(e);
 			} catch (CloneNotSupportedException e) {
 				e.printStackTrace();
 				UPSLogger.error(this, e.getMessage());
@@ -171,7 +172,7 @@ public class PController extends Thread {
 		for (int i = 0; i < fmList.size(); i++) {
 			Membrane membrane = fmList.get(i);
 			try {
-				UPSLogger.debug(this, "Membrane " + membrane.getNameDim() + " are fetching objects");
+				UPSLogger.info(this, "Membrane " + membrane.getNameDim() + " are fetching objects");
 				List<Rule> fetchedRules = membrane.fetch();
 				rmList.add(membrane);
 			} catch (TunnelNotExistException e) {
@@ -179,12 +180,14 @@ public class PController extends Thread {
 			}
 		}
 
-		List<Rule> uList = new LinkedList<>();
+		HashMap<Membrane, List<Rule>> uMap = new HashMap<>();
+		int totalUsed = 0;
 		for (int i = 0; i < rmList.size(); i++) {
 			Membrane membrane = rmList.get(i);
-			UPSLogger.debug(this, "Membrane " + membrane.getNameDim() + " are setting products");
+			UPSLogger.info(this, "Membrane " + membrane.getNameDim() + " are setting products");
 			List<Rule> rList = membrane.setProducts();
-			uList.addAll(rList);
+			uMap.put(membrane, new ArrayList<>(rList));
+			totalUsed += rList.size();
 		}
 
 		for (Membrane m : smList) {
@@ -193,16 +196,16 @@ public class PController extends Thread {
 
 		endTime = Calendar.getInstance();
 		long timeUsed = endTime.getTimeInMillis() - startTime.getTimeInMillis();
-		UPSLogger.result(this, "step:" + step + "\t\trules used : " + uList.size() + "\t\ttime used:" + timeUsed + "ms");
-		UPSLogger.debug(this, "\n\nRules used:");
-		UPSLogger.debug(this, uList);
+		UPSLogger.result(this, "step:" + step + "\t\trules used : " + totalUsed + "\t\ttime used:" + timeUsed + "ms");
+		UPSLogger.debug(this, "\n\n" + "step:" + step);
+		UPSLogger.debug(this, uMap);
 		UPSLogger.result(this, environment.toString() + "\n");
 
 		Membrane eClone = environment.deepClone();
 		records.add(eClone);
 		step++;
 
-		return uList.size();
+		return totalUsed;
 	}
 
 	public ArrayList<Membrane> getRecords() {

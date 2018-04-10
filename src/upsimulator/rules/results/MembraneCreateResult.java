@@ -14,7 +14,7 @@ import java.util.List;
 import net.sourceforge.jeval.Evaluator;
 import upsimulator.core.PTunnel;
 import upsimulator.exceptions.TunnelNotExistException;
-import upsimulator.exceptions.UnknownTargetMembraneException;
+import upsimulator.exceptions.UnknownMembraneException;
 import upsimulator.interfaces.Dimension;
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Result;
@@ -43,10 +43,10 @@ public class MembraneCreateResult implements Result, Dimension {
 	}
 
 	@Override
-	public void setResult(Membrane membrane) throws UnknownTargetMembraneException {
+	public void setResult(Membrane membrane) throws UnknownMembraneException {
 		Membrane sonMembrane = Membrane.getMemInstanceOf(templateMemName);
 		if (sonMembrane == null)
-			throw new UnknownTargetMembraneException("未找到对应的类或者深度复制失败。");
+			throw new UnknownMembraneException("Unknown membrane class:" + templateMemName);
 
 		sonMembrane.setName(getNameDim());
 		PTunnel.addChildParentTunnel(membrane, sonMembrane);
@@ -64,11 +64,6 @@ public class MembraneCreateResult implements Result, Dimension {
 			cloned.extraResults.add(result.deepClone());
 		cloned.dimensions = (ArrayList<String>) dimensions.clone();
 		return cloned;
-	}
-
-	@Override
-	public int getPriority() {
-		return 2;
 	}
 
 	private String getNameDim() {

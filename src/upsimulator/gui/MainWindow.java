@@ -608,7 +608,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 					initMembrane();
 				} catch (Exception e2) {
 					e2.printStackTrace();
-					resultLog(this, e2.toString());
+					// resultLog(this, e2.toString());
 				}
 			}
 		});
@@ -709,9 +709,12 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 			}
 		});
 
-		debugConsoleEnable = new JCheckBoxMenuItem("Enable Log");
+		debugConsoleEnable = new JCheckBoxMenuItem("Enable Debug Log");
 		debugConsoleEnable.setSelected(true);
 		popupMenu_1.add(debugConsoleEnable);
+
+		enableInfoLog = new JMenuItem("Enable Info Log");
+		popupMenu_1.add(enableInfoLog);
 		popupMenu_1.add(mntmClear);
 
 		JPanel editorPanel = new JPanel();
@@ -868,7 +871,6 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 			((DefaultTreeModel) membraneTree.getModel()).reload();
 			textResultPane.setText(controller.getRecords().get(value).toString());
 		} else {
-			System.err.println("controller == null");
 			DefaultMutableTreeNode rooTreeNode = (DefaultMutableTreeNode) membraneTree.getModel().getRoot();
 			rooTreeNode.removeAllChildren();
 			((DefaultTreeModel) membraneTree.getModel()).reload();
@@ -881,6 +883,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 	private JCheckBoxMenuItem resultConsoleEnable;
 	private JCheckBoxMenuItem debugConsoleEnable;
 	private JTextPane debugConsole;
+	private JMenuItem enableInfoLog;
 
 	private DefaultMutableTreeNode genTreeNode(Membrane membrane, DefaultMutableTreeNode node) {
 		if (node == null)
@@ -949,29 +952,43 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 		if (getDebugConsoleEnable().isSelected()) {
 			if (msg instanceof PMembrane) {
 				Util.addMsgToJTextPane(debugConsole, ((PMembrane) msg).toString("  ", true, true, true, true, true) + "\n\n\n", Color.black, false, resultConsole.getFont().getSize());
-			} else if (msg instanceof List<?>) {
-				HashMap<Rule, Integer> ruleUsedTimes = new HashMap<>(1000);
-				for (Rule rule : (List<Rule>) msg) {
-					if (ruleUsedTimes.containsKey(rule)) {
-						ruleUsedTimes.put(rule, ruleUsedTimes.get(rule) + 1);
-					} else {
-						ruleUsedTimes.put(rule, 1);
+			} else if (msg instanceof HashMap<?, ?>) {
+				Iterator<Entry<Membrane, List<?>>> it = ((HashMap<Membrane, List<?>>) msg).entrySet().iterator();
+				for (int j = 0; j < 100 & it.hasNext(); j++) {
+					Map.Entry<Membrane, List<?>> mentry = (Entry<Membrane, List<?>>) it.next();
+					Membrane membrane = mentry.getKey();
+					List<Rule> uRules = (List<Rule>) mentry.getValue();
+					if (uRules.size() == 0)
+						continue;
+
+					HashMap<Rule, Integer> ruleUsedTimes = new HashMap<>(1000);
+					for (Rule rule : uRules) {
+						if (ruleUsedTimes.containsKey(rule)) {
+							ruleUsedTimes.put(rule, ruleUsedTimes.get(rule) + 1);
+						} else {
+							ruleUsedTimes.put(rule, 1);
+						}
 					}
-				}
-				StringBuilder sBuilder = new StringBuilder(ruleUsedTimes.size() * 100);
-				Iterator<?> iter = ruleUsedTimes.entrySet().iterator();
-				for (int i = 0; i < 100 && iter.hasNext(); i++) {
-					Map.Entry entry = (Map.Entry) iter.next();
-					Rule key = (Rule) entry.getKey();
-					Integer val = (Integer) entry.getValue();
-					sBuilder.append(key.toString());
-					sBuilder.append(" × ");
-					sBuilder.append(val);
+					StringBuilder sBuilder = new StringBuilder(ruleUsedTimes.size() * 100);
+					sBuilder.append("rules used in " + membrane.getNameDim() + ":\n");
+					Iterator<?> iter = ruleUsedTimes.entrySet().iterator();
+					for (int i = 0; i < 100 && iter.hasNext(); i++) {
+						Map.Entry entry = (Map.Entry) iter.next();
+						Rule key = (Rule) entry.getKey();
+						Integer val = (Integer) entry.getValue();
+						sBuilder.append(key.toString());
+						sBuilder.append(" × ");
+						sBuilder.append(val);
+						sBuilder.append("\n");
+					}
+					if (iter.hasNext())
+						sBuilder.append("more rules ...\n");
 					sBuilder.append("\n");
+					Util.addMsgToJTextPane(debugConsole, sBuilder.toString(), Color.black, false, resultConsole.getFont().getSize());
 				}
-				if (iter.hasNext())
-					sBuilder.append("...\n");
-				Util.addMsgToJTextPane(debugConsole, sBuilder.toString(), Color.black, false, resultConsole.getFont().getSize());
+				if (it.hasNext()) {
+					Util.addMsgToJTextPane(debugConsole, "more membranes ...\n", Color.black, false, resultConsole.getFont().getSize());
+				}
 			} else {
 				Util.addMsgToJTextPane(debugConsole, msg.toString() + "\n", Color.black, false, resultConsole.getFont().getSize());
 			}
@@ -980,8 +997,8 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 
 	@Override
 	public void errorLog(Object who, Object msg) {
-		if (getDebugConsoleEnable().isSelected())
-			Util.addMsgToJTextPane(debugConsole, msg.toString() + "\n", Color.red, true, resultConsole.getFont().getSize());
+		if (getResultConsoleEnable().isSelected())
+			Util.addMsgToJTextPane(resultConsole, msg.toString() + "\n", Color.red, true, resultConsole.getFont().getSize());
 	}
 
 	@Override
@@ -1003,5 +1020,15 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 
 	public JTextPane getDebugConsole() {
 		return debugConsole;
+	}
+
+	@Override
+	public void infoLog(Object who, Object msg) {
+		if (getEnableInfoLog().isSelected())
+			Util.addMsgToJTextPane(debugConsole, msg.toString() + "\n", Color.black, false, resultConsole.getFont().getSize());
+	}
+
+	public JMenuItem getEnableInfoLog() {
+		return enableInfoLog;
 	}
 }

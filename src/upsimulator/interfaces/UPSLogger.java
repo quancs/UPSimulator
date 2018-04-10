@@ -6,6 +6,15 @@ public abstract class UPSLogger {
 	protected static UPSLogger upsLogger = null;
 	protected static boolean logEnable = true;
 
+	public static void info(Object who, Object msg) {
+		if (upsLogger == null) {
+			if (logEnable)
+				Logger.getLogger(who.getClass()).debug(msg);
+		} else {
+			upsLogger.infoLog(who, msg);
+		}
+	}
+
 	public static void debug(Object who, Object msg) {
 		if (upsLogger == null) {
 			if (logEnable)
@@ -34,12 +43,22 @@ public abstract class UPSLogger {
 	}
 
 	/**
+	 * Log info logs
+	 * 
+	 * @param who
+	 *            who want to send the information
+	 * @param msg
+	 *            the message object
+	 */
+	public abstract void infoLog(Object who, Object msg);
+
+	/**
 	 * Log debug informations
 	 * 
 	 * @param who
 	 *            who want to send the information
 	 * @param msg
-	 *            the msg object
+	 *            the message object
 	 */
 	public abstract void debugLog(Object who, Object msg);
 
@@ -49,7 +68,7 @@ public abstract class UPSLogger {
 	 * @param who
 	 *            where the error occurred
 	 * @param msg
-	 *            the msg object, can be exception or string
+	 *            the message object, can be exception or string
 	 */
 	public abstract void errorLog(Object who, Object msg);
 
@@ -59,7 +78,7 @@ public abstract class UPSLogger {
 	 * @param who
 	 *            who want to send to msg
 	 * @param msg
-	 *            the msg object
+	 *            the message object
 	 */
 	public abstract void resultLog(Object who, Object msg);
 

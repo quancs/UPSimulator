@@ -2,22 +2,25 @@ package upsimulator.interfaces;
 
 public interface Name {
 	/**
-	 * 为名称对象设置名称
+	 * Set the name
+	 * 
 	 * @param name
+	 *            name of object, rule, or membrane
 	 */
 	public void setName(String name);
 
 	/**
-	 * 获取对象维度名称 例如对象a2的名称是a，维度名称=名称+维度
+	 * Get the name with dimensions. For example, object a has a dimension
+	 * {@code 2}, then the return value is {@code a[2]}.
 	 * 
-	 * @return
+	 * @return string combined name and dimensions
 	 */
 	public String getNameDim();
 
 	/**
-	 * 获取对象名称 例如对象a2的名称是a
+	 * Get the name
 	 * 
-	 * @return
+	 * @return name
 	 */
 	public String getName();
 }

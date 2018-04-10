@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import upsimulator.exceptions.TunnelNotExistException;
 import upsimulator.exceptions.UnpredictableDimensionException;
@@ -21,11 +20,31 @@ public interface Membrane extends Name, Cloneable, Dimension {
 	public static HashMap<String, Membrane> membraneClass = new HashMap<>();
 	public static HashMap<String, Boolean> membraneClassStatus = new HashMap<>();
 
+	/**
+	 * Register a Membrane Class
+	 * 
+	 * @param name
+	 *            name of membrane class
+	 * @param membrane
+	 *            template of membrane class
+	 * @param predefined
+	 *            if it is a predefined membrane class. Predefined membrane classes
+	 *            can be membranes which use Java code to implement
+	 *            <tt>Membrane</tt> interface, other than use <tt>UPLanguage</tt> to
+	 *            define a membrane class.
+	 */
 	public static void registMemClass(String name, Membrane membrane, boolean predefined) {
 		membraneClass.put(name, membrane);
 		membraneClassStatus.put(name, predefined);
 	}
 
+	/**
+	 * Create an instance of a membrane class
+	 * 
+	 * @param membraneName
+	 *            the name of membrane class
+	 * @return an instance or {@code null} if membrane class required does not exist
+	 */
 	public static Membrane getMemInstanceOf(String membraneName) {
 		if (membraneClass.containsKey(membraneName)) {
 			return membraneClass.get(membraneName).deepClone();
@@ -34,6 +53,14 @@ public interface Membrane extends Name, Cloneable, Dimension {
 		}
 	}
 
+	/**
+	 * Check if a name is the name of one predefined membrane class
+	 * 
+	 * @param membraneName
+	 *            the name used to check
+	 * @return return {@code true} if the name is registered as a predefined
+	 *         membrane class, else return {@code false}
+	 */
 	public static boolean isPredefinedMem(String membraneName) {
 		Boolean fBoolean = membraneClassStatus.get(membraneName);
 		if (fBoolean == null) {
@@ -42,12 +69,20 @@ public interface Membrane extends Name, Cloneable, Dimension {
 			return fBoolean;
 	}
 
+	/**
+	 * Get the template of one membrane class
+	 * 
+	 * @param name
+	 *            the name of membrane class
+	 * @return template membrane
+	 */
 	public static Membrane getMemClass(String name) {
 		return membraneClass.get(name);
 	}
 
 	/**
-	 * Remove runtime properties and initialize this membrane for a new simulation
+	 * Remove runtime properties whose name starts with {@code $} and initialize
+	 * this membrane for a new simulation
 	 */
 	public void newStepInit();
 
@@ -98,7 +133,7 @@ public interface Membrane extends Name, Cloneable, Dimension {
 	public void addRule(Rule rule);
 
 	/**
-	 * Get all the rule contained in this membrane
+	 * Get all the rules contained in this membrane
 	 * 
 	 * @return All the rules
 	 */
@@ -233,11 +268,17 @@ public interface Membrane extends Name, Cloneable, Dimension {
 	public Map<String, Object> getProperties();
 
 	/**
+	 * Extend a template
 	 * 
 	 * @param template
 	 */
 	public void extend(Membrane template);
 
+	/**
+	 * Get all the children to whom this membrane has a <tt>in</to> tunnel
+	 * 
+	 * @return all the children
+	 */
 	public default List<Membrane> getChildren() {
 		ArrayList<Membrane> children = new ArrayList<Membrane>();
 		for (Tunnel tunnel : getTunnels()) {
@@ -248,6 +289,11 @@ public interface Membrane extends Name, Cloneable, Dimension {
 		return children;
 	}
 
+	/**
+	 * Get all the neighbors to whom this membrane has a <tt>go</to> tunnel
+	 * 
+	 * @return all the neighbors
+	 */
 	public default List<Membrane> getNeighbors() {
 		ArrayList<Membrane> neighbors = new ArrayList<Membrane>();
 		for (Tunnel tunnel : getTunnels()) {
@@ -258,6 +304,11 @@ public interface Membrane extends Name, Cloneable, Dimension {
 		return neighbors;
 	}
 
+	/**
+	 * Get the parent membrane of this membrane
+	 * 
+	 * @return parent membrane or {@code null} if parent membrane does not exist
+	 */
 	public default Membrane getParent() {
 		Tunnel tunnelOut = getTunnel(TunnelType.Out, null);
 		if (tunnelOut != null) {

@@ -80,7 +80,7 @@ public class PriorityCondition implements Condition {
 
 	@Override
 	public String toString() {
-		return "pri=" + priority;
+		return " ," + priority;
 	}
 
 }

@@ -30,10 +30,10 @@ public interface Dimension {
 	public Evaluator getEval();
 
 	/**
-	 * 为对象新增维度，例如A1，此时可以加入1作为A的一个维度
+	 * Add new integer dimensions to an instance of dimension.
 	 * 
 	 * @param dimensions
-	 *            新增维度【纯数字】
+	 *            new dimensions
 	 */
 	public default void addDimension(Integer... dimensions) {
 		for (Integer dim : dimensions)
@@ -41,10 +41,11 @@ public interface Dimension {
 	}
 
 	/**
-	 * 为对象新增维度，例如Ai+1，此时可以加入i+1作为A的一个维度
+	 * Add new formula dimensions to an instance of dimension. For example, a[i+1]
+	 * have a dimension {@code i+1} and {@code i+1} should be added to {@code a}.
 	 * 
 	 * @param formulas
-	 *            新增维度【的计算方式】
+	 *            Formula dimensions
 	 */
 	public default void addDimension(String... formulas) {
 		for (String dim : formulas)
@@ -52,20 +53,26 @@ public interface Dimension {
 	}
 
 	/**
+	 * Return the number of total dimensions
 	 * 
-	 * @return 返回维度数
+	 * @return the number of total dimensions
 	 */
 	public default int dimensionCount() {
 		return getDimensions().size();
 	}
 
 	/**
-	 * 获取全部的维度
+	 * Get all the dimensions of an instance
 	 * 
-	 * @return 获取到的维度
+	 * @return dimensions
 	 */
 	public List<String> getDimensions();
 
+	/**
+	 * Convert all the dimensions from {@code String} to {@code Integer}
+	 * 
+	 * @return Integer dimension list
+	 */
 	public default List<Integer> getIntDimensions() {
 		List<String> dims = getDimensions();
 		ArrayList<Integer> intDims = new ArrayList<>();
@@ -74,9 +81,8 @@ public interface Dimension {
 		return intDims;
 	}
 
-	// 如果存在一个没有使用的维度，会出现死循环？
 	/**
-	 * 将维度固定下来,r[i] 在i=1时，固定后为r1 。如果维度的内部包含有含有维度的对象，则此方法不适用
+	 * Calculate all the formula dimensions and fix them
 	 */
 	public default void fixDimension() {
 		List<String> fixedDim = new ArrayList<>();
@@ -87,6 +93,13 @@ public interface Dimension {
 		getDimensions().addAll(fixedDim);
 	}
 
+	/**
+	 * Fix a formula by calculating it using its own evaluator
+	 * 
+	 * @param str
+	 *            Formula dimension
+	 * @return Calculated value
+	 */
 	public default String fix(String str) {
 		try {
 			return getEval().evaluate(str);

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import upsimulator.exceptions.UnknownTargetMembraneException;
+import upsimulator.exceptions.UnknownMembraneException;
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Result;
 import upsimulator.interfaces.Tunnel;
@@ -91,7 +91,7 @@ public class PTunnel implements Tunnel {
 		try {
 			for (Result result : heldResults)
 				result.setResult(membrane);
-		} catch (UnknownTargetMembraneException e) {
+		} catch (UnknownMembraneException e) {
 			e.printStackTrace();
 			UPSLogger.error(this, e);
 		}

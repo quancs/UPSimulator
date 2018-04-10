@@ -11,7 +11,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import net.sourceforge.jeval.Evaluator;
-import upsimulator.exceptions.UnknownTargetMembraneException;
+import upsimulator.exceptions.UnknownMembraneException;
 import upsimulator.exceptions.UnpredictableDimensionException;
 import upsimulator.gui.MainWindow;
 import upsimulator.interfaces.Condition;
@@ -212,7 +212,7 @@ public class PRule implements Rule {
 				PossibleValueCombiner worker = PossibleValueCombiner.getWorker(last, lastComp, lastDims, lastDimsComp);
 				worker.start();
 				workers.add(worker);
-				UPSLogger.debug(this, "Thread " + worker.getWorkerId() + " " + getNameDim() + " search possible values : " + current + "/" + total + " " + last.size() + "*" + lastComp.size());
+				UPSLogger.info(this, "Thread " + worker.getWorkerId() + " " + getNameDim() + " search possible values : " + current + "/" + total + " " + last.size() + "*" + lastComp.size());
 				current++;
 			}
 			for (int i = 0; i < workers.size(); i++) {
@@ -222,7 +222,7 @@ public class PRule implements Rule {
 					pValuesDim.add(worker.getDims());
 					workers.remove(i);
 					i--;
-					UPSLogger.debug(this, "Thread " + worker.getWorkerId() + " finished, time spend= " + worker.getTimeSpend() + " find " + worker.getPValues().size() + " new possible values.");
+					UPSLogger.info(this, "Thread " + worker.getWorkerId() + " finished, time spend= " + worker.getTimeSpend() + " find " + worker.getPValues().size() + " new possible values.");
 				}
 			}
 			try {
@@ -337,7 +337,7 @@ public class PRule implements Rule {
 	}
 
 	@Override
-	public void setResult(Membrane membrane) throws UnknownTargetMembraneException {
+	public void setResult(Membrane membrane) throws UnknownMembraneException {
 		for (Result product : results)
 			product.setResult(membrane);
 	}
@@ -545,14 +545,20 @@ public class PRule implements Rule {
 
 		StringBuilder otherBuilder = new StringBuilder("| ");
 		for (Condition condition : conditions) {
-			if (condition instanceof MembranePropertyCondition || condition instanceof ObjectCondition || condition instanceof Result)
+			if (condition instanceof MembranePropertyCondition || condition instanceof ObjectCondition || condition instanceof Result || condition instanceof PriorityCondition)
 				continue;
 			otherBuilder.append(condition + " ");
 		}
 		if (otherBuilder.length() > 2)
 			sBuilder.append(otherBuilder);
 
-		sBuilder.replace(sBuilder.length() - 1, sBuilder.length(), ";");
+		sBuilder.replace(sBuilder.length() - 1, sBuilder.length(), "");
+		for (Condition condition : conditions) {
+			if (condition instanceof PriorityCondition)
+				sBuilder.append(condition.toString());
+		}
+
+		sBuilder.append(";");
 		return sBuilder.toString();
 	}
 
@@ -614,7 +620,7 @@ public class PRule implements Rule {
 			try {
 				checker.join();
 				satisfiedRules.addAll(checker.getSatisfiedRules());
-				UPSLogger.debug(this, "RuleChecker " + checker.getWorkerId() + " checked " + checker.getSatisfiedRules().size() + "/" + checker.getTotal() + "  " + checker.getTimeSpend() + "ms");
+				UPSLogger.info(this, "RuleChecker " + checker.getWorkerId() + " checked " + checker.getSatisfiedRules().size() + "/" + checker.getTotal() + "  " + checker.getTimeSpend() + "ms");
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} catch (Exception e) {
@@ -623,8 +629,7 @@ public class PRule implements Rule {
 		}
 
 		Calendar t3 = Calendar.getInstance();
-		UPSLogger.debug(this,
-				getNameDim() + " getPossibleValues=" + (t2.getTimeInMillis() - t1.getTimeInMillis()) + "ms\t\t" + " satisfyCheck=" + (t3.getTimeInMillis() - t2.getTimeInMillis()) + "ms");
+		UPSLogger.info(this, getNameDim() + " getPossibleValues=" + (t2.getTimeInMillis() - t1.getTimeInMillis()) + "ms\t\t" + " satisfyCheck=" + (t3.getTimeInMillis() - t2.getTimeInMillis()) + "ms");
 		return satisfiedRules;
 	}
 

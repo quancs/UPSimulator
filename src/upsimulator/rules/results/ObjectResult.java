@@ -2,7 +2,6 @@ package upsimulator.rules.results;
 
 import upsimulator.core.PObject;
 import upsimulator.exceptions.TunnelNotExistException;
-import upsimulator.exceptions.UnknownTargetMembraneException;
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Result;
 import upsimulator.interfaces.Tunnel;
@@ -43,7 +42,7 @@ public class ObjectResult extends PObject implements Result {
 	}
 
 	@Override
-	public void setResult(Membrane membrane) throws UnknownTargetMembraneException {
+	public void setResult(Membrane membrane) {
 		membrane.addObject(new PObject(this), num);
 	}
 
@@ -59,11 +58,6 @@ public class ObjectResult extends PObject implements Result {
 	@Override
 	public ObjectResult deepClone() {
 		return (ObjectResult) super.deepClone();
-	}
-
-	@Override
-	public int getPriority() {
-		return 1;
 	}
 
 	@Override
