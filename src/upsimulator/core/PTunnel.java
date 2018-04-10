@@ -11,8 +11,7 @@ import upsimulator.interfaces.Tunnel;
 import upsimulator.interfaces.UPSLogger;
 
 /*
- * Membrane's connection between A and B.
- * Connection can be a protein tunnel between membranes.
+ * Tunnel is a connection between membranes, used to transfer results.
  * */
 
 public class PTunnel implements Tunnel {
@@ -49,10 +48,7 @@ public class PTunnel implements Tunnel {
 
 	public String getName() {
 		if (name == null && source != null && targets.size() > 0) {
-			name = source.getNameDim() + "->";
-			for (int i = 0; i < targets.size() - 1; i++)
-				name += targets.get(i).getNameDim() + ",";
-			name += targets.get(targets.size() - 1).getNameDim();
+			name = source.getNameDim() + "->" + getTargetsName();
 		}
 		return name;
 	}

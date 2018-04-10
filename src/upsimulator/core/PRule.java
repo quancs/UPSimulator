@@ -337,12 +337,6 @@ public class PRule implements Rule {
 	}
 
 	@Override
-	public void setResult(Membrane membrane) throws UnknownMembraneException {
-		for (Result product : results)
-			product.setResult(membrane);
-	}
-
-	@Override
 	public void addCondition(Condition condition) {
 		if (conditions.contains(condition))
 			return;

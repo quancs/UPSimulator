@@ -88,47 +88,23 @@ public interface Rule extends Dimension, Name, Cloneable {
 	public void addResult(Result result);
 
 	/**
-	 * Get all the result
+	 * Get the result list of this rule
 	 * 
 	 * @return result list
 	 */
 	public List<Result> getResults();
 
 	/**
-	 * Set all the results执行第三步：设置结果，由于结果的设置已经在Membrane中做了，因此此方法不需要了
+	 * Get the condition list of this rule
 	 * 
-	 * @param membrane
-	 * @throws UnknownMembraneException
-	 *             当设置出错的时候，抛出异常；比如，执行out的时候没有父膜
-	 */
-	public void setResult(Membrane membrane) throws UnknownMembraneException;
-
-	/**
-	 * 获取所有的条件
-	 * 
-	 * @return
+	 * @return condition list
 	 */
 	public List<Condition> getConditions();
 
 	/**
-	 * 用于实现对象的深拷贝，因为膜的类型声明，所以声明一个膜的时候需要深拷贝
+	 * Deep clone one rule
 	 * 
-	 * @return
-	 * @throws CloneNotSupportedException
+	 * @return the cloned rule
 	 */
 	public Rule deepClone();
-
-	// /**
-	// * 设置规则的优先级
-	// *
-	// */
-	// public void setPriority(int pri);
-	//
-	// /**
-	// * 优先级越高，数字越小
-	// *
-	// * @return 规则的优先级
-	// */
-	// public int getPriority();
-
 }

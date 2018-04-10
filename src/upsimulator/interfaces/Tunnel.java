@@ -21,7 +21,7 @@ public interface Tunnel extends Cloneable {
 
 	public TunnelType getType();
 
-	public String getName();// son->parent, self->self, a->b
+	public String getName();
 
 	/**
 	 * Target's names are combined by "|" or "&", according to the tunnel type, and
