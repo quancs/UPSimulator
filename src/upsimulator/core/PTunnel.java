@@ -4,17 +4,18 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import upsimulator.exceptions.UnknownMembraneException;
+import upsimulator.exceptions.UnknownMembraneClassException;
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Result;
 import upsimulator.interfaces.Tunnel;
 import upsimulator.interfaces.UPSLogger;
-import upsimulator.rules.results.PositionResult.Target;
 
-/*
- * Tunnel is a connection between membranes, used to transfer results.
- * */
-
+/**
+ * PTunnel is a connection between membranes, used to transfer results.
+ * 
+ * @author quan
+ *
+ */
 public class PTunnel implements Tunnel {
 	private static final long serialVersionUID = -7893633024003440550L;
 
@@ -97,7 +98,7 @@ public class PTunnel implements Tunnel {
 		try {
 			for (Result result : heldResults)
 				result.setResult(membrane);
-		} catch (UnknownMembraneException e) {
+		} catch (UnknownMembraneClassException e) {
 			e.printStackTrace();
 			UPSLogger.error(this, e);
 		}

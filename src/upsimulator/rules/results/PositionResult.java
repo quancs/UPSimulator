@@ -472,7 +472,7 @@ public class PositionResult implements Result, Dimension, Condition {
 		if (tunnel == null) {
 			try {
 				UPSLogger.error(this, "Tunnel does not exist and cannot be created : " + getTargetsName());
-				throw new TunnelNotExistException(getTargetsName());
+				throw new TunnelNotExistException(current, move, getTargetsName());
 			} catch (EvaluationException e) {
 				e.printStackTrace();
 				UPSLogger.error(this, e);

@@ -64,7 +64,7 @@ public class ObjectResult extends PObject implements Result {
 	public Tunnel selectTunnel(Membrane current) throws TunnelNotExistException {
 		Tunnel tunnel = current.getTunnel(TunnelType.Here, null);
 		if (tunnel == null) {
-			throw new TunnelNotExistException(TunnelType.Here + " tunnel does not exist in " + current);
+			throw new TunnelNotExistException(current, TunnelType.Here);
 		} else {
 			return tunnel;
 		}

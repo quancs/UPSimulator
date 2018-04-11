@@ -14,7 +14,7 @@ import java.util.List;
 import net.sourceforge.jeval.Evaluator;
 import upsimulator.core.PTunnel;
 import upsimulator.exceptions.TunnelNotExistException;
-import upsimulator.exceptions.UnknownMembraneException;
+import upsimulator.exceptions.UnknownMembraneClassException;
 import upsimulator.interfaces.Dimension;
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Result;
@@ -43,10 +43,10 @@ public class MembraneCreateResult implements Result, Dimension {
 	}
 
 	@Override
-	public void setResult(Membrane membrane) throws UnknownMembraneException {
+	public void setResult(Membrane membrane) throws UnknownMembraneClassException {
 		Membrane sonMembrane = Membrane.getMemInstanceOf(templateMemName);
 		if (sonMembrane == null)
-			throw new UnknownMembraneException("Unknown membrane class:" + templateMemName);
+			throw new UnknownMembraneClassException(templateMemName);
 
 		sonMembrane.setName(getNameDim());
 		PTunnel.addChildParentTunnel(membrane, sonMembrane);
@@ -187,7 +187,7 @@ public class MembraneCreateResult implements Result, Dimension {
 	public Tunnel selectTunnel(Membrane current) throws TunnelNotExistException {
 		Tunnel tunnel = current.getTunnel(TunnelType.Here, null);
 		if (tunnel == null) {
-			throw new TunnelNotExistException(TunnelType.Here + " tunnel does not exist in " + current);
+			throw new TunnelNotExistException(current, TunnelType.Here);
 		} else {
 			return tunnel;
 		}

@@ -26,7 +26,7 @@ import upsimulator.interfaces.UPSLogger;
  * The default membrane implementation, a container of objects & rules & tunnels
  * & properties.
  * 
- * @author quanc
+ * @author quan
  *
  */
 public class PMembrane implements Membrane {

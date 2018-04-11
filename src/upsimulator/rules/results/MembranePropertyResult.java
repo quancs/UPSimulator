@@ -1,7 +1,7 @@
 package upsimulator.rules.results;
 
 import upsimulator.exceptions.TunnelNotExistException;
-import upsimulator.exceptions.UnknownMembraneException;
+import upsimulator.exceptions.UnknownMembraneClassException;
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Result;
 import upsimulator.interfaces.Tunnel;
@@ -26,7 +26,7 @@ public class MembranePropertyResult implements Result {
 	}
 
 	@Override
-	public void setResult(Membrane membrane) throws UnknownMembraneException {
+	public void setResult(Membrane membrane) throws UnknownMembraneClassException {
 		membrane.setProperty(property, value);
 	}
 
@@ -50,7 +50,7 @@ public class MembranePropertyResult implements Result {
 	public Tunnel selectTunnel(Membrane current) throws TunnelNotExistException {
 		Tunnel tunnel = current.getTunnel(TunnelType.Here, null);
 		if (tunnel == null) {
-			throw new TunnelNotExistException(TunnelType.Here + " tunnel does not exist in " + current);
+			throw new TunnelNotExistException(current,TunnelType.Here);
 		} else {
 			return tunnel;
 		}

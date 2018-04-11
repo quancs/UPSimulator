@@ -3,7 +3,7 @@ package upsimulator.interfaces;
 import java.util.HashMap;
 import java.util.List;
 
-import upsimulator.exceptions.UnknownMembraneException;
+import upsimulator.exceptions.UnknownMembraneClassException;
 import upsimulator.exceptions.UnpredictableDimensionException;
 
 /**

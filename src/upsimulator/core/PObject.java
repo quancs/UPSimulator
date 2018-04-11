@@ -7,6 +7,12 @@ import net.sourceforge.jeval.EvaluationException;
 import net.sourceforge.jeval.Evaluator;
 import upsimulator.interfaces.Obj;
 
+/**
+ * PObject represents the object in P systems.<br>
+ * 
+ * @author quan
+ *
+ */
 public class PObject implements Obj {
 	private static final long serialVersionUID = 918301397917102425L;
 

@@ -11,9 +11,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import net.sourceforge.jeval.Evaluator;
-import upsimulator.exceptions.UnknownMembraneException;
 import upsimulator.exceptions.UnpredictableDimensionException;
-import upsimulator.gui.MainWindow;
 import upsimulator.interfaces.Condition;
 import upsimulator.interfaces.Dimension;
 import upsimulator.interfaces.Membrane;
@@ -23,17 +21,20 @@ import upsimulator.interfaces.Rule;
 import upsimulator.interfaces.UPSLogger;
 import upsimulator.rules.conditions.InhibitorCondition;
 import upsimulator.rules.conditions.MembranePropertyCondition;
-import upsimulator.rules.conditions.MembraneStatusCondition;
 import upsimulator.rules.conditions.ObjectCondition;
 import upsimulator.rules.conditions.PriorityCondition;
-import upsimulator.rules.results.MembraneCreateResult;
-import upsimulator.rules.results.MembraneDissolveResult;
 import upsimulator.rules.results.MembranePropertyResult;
 import upsimulator.rules.results.MembraneStatusResult;
-import upsimulator.rules.results.ObjectResult;
 import upsimulator.speedup.PossibleValueCombiner;
 import upsimulator.speedup.RuleChecker;
 
+/**
+ * PRule represents the rule in P systems.<br>
+ * PRule is the basic implementation of Rule.
+ * 
+ * @author quan
+ *
+ */
 public class PRule implements Rule {
 	private static final long serialVersionUID = -3360118464623511714L;
 
@@ -295,8 +296,7 @@ public class PRule implements Rule {
 
 		for (int i = 0; i < graph.size(); i++) {
 			if (graph.get(i).size() == 0) {
-				throw new UnpredictableDimensionException("Dimension " + dimensions.get(i) + " in " + this
-						+ " is not predictable. Possible wrong form: Rule r1[i][j] = e[i] -> e[j]; Rule r1[i][j] = e[i] -> ; Rule r1[i][j] = e[i] -> | !e[j]; ");
+				throw new UnpredictableDimensionException(this,dimensions.get(i));// Possible wrong form: Rule r1[i][j] = e[i] -> e[j]; Rule r1[i][j] = e[i] -> ; Rule r1[i][j] = e[i] -> | !e[j]; ");
 			}
 		}
 	}
