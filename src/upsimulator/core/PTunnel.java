@@ -9,6 +9,7 @@ import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Result;
 import upsimulator.interfaces.Tunnel;
 import upsimulator.interfaces.UPSLogger;
+import upsimulator.rules.results.PositionResult.Target;
 
 /*
  * Tunnel is a connection between membranes, used to transfer results.
@@ -38,14 +39,17 @@ public class PTunnel implements Tunnel {
 		open();
 	}
 
+	@Override
 	public void setType(TunnelType type) {
 		this.type = type;
 	}
 
+	@Override
 	public TunnelType getType() {
 		return type;
 	}
 
+	@Override
 	public String getName() {
 		if (name == null && source != null && targets.size() > 0) {
 			name = source.getNameDim() + "->" + getTargetsName();
@@ -53,18 +57,22 @@ public class PTunnel implements Tunnel {
 		return name;
 	}
 
+	@Override
 	public Membrane getSource() {
 		return source;
 	}
 
+	@Override
 	public void setSource(Membrane source) {
 		this.source = source;
 	}
 
+	@Override
 	public List<Membrane> getTargets() {
 		return targets;
 	}
 
+	@Override
 	public void addTarget(Membrane target) {
 		targets.add(target);
 		targets.sort(new Comparator<Membrane>() {
@@ -75,10 +83,12 @@ public class PTunnel implements Tunnel {
 		});
 	}
 
+	@Override
 	public void holdResult(Result result) {
 		heldResults.add(result);
 	}
 
+	@Override
 	public List<Result> getHeldResults() {
 		return heldResults;
 	}
@@ -103,6 +113,7 @@ public class PTunnel implements Tunnel {
 		pushResultsTo(target);
 	}
 
+	@Override
 	public void pushResult() {
 		switch (type) {
 		case Out:
@@ -154,15 +165,28 @@ public class PTunnel implements Tunnel {
 		}
 	}
 
+	@Override
 	public void open() {
 		isOpen = true;
 	}
 
+	@Override
 	public void close() {
 		isOpen = false;
 	}
 
+	@Override
 	public boolean isOpen() {
+		if (isOpen == false)
+			return false;
+		else {
+			for (Membrane target : targets) {
+				if (target.isDeleted()) {
+					isOpen = false;
+					return false;
+				}
+			}
+		}
 		return isOpen;
 	}
 

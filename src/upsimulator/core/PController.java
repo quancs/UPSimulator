@@ -7,7 +7,6 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -25,9 +24,8 @@ import upsimulator.recognizer.UPLanguageParser;
 import upsimulator.recognizer.UPLanguageRecognizer;
 
 /**
- * 控制极大并行和极小并行在此处控制 . <br>
- * Not completely finished yet. <br>
- * 优先级规则，还未确认满足
+ * PController is a controller of simulation.<br>
+ * Maximum and minimum parallelism can be controlled in the class.
  * 
  * @author quan
  *
@@ -51,14 +49,27 @@ public class PController extends Thread {
 	private ArrayList<Membrane> fmList = new ArrayList<>();// run fetch step.
 	private ArrayList<Membrane> rmList = new ArrayList<>();// run setResult step.
 
-	public PController(String string, PMethod method) {
-		this.method = method;
+	/**
+	 * Create a controller using the string description of environment
+	 * 
+	 * @param string
+	 *            the string description of environment in UPL
+	 */
+	public PController(String string) {
+		this.method = PMethod.maximum;
 		environment = getEnvironment(string);
 		records.add((Membrane) environment.deepClone());
 		step = 1;
 	}
 
-	public static Membrane getEnvironment(String modelInstanceStr) {
+	/**
+	 * Recognize simulation environment
+	 * 
+	 * @param modelInstanceStr
+	 *            the string description of environment
+	 * @return environment
+	 */
+	public Membrane getEnvironment(String modelInstanceStr) {
 		// redirect the errors from stdio to file
 		File errFile = new File("errors.log");
 		if (errFile.exists())
@@ -97,17 +108,17 @@ public class PController extends Thread {
 		try {
 			Scanner scanner = new Scanner(errFile);
 			if (scanner.hasNextLine())
-				UPSLogger.error(PController.class, scanner.nextLine());
+				UPSLogger.error(this, scanner.nextLine());
 			scanner.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		if (membrane != null) {
-			UPSLogger.debug(PController.class, "Recogize environment done.\n");
-			UPSLogger.debug(PController.class, membrane);
-			UPSLogger.result(PController.class, membrane);
+			UPSLogger.debug(this, "Recogize environment done.\n");
+			UPSLogger.debug(this, membrane);
+			UPSLogger.result(this, membrane);
 		} else {
-			UPSLogger.debug(PController.class, "Recogize environment failed.\n");
+			UPSLogger.debug(this, "Recogize environment failed.\n");
 		}
 
 		return membrane;
@@ -135,14 +146,28 @@ public class PController extends Thread {
 		}
 	}
 
+	/**
+	 * Simulate till no rules can be used.
+	 */
 	public void runToStop() {
 		leftStep = -1;
 	}
 
+	/**
+	 * Simulate the environment with steps specified
+	 * 
+	 * @param steps
+	 *            Steps need to simulate
+	 */
 	public void runSteps(int steps) {
 		leftStep = steps;
 	}
 
+	/**
+	 * Simulate one step
+	 * 
+	 * @return rules used
+	 */
 	private int runOneStep() {
 		Calendar startTime, endTime;
 		startTime = Calendar.getInstance();
@@ -208,11 +233,12 @@ public class PController extends Thread {
 		return totalUsed;
 	}
 
+	/**
+	 * Get all the records of simulation result
+	 * 
+	 * @return
+	 */
 	public ArrayList<Membrane> getRecords() {
 		return records;
-	}
-
-	public void setRecords(ArrayList<Membrane> records) {
-		this.records = records;
 	}
 }

@@ -213,7 +213,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 		}
 
 		String fileName = instances.getFileDescriber(singleInstance.getSelectedIndex()).getFile().getName();
-		PController controller = new PController(Util.filesToString(files), PMethod.maximum);
+		PController controller = new PController(Util.filesToString(files));
 		controller.start();
 		controllerMap.put(fileName, controller);
 	}
@@ -440,11 +440,10 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 		gbc_splitPane.gridx = 0;
 		gbc_splitPane.gridy = 2;
 		projectPanel.add(splitPane, gbc_splitPane);
-		splitPane.setResizeWeight(0.5);
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 
 		JPanel panel = new JPanel();
-		panel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Membranes", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		panel.setBorder(null);
 		panel.setBackground(UIManager.getColor("Button.background"));
 		splitPane.setLeftComponent(panel);
 		panel.setLayout(new BorderLayout(0, 0));
@@ -636,7 +635,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 		gbc_btnPause.gridy = 2;
 		stepByStepPanel.add(btnPause, gbc_btnPause);
 
-		JButton btnOneStep = new JButton("One Step");
+		JButton btnOneStep = new JButton("Run One Step");
 		btnOneStep.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -654,7 +653,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 
 		JPanel consolePanel = new JPanel();
 		consolePanel.setBackground(Color.WHITE);
-		consolePanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Simulate Messages", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		consolePanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Simulation Messages", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		GridBagConstraints gbc_consolePanel = new GridBagConstraints();
 		gbc_consolePanel.fill = GridBagConstraints.BOTH;
 		gbc_consolePanel.gridx = 0;
@@ -667,8 +666,13 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 		consoleSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		consolePanel.add(consoleSplitPane);
 
+		JPanel panel_3 = new JPanel();
+		panel_3.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Result", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		consoleSplitPane.setLeftComponent(panel_3);
+		panel_3.setLayout(new BorderLayout(0, 0));
+
 		JScrollPane scrollPane_1 = new JScrollPane();
-		consoleSplitPane.setLeftComponent(scrollPane_1);
+		panel_3.add(scrollPane_1);
 
 		resultConsole = new JTextPane();
 		scrollPane_1.setViewportView(resultConsole);
@@ -693,8 +697,13 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 		});
 		popupMenu_2.add(mntmClear_1);
 
+		JPanel panel_5 = new JPanel();
+		panel_5.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Process", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		consoleSplitPane.setRightComponent(panel_5);
+		panel_5.setLayout(new BorderLayout(0, 0));
+
 		JScrollPane scrollPane_3 = new JScrollPane();
-		consoleSplitPane.setRightComponent(scrollPane_3);
+		panel_5.add(scrollPane_3);
 
 		debugConsole = new JTextPane();
 		scrollPane_3.setViewportView(debugConsole);

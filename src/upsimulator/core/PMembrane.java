@@ -6,23 +6,29 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.Map.Entry;
+import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.sourceforge.jeval.Evaluator;
 import upsimulator.exceptions.TunnelNotExistException;
 import upsimulator.exceptions.UnpredictableDimensionException;
-import upsimulator.gui.MainWindow;
 import upsimulator.interfaces.Condition;
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Obj;
 import upsimulator.interfaces.Result;
 import upsimulator.interfaces.Rule;
 import upsimulator.interfaces.Tunnel;
-import upsimulator.interfaces.UPSLogger;
 import upsimulator.interfaces.Tunnel.TunnelType;
+import upsimulator.interfaces.UPSLogger;
 
+/**
+ * The default membrane implementation, a container of objects & rules & tunnels
+ * & properties.
+ * 
+ * @author quanc
+ *
+ */
 public class PMembrane implements Membrane {
 	private static final long serialVersionUID = -1932793470654198760L;
 
@@ -30,6 +36,12 @@ public class PMembrane implements Membrane {
 	private ConcurrentHashMap<Obj, Integer> objects = new ConcurrentHashMap<Obj, Integer>();
 	private ArrayList<Rule> rules = new ArrayList<>();
 
+	/**
+	 * Create an empty membrane with a name
+	 * 
+	 * @param name
+	 *            membrane name
+	 */
 	public PMembrane(String name) {
 		super();
 		this.name = name;
@@ -41,6 +53,9 @@ public class PMembrane implements Membrane {
 		fetchedRules = new ArrayList<Rule>(1000);
 	}
 
+	/**
+	 * Create an empty membrane with no name
+	 */
 	public PMembrane() {
 		super();
 		this.name = "NoType";
@@ -423,7 +438,7 @@ public class PMembrane implements Membrane {
 		Map<Obj, Integer> objmap = template.getObjects();
 		Iterator<?> iter = objmap.entrySet().iterator();
 		while (iter.hasNext()) {
-			Map.Entry entry = (Map.Entry) iter.next();
+			Map.Entry<?, ?> entry = (Map.Entry<?, ?>) iter.next();
 			addObject((Obj) entry.getKey(), (Integer) entry.getValue());
 		}
 
@@ -455,31 +470,19 @@ public class PMembrane implements Membrane {
 
 	@Override
 	public void delete() {
+		deleted = true;
 		for (Tunnel tunnel : tunnels) {
-			if (tunnel.getSource() == this && tunnel.getType() != TunnelType.Here) {
+			tunnel.close();
+			if (tunnel.getSource() == this && (tunnel.getType() == TunnelType.Go || tunnel.getType() == TunnelType.Out)) {
 				for (Membrane target : tunnel.getTargets()) {
 					List<Tunnel> ts = target.getTunnels();
-					for (int i = 0; i < ts.size();) {
+					for (int i = 0; i < ts.size(); i++) {
 						Tunnel t = ts.get(i);
-						if (t.getSource() == this || t.getTargets().contains(this)) {
-							ts.remove(i);
-						} else
-							i++;
+						if (t.getSource() == this || t.getTargets().contains(this))
+							t.close();
 					}
 				}
 			}
-		}
-		deleted = true;
-	}
-
-	private void removeTunnelInvolved(Membrane target) {
-		List<Tunnel> tunnels = getTunnels();
-		for (int i = 0; i < tunnels.size();) {
-			Tunnel tunnel = tunnels.get(i);
-			if (tunnel.getSource() == target || tunnel.getTargets().contains(target)) {
-				tunnels.remove(i);
-			} else
-				i++;
 		}
 	}
 
