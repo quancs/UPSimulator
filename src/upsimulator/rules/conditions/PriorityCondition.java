@@ -14,12 +14,20 @@ import upsimulator.interfaces.Membrane;
  *
  */
 public class PriorityCondition implements Condition {
+
+	private static boolean exist = false;// if exist PriorityCondition
+
+	public static boolean exist() {
+		return exist;
+	}
+
 	private static String priProp = "$pri";
 
 	private int priority = 1;
 
 	public PriorityCondition(int priority) {
 		this.priority = priority;
+		exist = true;
 	}
 
 	@Override
@@ -32,24 +40,7 @@ public class PriorityCondition implements Condition {
 	 */
 	@Override
 	public boolean satisfy(Membrane membrane) {
-		Integer priHighest = (Integer) membrane.getProperty(priProp);
-		if (priHighest == null || priHighest > priority) {
-			synchronized (membrane.getProperties()) {
-				priHighest = (Integer) membrane.getProperty(priProp);
-				if (priHighest == null || priHighest > priority) {
-					membrane.setProperty(priProp, priority);
-					return true;
-				} else if (priHighest < priority) {
-					return false;
-				} else {
-					return true;
-				}
-			}
-		} else if (priHighest < priority) {
-			return false;
-		} else {// priHighest == priority
-			return true;
-		}
+		return true;
 	}
 
 	/**
@@ -57,14 +48,7 @@ public class PriorityCondition implements Condition {
 	 */
 	@Override
 	public boolean fetch(Membrane membrane) {
-		Integer priHighest = (Integer) membrane.getProperty(priProp);
-		if (priHighest == priority) {
-			return true;
-		} else if (priHighest < priority) {
-			return false;
-		} else {
-			throw new RuntimeException("Highest priority is less than the priority of this rule");
-		}
+		return true;
 	}
 
 	@Override

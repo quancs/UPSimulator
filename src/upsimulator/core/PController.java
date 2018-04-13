@@ -222,7 +222,7 @@ public class PController extends Thread {
 		endTime = Calendar.getInstance();
 		long timeUsed = endTime.getTimeInMillis() - startTime.getTimeInMillis();
 		UPSLogger.result(this, "step:" + step + "\t\trules used : " + totalUsed + "\t\ttime used:" + timeUsed + "ms");
-		UPSLogger.debug(this, "\n\n" + "step:" + step);
+		UPSLogger.debug(this, "\n" + "step:" + step);
 		UPSLogger.debug(this, uMap);
 		UPSLogger.result(this, environment.toString() + "\n");
 

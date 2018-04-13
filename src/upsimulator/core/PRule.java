@@ -296,7 +296,8 @@ public class PRule implements Rule {
 
 		for (int i = 0; i < graph.size(); i++) {
 			if (graph.get(i).size() == 0) {
-				throw new UnpredictableDimensionException(this,dimensions.get(i));// Possible wrong form: Rule r1[i][j] = e[i] -> e[j]; Rule r1[i][j] = e[i] -> ; Rule r1[i][j] = e[i] -> | !e[j]; ");
+				throw new UnpredictableDimensionException(this, dimensions.get(i));// Possible wrong form: Rule r1[i][j] = e[i] -> e[j]; Rule r1[i][j] = e[i] -> ;
+																					// Rule r1[i][j] = e[i] -> | !e[j]; ");
 			}
 		}
 	}
@@ -342,15 +343,14 @@ public class PRule implements Rule {
 			return;
 
 		if (condition instanceof PriorityCondition) {
-			if (conditions.size() >= 1 && conditions.get(conditions.size() - 1) instanceof MembraneStatusResult) {
-				conditions.add(conditions.size() - 1, condition);
-			} else {
-				conditions.add(condition);
-			}
+			conditions.add(0, condition);
 		} else if (condition instanceof MembraneStatusResult) {
 			conditions.add(condition);
 		} else {
-			conditions.add(0, condition);
+			if (conditions.size() > 0 && conditions.get(0) instanceof PriorityCondition)
+				conditions.add(1, condition);
+			else
+				conditions.add(0, condition);
 		}
 		if (condition instanceof Dimension)
 			((Dimension) condition).setEval(evaluator);

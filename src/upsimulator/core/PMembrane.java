@@ -1,6 +1,7 @@
 package upsimulator.core;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -21,6 +22,7 @@ import upsimulator.interfaces.Rule;
 import upsimulator.interfaces.Tunnel;
 import upsimulator.interfaces.Tunnel.TunnelType;
 import upsimulator.interfaces.UPSLogger;
+import upsimulator.rules.conditions.PriorityCondition;
 
 /**
  * The default membrane implementation, a container of objects & rules & tunnels
@@ -179,6 +181,20 @@ public class PMembrane implements Membrane {
 	@Override
 	public void addRule(Rule rule) {
 		rules.add(rule);
+		if (rule.getConditions().get(0) instanceof PriorityCondition) {
+			rules.sort(new Comparator<Rule>() {
+				@Override
+				public int compare(Rule o1, Rule o2) {
+					if (o1.getConditions().get(0) instanceof PriorityCondition && o2.getConditions().get(0) instanceof PriorityCondition) {
+						PriorityCondition p1 = (PriorityCondition) o1.getConditions().get(0);
+						PriorityCondition p2 = (PriorityCondition) o2.getConditions().get(0);
+						return p1.getPriority() - p2.getPriority();
+					} else {
+						return 0;
+					}
+				}
+			});
+		}
 	}
 
 	@Override
@@ -208,24 +224,39 @@ public class PMembrane implements Membrane {
 	public List<Rule> fetch() throws TunnelNotExistException {
 		fetchedRules.clear();
 
-		for (int i = 0; i < urules.size(); i++) {
-			if (urules.size() > 100 && ((urules.size() - i) % 1000 == 0)) {
-				UPSLogger.info(this, "Membrane " + getNameDim() + " fetched " + i + "/" + urules.size() + " rules");
-			}
+		if (PriorityCondition.exist()) {
+			for (int i = 0; i < urules.size(); i++) {
+				if (urules.size() > 100 && ((urules.size() - i) % 1000 == 0)) {
+					UPSLogger.info(this, "Membrane " + getNameDim() + " fetched " + i + "/" + urules.size() + " rules");
+				}
 
-			Rule rule = urules.get(i);
-			while (rule.fetch(this)) {// 一条规则发生多次的时候
-				fetchedRules.add(rule);
-				for (Result result : rule.getResults()) {
-					try {
-						result.selectTunnel(this).holdResult(result);
-					} catch (TunnelNotExistException e) {
-						e.printStackTrace();
-						throw e;
+				Rule rule = urules.get(i);
+				while (rule.fetch(this)) {// 一条规则发生多次的时候
+					fetchedRules.add(rule);
+					for (Result result : rule.getResults()) {
+						try {
+							result.selectTunnel(this).holdResult(result);
+						} catch (TunnelNotExistException e) {
+							e.printStackTrace();
+							throw e;
+						}
 					}
 				}
 			}
+		} else {
+			LinkedList<Rule> rules = new LinkedList<>(urules);
+			for (int i = 0; rules.size() > 0; i++) {
+				if (urules.size() > 100 && i % 1000 == 0)
+					UPSLogger.info(this, "Membrane " + getNameDim() + " has fetched " + rules.size() + "/" + urules.size() + " rules");
+
+				Rule first = rules.removeFirst();
+				if (first.fetch(this)) {
+					fetchedRules.add(first);
+					rules.add(first);
+				}
+			}
 		}
+
 		return fetchedRules;
 	}
 
