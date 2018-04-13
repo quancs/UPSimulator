@@ -253,6 +253,14 @@ public class PMembrane implements Membrane {
 				if (first.fetch(this)) {
 					fetchedRules.add(first);
 					rules.add(first);
+					for (Result result : first.getResults()) {
+						try {
+							result.selectTunnel(this).holdResult(result);
+						} catch (TunnelNotExistException e) {
+							e.printStackTrace();
+							throw e;
+						}
+					}
 				}
 			}
 		}
