@@ -237,7 +237,7 @@ public class PTunnel implements Tunnel {
 	@Override
 	public String toString() {
 		StringBuilder sBuilder = new StringBuilder();
-		sBuilder.append(getType().toString() + " " + getTargetsName());
+		sBuilder.append(getTargetsName());
 		return sBuilder.toString();
 	}
 }

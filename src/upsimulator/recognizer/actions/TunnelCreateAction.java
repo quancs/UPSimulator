@@ -6,6 +6,12 @@ import upsimulator.core.PTunnel;
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Tunnel.TunnelType;
 
+/**
+ * Create a tunnel between two neighbors
+ * 
+ * @author quan
+ *
+ */
 public class TunnelCreateAction extends RecognizerAction {
 
 	private Membrane source;

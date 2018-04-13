@@ -22,4 +22,20 @@ public class UnpredictableDimensionException extends Exception {
 		this.dim = dim;
 	}
 
+	public Rule getRule() {
+		return rule;
+	}
+
+	public void setRule(Rule rule) {
+		this.rule = rule;
+	}
+
+	public String getDim() {
+		return dim;
+	}
+
+	public void setDim(String dim) {
+		this.dim = dim;
+	}
+
 }

@@ -5,6 +5,12 @@ import java.util.List;
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Rule;
 
+/**
+ * Add a set of rule to one membrane
+ * 
+ * @author quan
+ *
+ */
 public class RuleSetDeclareAction extends RecognizerAction {
 
 	private String ruleSetName, prefix;
@@ -25,7 +31,7 @@ public class RuleSetDeclareAction extends RecognizerAction {
 	@Override
 	public boolean ready() {
 		if (Rule.getRuleSet(ruleSetName) == null)
-			throw new RuntimeException("需要的规则集不存在：" + ruleSetName);
+			throw new RuntimeException("No such rule set：" + ruleSetName);
 		return true;
 	}
 

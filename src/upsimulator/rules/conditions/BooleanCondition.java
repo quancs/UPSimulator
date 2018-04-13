@@ -5,12 +5,13 @@ import java.util.List;
 
 import net.sourceforge.jeval.EvaluationException;
 import net.sourceforge.jeval.Evaluator;
+import upsimulator.exceptions.UnsupportedDimensionException;
 import upsimulator.interfaces.Condition;
 import upsimulator.interfaces.Dimension;
 import upsimulator.interfaces.Membrane;
 
 /**
- * 布尔约束关系 如Rule rule[i][j]=a[i]->b[i] | i==j;中i==j部分应该放到BooleanCondition进行判断
+ * The boolean relationship of dimensions of rule
  * 
  * @author quan
  *
@@ -19,9 +20,10 @@ public class BooleanCondition implements Dimension, Condition {
 
 	@Override
 	public void addDimension(Integer... dimensions) {
-		throw new RuntimeException("DimRelationshipCondition can not add Integer dimensions.");
+		throw new UnsupportedDimensionException(this, dimensions);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Condition deepClone() {
 		// no need to deep clone dimensions
 		try {

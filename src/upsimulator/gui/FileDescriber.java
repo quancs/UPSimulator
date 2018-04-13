@@ -5,6 +5,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
 
+/**
+ * Describe model file or instance file
+ * 
+ * @author quanc
+ *
+ */
 public class FileDescriber implements Serializable {
 	private static final long serialVersionUID = 1L;
 

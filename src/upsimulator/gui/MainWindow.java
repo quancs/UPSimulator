@@ -64,7 +64,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
 import upsimulator.core.PController;
-import upsimulator.core.PController.PMethod;
 import upsimulator.core.PMembrane;
 import upsimulator.gui.FileDescriber.State;
 import upsimulator.gui.FileDescriber.Type;
@@ -73,6 +72,12 @@ import upsimulator.interfaces.Obj;
 import upsimulator.interfaces.Rule;
 import upsimulator.interfaces.UPSLogger;
 
+/**
+ * User interface
+ * 
+ * @author quan
+ *
+ */
 public class MainWindow extends UPSLogger implements TreeSelectionListener, ItemListener {
 
 	private JFrame frmUpsimulator;

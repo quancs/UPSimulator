@@ -4,6 +4,8 @@ import upsimulator.interfaces.Condition;
 import upsimulator.interfaces.Membrane;
 
 /**
+ * Represent minimum priority condition in P system.
+ * <p>
  * Priority condition must not be put at the front of any object conditions in
  * multi-thread context. PriorityCondition must be put at the tail of
  * condition's list, or there will be some mistake.

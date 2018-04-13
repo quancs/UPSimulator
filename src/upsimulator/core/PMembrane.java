@@ -257,6 +257,8 @@ public class PMembrane implements Membrane {
 
 	@Override
 	public String toString() {
+		if (isDeleted())
+			return "";
 		return toString(" ", true, true, false, true, false);
 	}
 
@@ -324,7 +326,11 @@ public class PMembrane implements Membrane {
 
 		if (withTunnel && tunnels.size() > 0) {
 			mBuilder.append(space + "Tunnel ");
+			boolean hasOpenedTunnel = false;
 			for (int i = 0; i < tunnels.size(); i++) {
+				if (!tunnels.get(i).isOpen() || tunnels.get(i).getType() != TunnelType.Go)
+					continue;
+				hasOpenedTunnel = true;
 				mBuilder.append(tunnels.get(i));
 				if (i == tunnels.size() - 1) {
 					mBuilder.append(";\n");
@@ -332,6 +338,8 @@ public class PMembrane implements Membrane {
 					mBuilder.append(", ");
 				}
 			}
+			if (!hasOpenedTunnel)
+				mBuilder.replace(0, mBuilder.length(), "");
 		}
 
 		if (withRule) {

@@ -18,7 +18,12 @@ import upsimulator.interfaces.Tunnel.TunnelType;
 import upsimulator.interfaces.UPSLogger;
 import upsimulator.rules.conditions.MembranePropertyCondition;
 
-//既是结果也是条件
+/**
+ * A object result to a target membrane
+ * 
+ * @author quan
+ *
+ */
 public class PositionResult implements Result, Dimension, Condition {
 
 	public class Target implements Cloneable {

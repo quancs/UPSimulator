@@ -5,6 +5,12 @@ import org.apache.log4j.Logger;
 import upsimulator.interfaces.Condition;
 import upsimulator.interfaces.Membrane;
 
+/**
+ * Membrane property represents the property condition of one rule
+ * 
+ * @author quan
+ *
+ */
 public class MembranePropertyCondition implements Condition {
 
 	private static Logger logger = Logger.getLogger(MembranePropertyCondition.class);
@@ -44,18 +50,40 @@ public class MembranePropertyCondition implements Condition {
 	public void withdrawFetch(Membrane membrane) {
 	}
 
+	/**
+	 * Return property name of this condition
+	 * 
+	 * @return property name
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Set the name of property
+	 * 
+	 * @param name
+	 *            property name
+	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
+	/**
+	 * Get the value of property
+	 * 
+	 * @return property value
+	 */
 	public String getValue() {
 		return value;
 	}
 
+	/**
+	 * Set the property value of this condition
+	 * 
+	 * @param value
+	 *            property value
+	 */
 	public void setValue(String value) {
 		this.value = value;
 	}

@@ -22,10 +22,10 @@ import upsimulator.interfaces.Tunnel;
 import upsimulator.interfaces.Tunnel.TunnelType;
 
 /**
+ * Create a sub-membrane in one membrane
+ * 
  * @author quan
- * @Date 2017年10月26日下午3:20:17
- * @Copyright (c) 2017, quancs@qq.com All Rights Reserved.
- * @Todo 创建膜的结果
+ *
  */
 public class MembraneCreateResult implements Result, Dimension {
 

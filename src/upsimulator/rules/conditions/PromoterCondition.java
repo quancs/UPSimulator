@@ -4,6 +4,12 @@ import upsimulator.core.PObject;
 import upsimulator.interfaces.Condition;
 import upsimulator.interfaces.Membrane;
 
+/**
+ * Represents the promoter condition in one rule
+ * 
+ * @author quan
+ *
+ */
 public class PromoterCondition extends PObject implements Condition {
 
 	public PromoterCondition(PObject obj) {

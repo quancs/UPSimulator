@@ -9,13 +9,12 @@ import upsimulator.interfaces.Tunnel;
 import upsimulator.interfaces.Tunnel.TunnelType;
 
 /**
+ * Dissolve a membrane by calling {@code Membrane.delete()}. After calling all
+ * the tunnels inside will be closed, and tunnels to this membrane will be
+ * closed, too.
+ * 
  * @author quan
- * @Date 2017年10月23日下午4:30:40
- * @Copyright (c) 2017, quancs@qq.com All Rights Reserved.
- * @Todo dissolve a membrane, the objects and son membrane's father will be it's
- *       grandfather; and the result must be the last one in a rule, or the
- *       membrane target of setresult function of one rule will be the wrong one
- *       溶解膜：即是关闭所有的通道
+ *
  */
 public class MembraneDissolveResult implements Result {
 

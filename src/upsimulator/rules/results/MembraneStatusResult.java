@@ -4,8 +4,7 @@ import upsimulator.interfaces.Condition;
 import upsimulator.interfaces.Membrane;
 
 /**
- * Membrane status result must not be put at the front of object condition in
- * multi-thread context
+ * Represents the membrane status condition in tissue-like P system.
  * 
  * @author quan
  *

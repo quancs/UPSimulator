@@ -6,7 +6,8 @@ import upsimulator.core.PMembrane;
 import upsimulator.interfaces.Membrane;
 
 /**
- * 需要推迟的编译器动作：当当前需要做的事情需要推迟的时候，就将动作推迟到文档识别结束的时候
+ * Actions that need to be delayed, will be done after the document recognize
+ * has been finished.
  * 
  * @author quan
  *
@@ -14,27 +15,33 @@ import upsimulator.interfaces.Membrane;
 public abstract class RecognizerAction {
 
 	/**
-	 * 未准备好的膜
+	 * Membranes not ready
 	 */
 	protected static ConcurrentHashMap<String, Integer> unreadyMembranes = new ConcurrentHashMap<>();
 
 	/**
-	 * 初始化动作
+	 * Initial action
 	 */
 	public abstract void init();
 
 	/**
-	 * 动作需要的条件是否准备好，如果需要使用的膜存在其他未被完成的动作，则未准备好
+	 * Check if this action is ready to execute
 	 * 
-	 * @return 是否准备好的标志
+	 * @return {@code true} if ready, {@code false} if not
 	 */
 	public abstract boolean ready();
 
 	/**
-	 * 做出推迟的动作
+	 * Do action
 	 */
 	public abstract void doAction();
 
+	/**
+	 * Minus the unready count of one membrane
+	 * 
+	 * @param membrane
+	 *            membrane which is ready
+	 */
 	protected void minusUnreadyCount(Membrane membrane) {
 		for (; membrane != null;) {
 			String memName = membrane.getName();
@@ -53,10 +60,16 @@ public abstract class RecognizerAction {
 				count--;
 			}
 		} else {
-			throw new RuntimeException("发生计数错误 : " + memName);
+			throw new RuntimeException("Count error : " + memName);
 		}
 	}
 
+	/**
+	 * Add the unready count of one membrane
+	 * 
+	 * @param membrane
+	 *            membrane which is not ready
+	 */
 	protected void addUnreadyCount(Membrane membrane) {
 		for (; membrane != null;) {
 			String memName = membrane.getName();
@@ -73,10 +86,14 @@ public abstract class RecognizerAction {
 		unreadyMembranes.put(memName, count);
 	}
 
+	/**
+	 * Check if one membrane is ready
+	 * 
+	 * @param membrane
+	 *            membrane to check
+	 * @return {@code true} if membrane is ready, {@code false} in reverse
+	 */
 	protected boolean ready(String memName) {
-		// if (Membrane.getMemClass(memName) == null)
-		// throw new RuntimeException("发现未被定义的膜类：" + memName);
-
 		if (unreadyMembranes.containsKey(memName)) {
 			return false;
 		} else {

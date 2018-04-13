@@ -4,19 +4,22 @@ import java.awt.Color;
 import java.awt.Font;
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.UIManager;
-import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
+/**
+ * Some useful functions are collected in {@code Util}
+ * 
+ * @author quan
+ *
+ */
 public class Util {
 	public static void setDefaultSize(int size) {
 		Set<Object> keySet = UIManager.getLookAndFeelDefaults().keySet();
@@ -59,16 +62,16 @@ public class Util {
 
 	public static void addMsgToJTextPane(JTextPane pane, String str, Color col, boolean bold, int fontSize) {
 		SimpleAttributeSet attrSet = new SimpleAttributeSet();
-		StyleConstants.setForeground(attrSet, col);// 颜色
+		StyleConstants.setForeground(attrSet, col);// font color
 
-		if (bold == true) {// 字体类型
+		if (bold == true) {// font type
 			StyleConstants.setBold(attrSet, true);
 		}
 
 		StyleConstants.setFontSize(attrSet, fontSize);
-		// 字体大小
+		// Font size
 		// StyleConstants.setFontFamily(attrSet, "黑体");
-		// 设置字体
+		// Set font
 
 		Document doc = pane.getDocument();
 		try {

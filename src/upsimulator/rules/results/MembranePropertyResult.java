@@ -7,6 +7,12 @@ import upsimulator.interfaces.Result;
 import upsimulator.interfaces.Tunnel;
 import upsimulator.interfaces.Tunnel.TunnelType;
 
+/**
+ * Represents a membrane property result
+ * 
+ * @author quan
+ *
+ */
 public class MembranePropertyResult implements Result {
 
 	private String property;
@@ -50,7 +56,7 @@ public class MembranePropertyResult implements Result {
 	public Tunnel selectTunnel(Membrane current) throws TunnelNotExistException {
 		Tunnel tunnel = current.getTunnel(TunnelType.Here, null);
 		if (tunnel == null) {
-			throw new TunnelNotExistException(current,TunnelType.Here);
+			throw new TunnelNotExistException(current, TunnelType.Here);
 		} else {
 			return tunnel;
 		}

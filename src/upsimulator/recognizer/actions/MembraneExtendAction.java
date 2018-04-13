@@ -3,9 +3,9 @@ package upsimulator.recognizer.actions;
 import upsimulator.interfaces.Membrane;
 
 /**
- * This class is for membrane extending if the membrane extended has not
- * recognized before, then this class will help son to extend.
- * 在识别的时候，子类先于父类声明，则子类需要等待父类声明出现之后，补全父类内部的内容
+ * This class is used for membrane extending if the membrane extended has not
+ * been recognized before. Child will extends parent, until parent has been
+ * recognized.
  * 
  * @author quan
  *

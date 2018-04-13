@@ -2,6 +2,12 @@ package upsimulator.speedup;
 
 import java.util.Calendar;
 
+/**
+ * Worker is used to speed up simulation by using Multi-thread technology
+ * 
+ * @author quan
+ *
+ */
 public abstract class Worker extends Thread {
 
 	private static int idGen = 1;

@@ -5,9 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * This worker is used by rules to speed up rule actions
+ * This worker is used by rules to speed getting dimension possible values up
  * 
- * @author quanc
+ * @author quan
  *
  */
 public class PossibleValueCombiner extends Worker {

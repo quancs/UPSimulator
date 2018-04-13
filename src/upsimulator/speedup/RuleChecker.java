@@ -6,6 +6,12 @@ import java.util.List;
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Rule;
 
+/**
+ * Speed up checking rule's satisfaction
+ * 
+ * @author quan
+ *
+ */
 public class RuleChecker extends Worker {
 
 	private Rule source;

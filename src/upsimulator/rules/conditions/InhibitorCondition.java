@@ -4,6 +4,12 @@ import upsimulator.core.PObject;
 import upsimulator.interfaces.Condition;
 import upsimulator.interfaces.Membrane;
 
+/**
+ * Inhibitor condition represents inhibitor of one rule
+ * 
+ * @author quan
+ *
+ */
 public class InhibitorCondition extends PObject implements Condition {
 
 	@Override

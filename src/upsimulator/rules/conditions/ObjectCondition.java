@@ -4,6 +4,12 @@ import upsimulator.core.PObject;
 import upsimulator.interfaces.Condition;
 import upsimulator.interfaces.Membrane;
 
+/**
+ * Represents the object that will be consumed in reaction.
+ * 
+ * @author quan
+ *
+ */
 public class ObjectCondition extends PObject implements Condition {
 	int num = 1;
 

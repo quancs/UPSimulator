@@ -1,5 +1,11 @@
 package upsimulator.rules.conditions;
 
+/**
+ * Represents the membrane status condition in tissue-like P system
+ * 
+ * @author quan
+ *
+ */
 public class MembraneStatusCondition extends MembranePropertyCondition {
 
 	public MembraneStatusCondition(String value) {

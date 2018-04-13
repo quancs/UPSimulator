@@ -8,7 +8,7 @@ import upsimulator.interfaces.Tunnel;
 import upsimulator.interfaces.Tunnel.TunnelType;
 
 /**
- * 以对象作为结果
+ * Represents the object product in rules
  * 
  * @author quan
  *
