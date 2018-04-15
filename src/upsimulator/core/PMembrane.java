@@ -303,7 +303,12 @@ public class PMembrane implements Membrane {
 
 	@Override
 	public String toString(String space, boolean withObject, boolean withProp, boolean withRule, boolean withSubmembrane, boolean withTunnel) {
-		StringBuilder mBuilder = new StringBuilder("Membrane " + getNameDim() + " {\n");
+		StringBuilder mBuilder = new StringBuilder();
+		if (getNameDim().equals("Environment")) {
+			mBuilder.append(getNameDim() + " {\n");
+		} else {
+			mBuilder.append("Membrane " + getNameDim() + " {\n");
+		}
 
 		if (withObject && objects.size() > 0) {
 			StringBuilder oBuilder = new StringBuilder(space + "Object ");
@@ -363,22 +368,22 @@ public class PMembrane implements Membrane {
 			mBuilder.append(smBuilder);
 		}
 
-		if (withTunnel && tunnels.size() > 0) {
-			mBuilder.append(space + "Tunnel ");
+		if (withTunnel && tunnels.size() > 0) {// Here tunnel
+			StringBuilder tBuilder = new StringBuilder(space + "Tunnel ");
 			boolean hasOpenedTunnel = false;
 			for (int i = 0; i < tunnels.size(); i++) {
 				if (!tunnels.get(i).isOpen() || tunnels.get(i).getType() != TunnelType.Go)
 					continue;
 				hasOpenedTunnel = true;
-				mBuilder.append(tunnels.get(i));
+				tBuilder.append(tunnels.get(i));
 				if (i == tunnels.size() - 1) {
-					mBuilder.append(";\n");
+					tBuilder.append(";\n");
 				} else {
-					mBuilder.append(", ");
+					tBuilder.append(", ");
 				}
 			}
-			if (!hasOpenedTunnel)
-				mBuilder.replace(0, mBuilder.length(), "");
+			if (hasOpenedTunnel)
+				mBuilder.append(tBuilder);
 		}
 
 		if (withRule) {
