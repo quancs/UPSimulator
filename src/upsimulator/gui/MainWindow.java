@@ -726,8 +726,8 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 		debugConsoleEnable = new JCheckBoxMenuItem("Enable Debug Log");
 		debugConsoleEnable.setSelected(true);
 		popupMenu_1.add(debugConsoleEnable);
-
-		enableInfoLog = new JMenuItem("Enable Info Log");
+		
+		enableInfoLog = new JCheckBoxMenuItem("Enable Info Log");
 		popupMenu_1.add(enableInfoLog);
 		popupMenu_1.add(mntmClear);
 
@@ -897,7 +897,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 	private JCheckBoxMenuItem resultConsoleEnable;
 	private JCheckBoxMenuItem debugConsoleEnable;
 	private JTextPane debugConsole;
-	private JMenuItem enableInfoLog;
+	private JCheckBoxMenuItem enableInfoLog;
 
 	private DefaultMutableTreeNode genTreeNode(Membrane membrane, DefaultMutableTreeNode node) {
 		if (node == null)
@@ -1041,8 +1041,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 		if (getEnableInfoLog().isSelected())
 			Util.addMsgToJTextPane(debugConsole, msg.toString() + "\n", Color.black, false, resultConsole.getFont().getSize());
 	}
-
-	public JMenuItem getEnableInfoLog() {
+	public JCheckBoxMenuItem getEnableInfoLog() {
 		return enableInfoLog;
 	}
 }

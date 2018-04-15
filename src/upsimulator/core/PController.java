@@ -180,7 +180,7 @@ public class PController extends Thread {
 		for (int i = 0; i < smList.size(); i++) {
 			Membrane membrane = smList.get(i);
 			try {
-				UPSLogger.info(this, "Membrane " + membrane.getNameDim() + " are checking usable rules");
+				UPSLogger.info(this, "Membrane " + membrane.getNameDim() + " is checking usable rules");
 				List<Rule> uRules = membrane.getUsableRules();
 				// 此处控制极大和极小并行，以及随机执行也是在此控制
 				smList.addAll(((PMembrane) membrane).getChildren());
@@ -197,7 +197,7 @@ public class PController extends Thread {
 		for (int i = 0; i < fmList.size(); i++) {
 			Membrane membrane = fmList.get(i);
 			try {
-				UPSLogger.info(this, "Membrane " + membrane.getNameDim() + " are fetching objects");
+				UPSLogger.info(this, "Membrane " + membrane.getNameDim() + " is fetching objects");
 				List<Rule> fetchedRules = membrane.fetch();
 				rmList.add(membrane);
 			} catch (TunnelNotExistException e) {
@@ -209,7 +209,7 @@ public class PController extends Thread {
 		int totalUsed = 0;
 		for (int i = 0; i < rmList.size(); i++) {
 			Membrane membrane = rmList.get(i);
-			UPSLogger.info(this, "Membrane " + membrane.getNameDim() + " are setting products");
+			UPSLogger.info(this, "Membrane " + membrane.getNameDim() + " is setting products");
 			List<Rule> rList = membrane.setProducts();
 			uMap.put(membrane, new ArrayList<>(rList));
 			totalUsed += rList.size();
