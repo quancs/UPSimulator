@@ -226,19 +226,31 @@ public class PController extends Thread {
 		UPSLogger.debug(this, uMap);
 		UPSLogger.result(this, environment.toString() + "\n");
 
-		Membrane eClone = environment.deepClone();
-		records.add(eClone);
+		if (enableRecords) {
+			Membrane eClone = environment.deepClone();
+			records.add(eClone);
+		}
 		step++;
 
 		return totalUsed;
 	}
 
+	private boolean enableRecords = true;
+
 	/**
 	 * Get all the records of simulation result
 	 * 
-	 * @return
+	 * @return Records
 	 */
 	public ArrayList<Membrane> getRecords() {
 		return records;
+	}
+
+	public boolean isEnableRecords() {
+		return enableRecords;
+	}
+
+	public void setEnableRecords(boolean enableRecords) {
+		this.enableRecords = enableRecords;
 	}
 }

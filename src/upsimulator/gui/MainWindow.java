@@ -89,7 +89,6 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 	private UPLFileListModel instances = new UPLFileListModel();
 	// the model files
 	private UPLFileListModel models = new UPLFileListModel();
-	private JCheckBoxMenuItem separateModelInstanceJCheck;
 	private Settings settings = new Settings();
 	private final JSplitPane lrSplitPane = new JSplitPane();
 	private JTextPane editor;
@@ -199,10 +198,6 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 	private void exit() {
 		writeSettings();
 		System.exit(0);
-	}
-
-	private void changeSeparateModelInstance() {
-		settings.setSeparateModelInstance(separateModelInstanceJCheck.isSelected());
 	}
 
 	private void initMembrane() {
@@ -323,7 +318,6 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 
 		readSettings();
 		initialize();
-		separateModelInstanceJCheck.setSelected(settings.getSeparateModelInstance());
 		modelFileJList.setModel(models);
 		instanceFileJList.setModel(instances);
 
@@ -541,13 +535,8 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 		JMenu mnSettings = new JMenu("Settings");
 		menuBar.add(mnSettings);
 
-		separateModelInstanceJCheck = new JCheckBoxMenuItem("Model&Instance Separate");
-		separateModelInstanceJCheck.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				changeSeparateModelInstance();
-			}
-		});
-		mnSettings.add(separateModelInstanceJCheck);
+		enableRecords = new JCheckBoxMenuItem("Record Results(Affect Efficiency)");
+		mnSettings.add(enableRecords);
 
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.addChangeListener(new ChangeListener() {
@@ -628,9 +617,10 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 			public void mouseClicked(MouseEvent e) {
 				String instance = singleInstance.getSelectedItem().toString();
 				PController controller = controllerMap.get(instance);
-				if (controller != null)
+				if (controller != null) {
+					controller.setEnableRecords(getEnableRecords().isSelected());
 					controller.runToStop();
-				else
+				} else
 					resultLog(this, "Instance is not selected.");
 			}
 		});
@@ -646,8 +636,10 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 			public void mouseClicked(MouseEvent e) {
 				String instance = singleInstance.getSelectedItem().toString();
 				PController controller = controllerMap.get(instance);
-				if (controller != null)
+				if (controller != null) {
+					controller.setEnableRecords(getEnableRecords().isSelected());
 					controller.runSteps(1);
+				}
 			}
 		});
 		GridBagConstraints gbc_btnOneStep = new GridBagConstraints();
@@ -726,7 +718,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 		debugConsoleEnable = new JCheckBoxMenuItem("Enable Debug Log");
 		debugConsoleEnable.setSelected(true);
 		popupMenu_1.add(debugConsoleEnable);
-		
+
 		enableInfoLog = new JCheckBoxMenuItem("Enable Info Log");
 		popupMenu_1.add(enableInfoLog);
 		popupMenu_1.add(mntmClear);
@@ -898,6 +890,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 	private JCheckBoxMenuItem debugConsoleEnable;
 	private JTextPane debugConsole;
 	private JCheckBoxMenuItem enableInfoLog;
+	private JCheckBoxMenuItem enableRecords;
 
 	private DefaultMutableTreeNode genTreeNode(Membrane membrane, DefaultMutableTreeNode node) {
 		if (node == null)
@@ -1041,7 +1034,12 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 		if (getEnableInfoLog().isSelected())
 			Util.addMsgToJTextPane(debugConsole, msg.toString() + "\n", Color.black, false, resultConsole.getFont().getSize());
 	}
+
 	public JCheckBoxMenuItem getEnableInfoLog() {
 		return enableInfoLog;
+	}
+
+	public JCheckBoxMenuItem getEnableRecords() {
+		return enableRecords;
 	}
 }
