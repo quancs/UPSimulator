@@ -32,7 +32,7 @@ public class MembranePropertyResult implements Result {
 	}
 
 	@Override
-	public void setResult(Membrane membrane) throws UnknownMembraneClassException {
+	public void setResult(Membrane membrane, int times) throws UnknownMembraneClassException {
 		membrane.setProperty(property, value);
 	}
 

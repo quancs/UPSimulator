@@ -58,7 +58,7 @@ public class BooleanCondition implements Dimension, Condition {
 	}
 
 	@Override
-	public boolean satisfy(Membrane membrane) {
+	public int satisfy(Membrane membrane) {
 		boolean satisfied = true;
 		String formula = dimensions.get(0);
 		try {
@@ -70,17 +70,19 @@ public class BooleanCondition implements Dimension, Condition {
 			System.err.println("bad expr=" + formula);
 			e.printStackTrace();
 		}
-
-		return satisfied;
+		if (satisfied)
+			return Integer.MAX_VALUE;
+		else
+			return 0;
 	}
 
 	@Override
-	public boolean fetch(Membrane membrane) {
-		return true;
+	public int fetch(Membrane membrane, int times) {
+		return times;
 	}
 
 	@Override
-	public void withdrawFetch(Membrane membrane) {
+	public void withdrawFetch(Membrane membrane, int times) {
 
 	}
 

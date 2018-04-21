@@ -192,14 +192,14 @@ public interface Membrane extends Name, Cloneable, Dimension {
 	 * checked first.</li>
 	 * </ul>
 	 * 
-	 * @return All the usable rules
+	 * @return All the usable rules and satisfied times
 	 * @throws CloneNotSupportedException
 	 *             if some rules, objects, cannot be cloned
 	 * @throws UnpredictableDimensionException
 	 *             if there exist unpredictable dimension, such as the dimension of
 	 *             one rule only appears at a inhibitor
 	 */
-	public List<Rule> getUsableRules() throws UnpredictableDimensionException, CloneNotSupportedException;
+	public Map<Rule, Integer> getUsableRules() throws UnpredictableDimensionException, CloneNotSupportedException;
 
 	/**
 	 * All the satisfied rules try to fetch the objects they need
@@ -209,14 +209,14 @@ public interface Membrane extends Name, Cloneable, Dimension {
 	 *             If one rule want to get a neighbor of this membrane and no tunnel
 	 *             was found
 	 */
-	public List<Rule> fetch() throws TunnelNotExistException;
+	public Map<Rule, Integer> fetch() throws TunnelNotExistException;
 
 	/**
 	 * Set products of rules
 	 * 
 	 * @return the rules have set their product successfully
 	 */
-	public List<Rule> setProducts();
+	public Map<Rule, Integer> setProducts();
 
 	/**
 	 * 

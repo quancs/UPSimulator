@@ -39,20 +39,20 @@ public class PriorityCondition implements Condition {
 	 * Save the highest priority.
 	 */
 	@Override
-	public boolean satisfy(Membrane membrane) {
-		return true;
+	public int satisfy(Membrane membrane) {
+		return Integer.MAX_VALUE;
 	}
 
 	/**
 	 * If the highest priority equals to {@code priority}, this rule will fetch.
 	 */
 	@Override
-	public boolean fetch(Membrane membrane) {
-		return true;
+	public int fetch(Membrane membrane, int times) {
+		return times;
 	}
 
 	@Override
-	public void withdrawFetch(Membrane membrane) {
+	public void withdrawFetch(Membrane membrane, int times) {
 
 	}
 

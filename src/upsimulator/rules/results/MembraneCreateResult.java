@@ -13,6 +13,7 @@ import java.util.List;
 
 import net.sourceforge.jeval.Evaluator;
 import upsimulator.core.PTunnel;
+import upsimulator.exceptions.TimesException;
 import upsimulator.exceptions.TunnelNotExistException;
 import upsimulator.exceptions.UnknownMembraneClassException;
 import upsimulator.interfaces.Dimension;
@@ -43,7 +44,10 @@ public class MembraneCreateResult implements Result, Dimension {
 	}
 
 	@Override
-	public void setResult(Membrane membrane) throws UnknownMembraneClassException {
+	public void setResult(Membrane membrane, int times) throws UnknownMembraneClassException, TimesException {
+		if (times > 1)
+			throw new TimesException(this, membrane, times, 1);
+
 		Membrane sonMembrane = Membrane.getMemInstanceOf(templateMemName);
 		if (sonMembrane == null)
 			throw new UnknownMembraneClassException(templateMemName);
@@ -51,7 +55,7 @@ public class MembraneCreateResult implements Result, Dimension {
 		sonMembrane.setName(getNameDim());
 		PTunnel.addChildParentTunnel(membrane, sonMembrane);
 		for (Result result : extraResults)
-			result.setResult(sonMembrane);
+			result.setResult(sonMembrane, 1);
 	}
 
 	@SuppressWarnings("unchecked")

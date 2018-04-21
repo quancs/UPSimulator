@@ -103,9 +103,9 @@ public class PositionResult implements Result, Dimension, Condition {
 	}
 
 	@Override
-	public void setResult(Membrane membrane) {
+	public void setResult(Membrane membrane, int times) {
 		for (ObjectResult or : ors)
-			or.setResult(membrane);
+			or.setResult(membrane, times);
 	}
 
 	private PositionResult cloned = null;
@@ -296,58 +296,65 @@ public class PositionResult implements Result, Dimension, Condition {
 		return evaluator;
 	}
 
-	private final boolean satisfy(Membrane membrane, List<MembranePropertyCondition> mpcs) {
+	private final int satisfy(Membrane membrane, List<MembranePropertyCondition> mpcs) {
+		int min = Integer.MAX_VALUE;
+
 		for (MembranePropertyCondition mpc : mpcs) {
-			if (!mpc.satisfy(membrane))
-				return false;
+			int mpcc = mpc.satisfy(membrane);
+			if (mpcc < min)
+				min = mpcc;
+			if (mpcc == 0)
+				return 0;
 		}
-		return true;
+		return min;
 	}
 
-	private final boolean satisfyAll(List<Target> targets, List<Membrane> membranes) {
+	private final int satisfyAll(List<Target> targets, List<Membrane> membranes) {
+		int min = Integer.MAX_VALUE;
 		for (Membrane membrane : membranes) {
-			boolean satisfy = false;
+			int satisfy = 0;
 			for (Target target : targets) {
 				if (target.nameDim.equals(membrane.getNameDim())) {
 					satisfy = satisfy(membrane, target.conditions);
 					break;
 				}
 			}
-			if (satisfy == false)
-				return false;
+			if (satisfy == 0)
+				return 0;
+			if (satisfy < min)
+				min = satisfy;
 		}
-		return true;
+		return min;
 	}
 
-	private final boolean satisfyOne(List<Target> targets, List<Membrane> membranes) {
+	private final int satisfyOne(List<Target> targets, List<Membrane> membranes) {
 		for (Membrane membrane : membranes) {
-			boolean satisfy = false;
 			for (Target target : targets) {
 				if (target.nameDim.equals(membrane.getNameDim())) {
-					satisfy = satisfy(membrane, target.conditions);
+					int satisfy = satisfy(membrane, target.conditions);
+					if (satisfy > 0)
+						return satisfy;
 					break;
 				}
 			}
-			if (satisfy)
-				return true;
 		}
-		return false;
+		return 0;
 	}
 
 	// private Membrane satisfiedMem;
 
 	// Check MembranePropertyCondition
 	@Override
-	public boolean satisfy(Membrane membrane) {
+	public int satisfy(Membrane membrane) {
 		if (checkSubmembraneProp == false || move == TunnelType.Here || move == TunnelType.Out)
-			return true;
+			return Integer.MAX_VALUE;
 
 		switch (move) {
 		case Go_one_of_all:
 		case Go_all:
 		case In_one_of_all:
 		case In_all:
-			return true;
+			return Integer.MAX_VALUE;
 		case In:
 			return satisfyAll(targets, membrane.getChildren());
 		case Go:
@@ -364,7 +371,7 @@ public class PositionResult implements Result, Dimension, Condition {
 		default:
 			break;
 		}
-		return false;
+		return 0;
 	}
 
 	private final String getTargetsName() throws EvaluationException {
@@ -406,12 +413,12 @@ public class PositionResult implements Result, Dimension, Condition {
 	}
 
 	@Override
-	public boolean fetch(Membrane membrane) {
-		return true;
+	public int fetch(Membrane membrane, int times) {
+		return times;
 	}
 
 	@Override
-	public void withdrawFetch(Membrane membrane) {
+	public void withdrawFetch(Membrane membrane, int times) {
 	}
 
 	@Override

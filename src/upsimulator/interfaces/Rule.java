@@ -2,6 +2,7 @@ package upsimulator.interfaces;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import upsimulator.exceptions.UnpredictableDimensionException;
 
@@ -42,9 +43,9 @@ public interface Rule extends Dimension, Name, Cloneable {
 	 * 
 	 * @param membrane
 	 *            the test membrane
-	 * @return if satisfied
+	 * @return satisfied times
 	 */
-	public boolean satisfy(Membrane membrane);
+	public int satisfy(Membrane membrane);
 
 	/**
 	 * Check if rule with dimensions is satisfied, return the satisfied rules which
@@ -52,23 +53,24 @@ public interface Rule extends Dimension, Name, Cloneable {
 	 * 
 	 * @param membrane
 	 *            the test membrane
-	 * @return All the satisfied rules
+	 * @return All the satisfied rules and satisfied times
 	 * @throws UnpredictableDimensionException
 	 *             if rule has dimension whose value cannot be predicted
 	 * @throws CloneNotSupportedException
 	 *             if clone failed
 	 */
-	public List<Rule> satisfiedRules(Membrane membrane) throws UnpredictableDimensionException, CloneNotSupportedException;
+	public Map<Rule, Integer> satisfiedRules(Membrane membrane) throws UnpredictableDimensionException, CloneNotSupportedException;
 
 	/**
 	 * Fetch objects from membrane
 	 * 
 	 * @param membrane
 	 *            target membrane
-	 * @return return {@code true} if all the conditions inside have fetched the
-	 *         objects they need
+	 * @param times
+	 *            times try to fetch
+	 * @return return the times all the conditions have fetched
 	 */
-	public boolean fetch(Membrane membrane);
+	public int fetch(Membrane membrane, int times);
 
 	/**
 	 * Add new condition

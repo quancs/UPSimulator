@@ -33,21 +33,21 @@ public class MembranePropertyCondition implements Condition {
 	}
 
 	@Override
-	public boolean satisfy(Membrane membrane) {
+	public int satisfy(Membrane membrane) {
 		if (membrane.getProperty(name) == null) {
 			logger.error("膜" + membrane + "不存在属性" + name);
-			return false;
+			return 0;
 		} else
-			return membrane.getProperty(name).equals(value);
+			return membrane.getProperty(name).equals(value) ? Integer.MAX_VALUE : 0;
 	}
 
 	@Override
-	public boolean fetch(Membrane membrane) {
-		return true;
+	public int fetch(Membrane membrane, int times) {
+		return times;
 	}
 
 	@Override
-	public void withdrawFetch(Membrane membrane) {
+	public void withdrawFetch(Membrane membrane, int times) {
 	}
 
 	/**

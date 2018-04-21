@@ -2,7 +2,9 @@ package upsimulator.core;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import upsimulator.exceptions.UnknownMembraneClassException;
 import upsimulator.interfaces.Membrane;
@@ -24,17 +26,17 @@ public class PTunnel implements Tunnel {
 	private String name;
 	private boolean isOpen;
 	private TunnelType type;
-	private ArrayList<Result> heldResults;
+	private HashMap<Result, Integer> heldResults;
 
 	public PTunnel(TunnelType type) {
-		heldResults = new ArrayList<Result>();
+		heldResults = new HashMap<>();
 		targets = new ArrayList<Membrane>();
 		this.type = type;
 		open();
 	}
 
 	public PTunnel() {
-		heldResults = new ArrayList<Result>();
+		heldResults = new HashMap<>();
 		targets = new ArrayList<Membrane>();
 		this.type = TunnelType.Here;
 		open();
@@ -85,19 +87,24 @@ public class PTunnel implements Tunnel {
 	}
 
 	@Override
-	public void holdResult(Result result) {
-		heldResults.add(result);
+	public void holdResult(Result result, int times) {
+		if (heldResults.containsKey(result)) {
+			heldResults.put(result, heldResults.get(result) + times);
+		} else
+			heldResults.put(result, times);
 	}
 
 	@Override
-	public List<Result> getHeldResults() {
+	public Map<Result, Integer> getHeldResults() {
 		return heldResults;
 	}
 
 	private final void pushResultsTo(Membrane membrane) {
 		try {
-			for (Result result : heldResults)
-				result.setResult(membrane);
+			for (Map.Entry<Result, Integer> entry : heldResults.entrySet()) {
+				Result result = entry.getKey();
+				result.setResult(membrane, entry.getValue());
+			}
 		} catch (UnknownMembraneClassException e) {
 			e.printStackTrace();
 			UPSLogger.error(this, e);
@@ -110,6 +117,8 @@ public class PTunnel implements Tunnel {
 	}
 
 	private final void pushResultsToOne(List<Membrane> membranes) {
+		// TODO maybe have some bugs in the function
+		// 因为与含义不符合，多个结果只能到达一个膜
 		Membrane target = membranes.get((int) (Math.random() * membranes.size()));
 		pushResultsTo(target);
 	}

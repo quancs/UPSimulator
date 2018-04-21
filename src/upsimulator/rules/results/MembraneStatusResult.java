@@ -23,21 +23,21 @@ public class MembraneStatusResult extends MembranePropertyResult implements Cond
 	}
 
 	@Override
-	public boolean satisfy(Membrane membrane) {
-		return true;
+	public int satisfy(Membrane membrane) {
+		return Integer.MAX_VALUE;
 	}
 
 	@Override
-	public boolean fetch(Membrane membrane) {
+	public int fetch(Membrane membrane, int times) {
 		Object endStatus = membrane.getProperty(endStatusStr);
 
 		if (endStatus != null) {
 			synchronized (endStatus) {
 				if (endStatus.equals(getValue())) {
 					membrane.setProperty(endStatusCountStr, (Integer) membrane.getProperty(endStatusCountStr) + 1);
-					return true;
+					return times;
 				} else {
-					return false;
+					return 0;
 				}
 			}
 		} else {
@@ -46,14 +46,14 @@ public class MembraneStatusResult extends MembranePropertyResult implements Cond
 				if (endStatus == null) {
 					membrane.setProperty(endStatusStr, getValue());
 					membrane.setProperty(endStatusCountStr, 1);
-					return true;
+					return times;
 				} else {
 					synchronized (endStatus) {
 						if (endStatus.equals(getValue())) {
 							membrane.setProperty(endStatusCountStr, (Integer) membrane.getProperty(endStatusCountStr) + 1);
-							return true;
+							return times;
 						} else {
-							return false;
+							return 0;
 						}
 					}
 				}
@@ -62,7 +62,7 @@ public class MembraneStatusResult extends MembranePropertyResult implements Cond
 	}
 
 	@Override
-	public void withdrawFetch(Membrane membrane) {
+	public void withdrawFetch(Membrane membrane, int times) {
 		Object endStatus = membrane.getProperty(endStatusStr);
 		Integer count = (Integer) membrane.getProperty(endStatusCountStr);
 		synchronized (endStatus) {

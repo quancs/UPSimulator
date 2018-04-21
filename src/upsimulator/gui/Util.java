@@ -76,6 +76,7 @@ public class Util {
 		Document doc = pane.getDocument();
 		try {
 			doc.insertString(doc.getLength(), str, attrSet);
+			pane.setCaretPosition(doc.getLength());
 		} catch (BadLocationException e) {
 			System.out.println("BadLocationException: " + e);
 		}

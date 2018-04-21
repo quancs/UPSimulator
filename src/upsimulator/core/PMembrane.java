@@ -51,8 +51,8 @@ public class PMembrane implements Membrane {
 		tunnel.setSource(this);
 		tunnel.addTarget(this);
 		tunnels.add(tunnel);
-		urules = new ArrayList<>(1000);
-		fetchedRules = new ArrayList<Rule>(1000);
+		urules = new HashMap<Rule, Integer>(1000);
+		fetchedRules = new HashMap<Rule, Integer>(1000);
 	}
 
 	/**
@@ -65,8 +65,8 @@ public class PMembrane implements Membrane {
 		tunnel.setSource(this);
 		tunnel.addTarget(this);
 		tunnels.add(tunnel);
-		urules = new ArrayList<>(1000);
-		fetchedRules = new ArrayList<Rule>(1000);
+		urules = new HashMap<Rule, Integer>(1000);
+		fetchedRules = new HashMap<Rule, Integer>(1000);
 	}
 
 	@Override
@@ -202,40 +202,41 @@ public class PMembrane implements Membrane {
 		return objects;
 	}
 
-	private ArrayList<Rule> urules;
+	private HashMap<Rule, Integer> urules;
 
 	@Override
-	public List<Rule> getUsableRules() throws UnpredictableDimensionException, CloneNotSupportedException {
+	public HashMap<Rule, Integer> getUsableRules() throws UnpredictableDimensionException, CloneNotSupportedException {
 		urules.clear();
 
 		for (Rule rule : rules) {
 			if (rule.dimensionCount() > 0) {
-				urules.addAll(rule.satisfiedRules(this));
-			} else if (rule.satisfy(this)) {
-				urules.add(rule);
+				urules.putAll(rule.satisfiedRules(this));
+			} else {
+				int times = rule.satisfy(this);
+				if (times > 0) {
+					urules.put(rule, times);
+				}
 			}
 		}
 		return urules;
 	}
 
-	private ArrayList<Rule> fetchedRules;
+	private HashMap<Rule, Integer> fetchedRules;
 
 	@Override
-	public List<Rule> fetch() throws TunnelNotExistException {
+	public Map<Rule, Integer> fetch() throws TunnelNotExistException {
 		fetchedRules.clear();
 
 		if (PriorityCondition.exist()) {
-			for (int i = 0; i < urules.size(); i++) {
-				if (urules.size() > 100 && ((urules.size() - i) % 1000 == 0)) {
-					UPSLogger.info(this, "Membrane " + getNameDim() + " fetched " + i + "/" + urules.size() + " rules");
-				}
-
-				Rule rule = urules.get(i);
-				while (rule.fetch(this)) {// 一条规则发生多次的时候
-					fetchedRules.add(rule);
+			for (Map.Entry<Rule, Integer> entry : urules.entrySet()) {
+				Rule rule = entry.getKey();
+				Integer times = entry.getValue();
+				Integer trueTimes = rule.fetch(this, times);
+				if (trueTimes > 0) {
+					fetchedRules.put(rule, trueTimes);
 					for (Result result : rule.getResults()) {
 						try {
-							result.selectTunnel(this).holdResult(result);
+							result.selectTunnel(this).holdResult(result, trueTimes);
 						} catch (TunnelNotExistException e) {
 							e.printStackTrace();
 							throw e;
@@ -244,22 +245,24 @@ public class PMembrane implements Membrane {
 				}
 			}
 		} else {
-			LinkedList<Rule> rules = new LinkedList<>(urules);
+			LinkedList<Rule> rules = new LinkedList<>(urules.keySet());
 			for (int i = 0; rules.size() > 0; i++) {
 				if (urules.size() > 100 && i % 1000 == 0)
 					UPSLogger.info(this, "Membrane " + getNameDim() + " has fetched " + rules.size() + "/" + urules.size() + " rules");
 
 				Rule first = rules.removeFirst();
-				if (first.fetch(this)) {
-					fetchedRules.add(first);
-					rules.add(first);
-					for (Result result : first.getResults()) {
-						try {
-							result.selectTunnel(this).holdResult(result);
-						} catch (TunnelNotExistException e) {
-							e.printStackTrace();
-							throw e;
-						}
+				Integer times = urules.get(first);
+				int readyToFetch = (int) (times * Math.random());
+				if (readyToFetch < 1)
+					readyToFetch = 1;
+				int fetched = first.fetch(this, readyToFetch);
+				if (fetched > 0) {
+					addFetched(first, fetched);
+					for (Result result : first.getResults())
+						result.selectTunnel(this).holdResult(result, fetched);
+
+					if (fetched == readyToFetch && readyToFetch < times) {// can fetch more
+						rules.add(first);
 					}
 				}
 			}
@@ -268,8 +271,16 @@ public class PMembrane implements Membrane {
 		return fetchedRules;
 	}
 
+	private void addFetched(Rule rule, int times) {
+		if (fetchedRules.containsKey(rule)) {
+			fetchedRules.put(rule, fetchedRules.get(rule) + times);
+		} else {
+			fetchedRules.put(rule, times);
+		}
+	}
+
 	@Override
-	public List<Rule> setProducts() {
+	public Map<Rule, Integer> setProducts() {
 		for (Tunnel t : tunnels)
 			t.pushResult();
 		return fetchedRules;

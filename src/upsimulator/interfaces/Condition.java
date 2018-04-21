@@ -13,18 +13,20 @@ public interface Condition extends Cloneable {
 	 * 
 	 * @param membrane
 	 *            the membrane where to check the condition
-	 * @return satisfied or not
+	 * @return satisfied times. return {@code 0} if not satisfied.
 	 */
-	public boolean satisfy(Membrane membrane);
+	public int satisfy(Membrane membrane);
 
 	/**
-	 * fetch objects condition need from membrane
+	 * fetch objects from membrane
 	 * 
 	 * @param membrane
 	 *            the membrane where to fetch objects
-	 * @return success or not
+	 * @param times
+	 *            how many times going to fetch
+	 * @return the times successfully fetch
 	 */
-	public boolean fetch(Membrane membrane);
+	public int fetch(Membrane membrane, int tryTimes);
 
 	/**
 	 * If some conditions in one rule cannot fetch the objects then the conditions
@@ -33,8 +35,10 @@ public interface Condition extends Cloneable {
 	 * 
 	 * @param membrane
 	 *            the membrane current condition withdraw objects to
+	 * @param times
+	 *            withdraw fetch times
 	 */
-	public void withdrawFetch(Membrane membrane);
+	public void withdrawFetch(Membrane membrane, int times);
 
 	/**
 	 * Deep clone this condition

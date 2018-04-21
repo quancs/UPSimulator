@@ -1,6 +1,7 @@
 package upsimulator.interfaces;
 
 import java.util.List;
+import java.util.Map;
 
 public interface Tunnel extends Cloneable {
 
@@ -39,9 +40,9 @@ public interface Tunnel extends Cloneable {
 
 	public void addTarget(Membrane target);
 
-	public void holdResult(Result result);
+	public void holdResult(Result result, int times);
 
-	public List<Result> getHeldResults();
+	public Map<Result, Integer> getHeldResults();
 
 	public void pushResult();
 

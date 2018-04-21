@@ -24,21 +24,21 @@ public class PromoterCondition extends PObject implements Condition {
 	}
 
 	@Override
-	public boolean satisfy(Membrane membrane) {
+	public int satisfy(Membrane membrane) {
 		if (membrane.getNumOf(this) > 0) {
-			return true;
+			return Integer.MAX_VALUE;
 		} else
-			return false;
+			return 0;
 	}
 
 	@Override
-	public boolean fetch(Membrane membrane) {
+	public int fetch(Membrane membrane, int times) {
 		// there is nothing need to fetch.
-		return true;
+		return times;
 	}
 
 	@Override
-	public void withdrawFetch(Membrane membrane) {
+	public void withdrawFetch(Membrane membrane, int times) {
 		// there is nothing need to withdrawFetch.
 		return;
 	}

@@ -36,25 +36,27 @@ public class ObjectCondition extends PObject implements Condition {
 	}
 
 	@Override
-	public boolean satisfy(Membrane membrane) {
-		if (membrane.getNumOf(this) >= num) {
-			return true;
-		} else {
-			return false;
-		}
+	public int satisfy(Membrane membrane) {
+		return membrane.getNumOf(this) / num;
 	}
 
 	@Override
-	public boolean fetch(Membrane membrane) {
-		if (membrane.reduceObject(this, num))
-			return true;
-		else
-			return false;
+	public int fetch(Membrane membrane, int times) {
+		if (membrane.reduceObject(this, num * times))
+			return times;
+		else if (times > 1) {
+			int satisfy = satisfy(membrane);
+			if (satisfy > 0) {
+				return fetch(membrane, satisfy);
+			} else
+				return 0;
+		} else
+			return 0;
 	}
 
 	@Override
-	public void withdrawFetch(Membrane membrane) {
-		membrane.addObject(new PObject(this), num);
+	public void withdrawFetch(Membrane membrane, int times) {
+		membrane.addObject(new PObject(this), num * times);
 	}
 
 	@Override

@@ -7,7 +7,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -181,7 +181,7 @@ public class PController extends Thread {
 			Membrane membrane = smList.get(i);
 			try {
 				UPSLogger.info(this, "Membrane " + membrane.getNameDim() + " is checking usable rules");
-				List<Rule> uRules = membrane.getUsableRules();
+				Map<Rule, Integer> uRules = membrane.getUsableRules();
 				// 此处控制极大和极小并行，以及随机执行也是在此控制
 				smList.addAll(((PMembrane) membrane).getChildren());
 				fmList.add(membrane);
@@ -198,20 +198,20 @@ public class PController extends Thread {
 			Membrane membrane = fmList.get(i);
 			try {
 				UPSLogger.info(this, "Membrane " + membrane.getNameDim() + " is fetching objects");
-				List<Rule> fetchedRules = membrane.fetch();
+				Map<Rule, Integer> fetchedRules = membrane.fetch();
 				rmList.add(membrane);
 			} catch (TunnelNotExistException e) {
 				e.printStackTrace();
 			}
 		}
 
-		HashMap<Membrane, List<Rule>> uMap = new HashMap<>();
+		HashMap<Membrane, Map<Rule, Integer>> uMap = new HashMap<>();
 		int totalUsed = 0;
 		for (int i = 0; i < rmList.size(); i++) {
 			Membrane membrane = rmList.get(i);
 			UPSLogger.info(this, "Membrane " + membrane.getNameDim() + " is setting products");
-			List<Rule> rList = membrane.setProducts();
-			uMap.put(membrane, new ArrayList<>(rList));
+			Map<Rule, Integer> rList = membrane.setProducts();
+			uMap.put(membrane, new HashMap<>(rList));
 			totalUsed += rList.size();
 		}
 

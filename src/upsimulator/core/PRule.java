@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -97,11 +99,16 @@ public class PRule implements Rule {
 	}
 
 	@Override
-	public boolean satisfy(Membrane membrane) {
-		for (Condition condition : conditions)
-			if (!condition.satisfy(membrane))
-				return false;
-		return true;
+	public int satisfy(Membrane membrane) {
+		int min = Integer.MAX_VALUE;
+		for (Condition condition : conditions) {
+			int st = condition.satisfy(membrane);
+			if (st == 0)
+				return 0;
+			if (st < min)
+				min = st;
+		}
+		return min;
 	}
 
 	private LinkedList<Integer[]> findValues(DimensionInfo dInfo, Membrane membrane) {
@@ -303,12 +310,12 @@ public class PRule implements Rule {
 	}
 
 	@Override
-	public boolean fetch(Membrane membrane) {
+	public int fetch(Membrane membrane, int times) {
 		if (dimensions.size() > 0 && !fixed) {
 			logger.error("Rule " + this + " has uncomputed dimension.");
-			return false;
+			return 0;
 		} else {
-			return doFetch(membrane);
+			return doFetch(membrane, times);
 		}
 	}
 
@@ -317,24 +324,36 @@ public class PRule implements Rule {
 	 * fetch first to make sure their semantic meaning right.
 	 * 
 	 * @param membrane
-	 * @return
+	 * @param times
+	 *            try to fetch
+	 * @return times really fetched
 	 */
-	private boolean doFetch(Membrane membrane) {
-		int i = conditions.size() - 1;
-		for (; i >= 0; i--) {
-			Condition criteria = conditions.get(i);
-			if (!criteria.fetch(membrane))
-				break;
-		}
-		if (i >= 0) {
-			for (i = i + 1; i < conditions.size(); i++) {
+	private int doFetch(Membrane membrane, int times) {
+		int fetched = 0;
+
+		int i = conditions.size();
+		boolean done = false;
+		for (; done == false;) {
+			for (i = i - 1; i >= 0; i--) {
 				Condition criteria = conditions.get(i);
-				criteria.withdrawFetch(membrane);
+				fetched = criteria.fetch(membrane, times);
+				if (fetched == 0) {
+					done = true;
+					break;
+				}
+				if (fetched < times)
+					break;
 			}
-			return false;
-		} else {
-			return true;
+			if (i >= 0) {// 撤销之前的fetch并继续下一个循环的fetch
+				for (int j = i + 1; j < conditions.size(); j++) {
+					Condition criteria = conditions.get(j);
+					criteria.withdrawFetch(membrane, times - fetched);
+				}
+			} else
+				done = true;
+			times = fetched;
 		}
+		return fetched;
 	}
 
 	@Override
@@ -586,14 +605,14 @@ public class PRule implements Rule {
 	 * @throws CloneNotSupportedException
 	 */
 	@Override
-	public List<Rule> satisfiedRules(Membrane membrane) throws UnpredictableDimensionException, CloneNotSupportedException {
+	public Map<Rule, Integer> satisfiedRules(Membrane membrane) throws UnpredictableDimensionException, CloneNotSupportedException {
 		if (dInfos == null)
 			initDimInfos();
 		Calendar t1 = Calendar.getInstance();
 		List<Integer[]> pValues = getPossibleValues(membrane);
 		Calendar t2 = Calendar.getInstance();
 
-		List<Rule> satisfiedRules = new LinkedList<>();
+		HashMap<Rule, Integer> satisfiedRules = new HashMap<>();
 
 		LinkedList<RuleChecker> checkers = new LinkedList<>();
 		int n = pValues.size() / 400;
@@ -613,7 +632,7 @@ public class PRule implements Rule {
 		for (RuleChecker checker : checkers) {
 			try {
 				checker.join();
-				satisfiedRules.addAll(checker.getSatisfiedRules());
+				satisfiedRules.putAll(checker.getSatisfiedRules());
 				UPSLogger.info(this, "RuleChecker " + checker.getWorkerId() + " checked " + checker.getSatisfiedRules().size() + "/" + checker.getTotal() + "  " + checker.getTimeSpend() + "ms");
 			} catch (InterruptedException e) {
 				e.printStackTrace();

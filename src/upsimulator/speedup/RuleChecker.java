@@ -1,7 +1,8 @@
 package upsimulator.speedup;
 
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Rule;
@@ -18,7 +19,7 @@ public class RuleChecker extends Worker {
 	private List<String> dims;
 	private List<Integer[]> pValues;
 	private Membrane target;
-	private LinkedList<Rule> satisfiedRules;
+	private HashMap<Rule, Integer> satisfiedRules;
 
 	public RuleChecker(Rule source, List<Integer[]> list, Membrane target) {
 		super();
@@ -26,7 +27,7 @@ public class RuleChecker extends Worker {
 		this.pValues = list;
 		this.target = target;
 		this.dims = source.getDimensions();
-		satisfiedRules = new LinkedList<>();
+		satisfiedRules = new HashMap<>();
 	}
 
 	@Override
@@ -36,14 +37,15 @@ public class RuleChecker extends Worker {
 			for (int i = 0; i < pv.length; i++)
 				rule.getEval().putVariable(dims.get(i), pv[i].toString());
 
-			if (rule.satisfy(target)) {
+			int satisfy = rule.satisfy(target);
+			if (satisfy > 0) {
 				rule.fixDimension();
-				satisfiedRules.add(rule);
+				satisfiedRules.put(rule, satisfy);
 			}
 		}
 	}
 
-	public LinkedList<Rule> getSatisfiedRules() {
+	public Map<Rule, Integer> getSatisfiedRules() {
 		return satisfiedRules;
 	}
 

@@ -28,7 +28,6 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
@@ -960,22 +959,12 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 			if (msg instanceof PMembrane) {
 				Util.addMsgToJTextPane(debugConsole, ((PMembrane) msg).toString("  ", true, true, true, true, true) + "\n\n\n", Color.black, false, resultConsole.getFont().getSize());
 			} else if (msg instanceof HashMap<?, ?>) {
-				Iterator<Entry<Membrane, List<?>>> it = ((HashMap<Membrane, List<?>>) msg).entrySet().iterator();
+				Iterator<Entry<Membrane, Map<?, ?>>> it = ((HashMap<Membrane, Map<?, ?>>) msg).entrySet().iterator();
 				for (int j = 0; j < 100 & it.hasNext(); j++) {
-					Map.Entry<Membrane, List<?>> mentry = (Entry<Membrane, List<?>>) it.next();
+					Map.Entry<Membrane, Map<?, ?>> mentry = (Entry<Membrane, Map<?, ?>>) it.next();
 					Membrane membrane = mentry.getKey();
-					List<Rule> uRules = (List<Rule>) mentry.getValue();
-					if (uRules.size() == 0)
-						continue;
+					Map<Rule, Integer> ruleUsedTimes = (Map<Rule, Integer>) mentry.getValue();
 
-					HashMap<Rule, Integer> ruleUsedTimes = new HashMap<>(1000);
-					for (Rule rule : uRules) {
-						if (ruleUsedTimes.containsKey(rule)) {
-							ruleUsedTimes.put(rule, ruleUsedTimes.get(rule) + 1);
-						} else {
-							ruleUsedTimes.put(rule, 1);
-						}
-					}
 					StringBuilder sBuilder = new StringBuilder(ruleUsedTimes.size() * 100);
 					sBuilder.append("rules used in " + membrane.getNameDim() + ":\n");
 					Iterator<?> iter = ruleUsedTimes.entrySet().iterator();
