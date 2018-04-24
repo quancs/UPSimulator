@@ -37,7 +37,7 @@ objName		:	Name | Letters;
 objNum		:	Integer;
 
 /*规则定义*/
-prule			:	'Rule' ruleName ('[' abcDim ']')* '=' propertyCondition* objCondtion+ '->' propertyResult* result*
+prule			:	'Rule' ruleName ('[' abcDim ']')* '=' (regCondition '/')? propertyCondition* objCondtion+ '->' propertyResult* result*
 					('|' condition ('&' condition)* )? priorityCondition? ';';
 ruleName		:	Name | Letters;
 condition		:	promoterCondition | inhibitorCondition  | boolCondition ;
@@ -70,6 +70,7 @@ propertyCondition: '<' (propertyName '=')? propertyValue '>';//Default propertyN
 objCondtion		: 	objName ('[' formulaDim ']')* ('^' objNum)?;
 priorityCondition: 	',' priority;
 priority		: 	Integer;
+regCondition	:	(Letters | '+' | '(' | ')' | '[' | ']' | '{' | '}' | ',' | '^' | '*' | '+' | '?' | '|' )+;
 
 /*所有的维度类型*/
 intDim			:	Integer;//整数维度

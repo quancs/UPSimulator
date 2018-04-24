@@ -1,6 +1,5 @@
-package upsimulator.recognizer;
-
 // Generated from UPLanguage.g4 by ANTLR 4.7.1
+package upsimulator.recognizer;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 /**
@@ -327,6 +326,13 @@ public class UPLanguageBaseVisitor<T> extends AbstractParseTreeVisitor<T> implem
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitPriority(UPLanguageParser.PriorityContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitRegCondition(UPLanguageParser.RegConditionContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

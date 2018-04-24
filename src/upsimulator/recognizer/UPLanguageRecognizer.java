@@ -38,6 +38,7 @@ import upsimulator.recognizer.UPLanguageParser.PropertyInitContext;
 import upsimulator.recognizer.UPLanguageParser.PropertyResultContext;
 import upsimulator.recognizer.UPLanguageParser.PruleContext;
 import upsimulator.recognizer.UPLanguageParser.RandomContext;
+import upsimulator.recognizer.UPLanguageParser.RegConditionContext;
 import upsimulator.recognizer.UPLanguageParser.RuleSetDeclareContext;
 import upsimulator.recognizer.UPLanguageParser.SubmembraneContext;
 import upsimulator.recognizer.UPLanguageParser.TargetContext;
@@ -55,6 +56,7 @@ import upsimulator.rules.conditions.MembraneStatusCondition;
 import upsimulator.rules.conditions.ObjectCondition;
 import upsimulator.rules.conditions.PriorityCondition;
 import upsimulator.rules.conditions.PromoterCondition;
+import upsimulator.rules.conditions.RegularExpressionCondition;
 import upsimulator.rules.results.MembraneCreateResult;
 import upsimulator.rules.results.MembraneDissolveResult;
 import upsimulator.rules.results.MembranePropertyResult;
@@ -370,6 +372,10 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 			Condition condition = (Condition) visitCondition(cc);
 			rule.addCondition(condition);
 		}
+		if (ctx.regCondition() != null) {
+			rule.addCondition((Condition) visitRegCondition(ctx.regCondition()));
+		}
+
 		if (ctx.priorityCondition() != null) {
 			PriorityCondition priorityCondition = (PriorityCondition) visitPriorityCondition(ctx.priorityCondition());
 			rule.addCondition(priorityCondition);
@@ -710,6 +716,11 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 	@Override
 	public T visitRandom(RandomContext ctx) {
 		return null;
+	}
+
+	@Override
+	public T visitRegCondition(RegConditionContext ctx) {
+		return (T) new RegularExpressionCondition(ctx.getText());
 	}
 
 }

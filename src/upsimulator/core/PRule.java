@@ -25,6 +25,7 @@ import upsimulator.rules.conditions.InhibitorCondition;
 import upsimulator.rules.conditions.MembranePropertyCondition;
 import upsimulator.rules.conditions.ObjectCondition;
 import upsimulator.rules.conditions.PriorityCondition;
+import upsimulator.rules.conditions.RegularExpressionCondition;
 import upsimulator.rules.results.MembranePropertyResult;
 import upsimulator.rules.results.MembraneStatusResult;
 import upsimulator.speedup.PossibleValueCombiner;
@@ -535,21 +536,30 @@ public class PRule implements Rule {
 		sBuilder.append(" = ");
 
 		for (Condition condition : conditions) {
+			if (condition instanceof RegularExpressionCondition) {
+				sBuilder.append(condition + " / ");
+			}
+		}
+
+		for (Condition condition : conditions) {
 			if (condition instanceof MembranePropertyCondition) {
 				sBuilder.append(condition + " ");
 			}
 		}
+
 		for (Condition condition : conditions) {
 			if (condition instanceof ObjectCondition) {
 				sBuilder.append(condition + " ");
 			}
 		}
+
 		sBuilder.append("-> ");
 		for (Result result : results) {
 			if (result instanceof MembranePropertyResult) {
 				sBuilder.append(result + " ");
 			}
 		}
+
 		for (Result result : results) {
 			if (!(result instanceof MembranePropertyResult)) {
 				sBuilder.append(result + " ");
@@ -558,7 +568,8 @@ public class PRule implements Rule {
 
 		StringBuilder otherBuilder = new StringBuilder("| ");
 		for (Condition condition : conditions) {
-			if (condition instanceof MembranePropertyCondition || condition instanceof ObjectCondition || condition instanceof Result || condition instanceof PriorityCondition)
+			if (condition instanceof MembranePropertyCondition || condition instanceof ObjectCondition || condition instanceof Result || condition instanceof PriorityCondition
+					|| condition instanceof RegularExpressionCondition)
 				continue;
 			otherBuilder.append(condition + " ");
 		}
