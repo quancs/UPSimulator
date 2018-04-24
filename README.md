@@ -1,9 +1,12 @@
 # UPSimulator
 UPSimulator is an universal and high performance simulator for membrane computing. Now, we have supported most features of cell-like P system & tissue-like P system. Visit https://github.com/quancs/UPSimulator/releases to download the [latest version](https://github.com/quancs/UPSimulator/releases).
 # UPLanguage
-To describe the complex rules in various types of P systems, we designed a new language called UPLanguage. UPLanguage aims to describe Cell-like P System (supported now), Tissue-like P System (supported now), Neural-like P System (supported in the future), and the mixed P system of cell-like, tissue-like and neural-like. The UPLanguage description string is the input of UPSimulator, and the grammar file of UPL is placed in resources/grammar/UPLanguage.g4.
+To describe the complex rules in various types of P systems, we designed a new language called UPLanguage. UPLanguage aims to describe Cell-like P System (supported now), Tissue-like P System (supported now), Neural-like P System (supported now), and the mixed P system of cell-like, tissue-like and neural-like. The UPLanguage description string is the input of UPSimulator, and the grammar file of UPL is placed in resources/grammar/UPLanguage.g4.
 
 # Usage
+## Required Environment
+Java 1.8+
+
 ## Simple Usage
 The result of the case bellow is an empty membrane "Environment". The explanation of code follows a double slash.
 
@@ -239,3 +242,7 @@ ANTLR is a powerful parser generator, used to recognize UPLanguage.
 
 ## JEval
 JEval is an advanced library for high-performance, mathematical, boolean and functional expression parsing and evaluation, used to calculate the dimension relationship. 
+
+# Author
+* Changsheng Quan, quancs@qq.com  or quancs@cqu.edu.cn
+If you need any help for usage and development, or you want to make contributions to this project, please contact me.
