@@ -159,12 +159,19 @@ Rule r[i]=a[i] -> b[i+1];
 ```
 In the code above, **a** and **a[i]** are Object Conditions, and **a^2** means two copy of 'a'.
 
+#### Regular Expression Condition
+```
+Rule r1= a(aa)*/ a^2 -> a;
+Rule r2= b(bb)+/ b^2 -> b;
+```
+In the code above, **a(aa)** and **b(bb)+** are both Regular Expression Conditions, and **a** represents positive spike and **b** represents negative spike.
+
 #### Property Condition or Status Condition
 ```
 Rule r= <Status=1> a -> b;
 Rule r[i]=<1> a[i] -> b[i+1];
 ```
-In the code above, **<Status=1>** and **<1>** are Property Conditions.
+In the code above, **<Status=1>** and **<1>** are Property Conditions, and **<1>** is the same as **<Status=1>**. Only status condition's name can be omitted.
 
 #### Inhibitor Condition
 ```
