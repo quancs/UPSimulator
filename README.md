@@ -244,5 +244,5 @@ ANTLR is a powerful parser generator, used to recognize UPLanguage.
 JEval is an advanced library for high-performance, mathematical, boolean and functional expression parsing and evaluation, used to calculate the dimension relationship. 
 
 # Author
-* Changsheng Quan, quancs@qq.com  or quancs@cqu.edu.cn
+* Changsheng Quan, quancs@qq.com  or quancs@cqu.edu.cn  
 If you need any help for usage and development, or you want to make contributions to this project, please contact me.
