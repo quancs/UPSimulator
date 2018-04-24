@@ -246,3 +246,6 @@ JEval is an advanced library for high-performance, mathematical, boolean and fun
 # Author
 * Changsheng Quan, quancs@qq.com  or quancs@cqu.edu.cn  
 If you need any help for usage and development, or you want to make contributions to this project, please contact me.
+
+# Help Needed
+Do you have a new P system need to simulate? Are you a software developer with java skills? Do you have expertise in building software? Are you an experienced lead technical writer? Do you like contributing to open source projects? Come and join us in helping UPSimulator to thrive and universal.
