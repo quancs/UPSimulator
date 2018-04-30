@@ -9,14 +9,14 @@
 package upsimulator.rules.results;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
-import net.sourceforge.jeval.Evaluator;
 import upsimulator.core.PTunnel;
 import upsimulator.exceptions.TimesException;
 import upsimulator.exceptions.TunnelNotExistException;
 import upsimulator.exceptions.UnknownMembraneClassException;
-import upsimulator.interfaces.Dimension;
+import upsimulator.interfaces.BaseDimensional;
+import upsimulator.interfaces.Dimensional;
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Result;
 import upsimulator.interfaces.Tunnel;
@@ -28,10 +28,9 @@ import upsimulator.interfaces.Tunnel.TunnelType;
  * @author quan
  *
  */
-public class MembraneCreateResult implements Result, Dimension {
+public class MembraneCreateResult extends BaseDimensional implements Result {
 
 	private String templateMemName;
-	private String name;
 
 	private ArrayList<Result> extraResults = new ArrayList<>();
 
@@ -40,7 +39,16 @@ public class MembraneCreateResult implements Result, Dimension {
 
 	public MembraneCreateResult(String template, String name) {
 		this.templateMemName = template;
-		this.name = name;
+		setName(name);
+	}
+
+	public MembraneCreateResult(MembraneCreateResult mcr) {
+		super(mcr);
+		this.templateMemName = mcr.templateMemName;
+		setName(mcr.getName());
+		extraResults = new ArrayList<>(mcr.extraResults.size());
+		for (Result result : mcr.extraResults)
+			extraResults.add(result.deepClone());
 	}
 
 	@Override
@@ -58,89 +66,16 @@ public class MembraneCreateResult implements Result, Dimension {
 			result.setResult(sonMembrane, 1);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public MembraneCreateResult deepClone() throws CloneNotSupportedException {
-		MembraneCreateResult cloned = (MembraneCreateResult) super.clone();
-		cloned.evaluator = null;
-		cloned.extraResults = new ArrayList<>();
-		for (Result result : extraResults)
-			cloned.extraResults.add(result.deepClone());
-		cloned.dimensions = (ArrayList<String>) dimensions.clone();
+	public MembraneCreateResult deepClone() {
+		MembraneCreateResult cloned = new MembraneCreateResult(this);
 		return cloned;
-	}
-
-	private String getNameDim() {
-		String name = this.name + "";
-		if (evaluator != null && dimensions != null) {
-			for (int i = 0; i < dimensions.size(); i++) {
-				String formula = dimensions.get(i);
-				int dimension;
-				try {
-					dimension = (int) Double.parseDouble(evaluator.evaluate(formula));
-					if (i == 0)
-						name += dimension;
-					else
-						name += "," + dimension;
-				} catch (Exception e) {
-					name = this.name + "";
-					for (int j = 0; j < dimensions.size(); j++) {
-						if (j == 0)
-							name += dimensions.get(j);
-						else
-							name += "," + dimensions.get(j);
-					}
-				}
-			}
-		} else if (dimensions != null) {
-			for (int i = 0; i < dimensions.size(); i++) {
-				if (i == 0)
-					name += dimensions.get(i);
-				else
-					name += "," + dimensions.get(i);
-			}
-		}
-		return name;
-	}
-
-	private Evaluator evaluator;
-
-	@Override
-	public void setEval(Evaluator evaluator) {
-		this.evaluator = evaluator;
-		for (Result result : extraResults)// 如果还存在其他的附带的结果，则一并设置
-			if (result instanceof Dimension)
-				((Dimension) result).setEval(evaluator);
-	}
-
-	private ArrayList<String> dimensions = new ArrayList<>();
-
-	@Override
-	public void addDimension(Integer... dimensions) {
-		for (Integer dim : dimensions)
-			this.dimensions.add(String.valueOf(dim));
-	}
-
-	@Override
-	public void addDimension(String... formulas) {
-		for (String dim : formulas)
-			this.dimensions.add(dim);
-	}
-
-	@Override
-	public int dimensionCount() {
-		return dimensions.size();
-	}
-
-	@Override
-	public List<String> getDimensions() {
-		return dimensions;
 	}
 
 	@Override
 	public String toString() {
 		String str = templateMemName;
-		if (name != null)
+		if (getName() != null)
 			str += ":" + getNameDim();
 		if (extraResults.size() > 0) {
 			str += "{ ";
@@ -149,14 +84,6 @@ public class MembraneCreateResult implements Result, Dimension {
 			str += "}";
 		}
 		return str;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public void addResult(Result result) {
@@ -172,19 +99,11 @@ public class MembraneCreateResult implements Result, Dimension {
 	}
 
 	@Override
-	public void fixDimension() {
-		// 固定自身的维度
-		Dimension.super.fixDimension();
-
-		// 固定子结果的维度
+	public void fix(Map<String, Object> env) {
+		super.fix(env);
 		for (Result result : extraResults)
-			if (result instanceof Dimension)
-				((Dimension) result).fixDimension();
-	}
-
-	@Override
-	public Evaluator getEval() {
-		return evaluator;
+			if (result instanceof Dimensional)
+				((Dimensional) result).fix(env);
 	}
 
 	@Override

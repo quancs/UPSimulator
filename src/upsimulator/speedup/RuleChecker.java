@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import upsimulator.interfaces.Dimension;
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Rule;
 
@@ -16,12 +17,12 @@ import upsimulator.interfaces.Rule;
 public class RuleChecker extends Worker {
 
 	private Rule source;
-	private List<String> dims;
-	private List<Integer[]> pValues;
+	private List<Dimension> dims;
+	private List<Long[]> pValues;
 	private Membrane target;
 	private HashMap<Rule, Integer> satisfiedRules;
 
-	public RuleChecker(Rule source, List<Integer[]> list, Membrane target) {
+	public RuleChecker(Rule source, List<Long[]> list, Membrane target) {
 		super();
 		this.source = source;
 		this.pValues = list;
@@ -32,14 +33,15 @@ public class RuleChecker extends Worker {
 
 	@Override
 	public void doWork() {
-		for (Integer[] pv : pValues) {
+		HashMap<String, Object> map = new HashMap<>();
+		for (Long[] pv : pValues) {
 			Rule rule = source.deepClone();
-			for (int i = 0; i < pv.length; i++)
-				rule.getEval().putVariable(dims.get(i), pv[i].toString());
+			for (int i = 0; i < dims.size(); i++)
+				map.put(dims.get(i).getText(), pv[i]);
+			rule.fix(map);
 
 			int satisfy = rule.satisfy(target);
 			if (satisfy > 0) {
-				rule.fixDimension();
 				satisfiedRules.put(rule, satisfy);
 			}
 		}

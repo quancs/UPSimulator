@@ -14,12 +14,13 @@ public class InhibitorCondition extends PObject implements Condition {
 
 	@Override
 	public InhibitorCondition deepClone() {
-		InhibitorCondition cloned = new InhibitorCondition(super.deepClone());
-		return cloned;
+		if (isFixed())
+			return this;
+		return new InhibitorCondition(this);
 	}
 
-	public InhibitorCondition(PObject object) {
-		super(object);
+	public InhibitorCondition(InhibitorCondition inhibitorCondition) {
+		super(inhibitorCondition);
 	}
 
 	public InhibitorCondition(String type, String... dims) {

@@ -24,6 +24,10 @@ public class ObjectResult extends PObject implements Result {
 		super(name, dims);
 	}
 
+	public ObjectResult(ObjectResult object) {
+		super(object);
+	}
+
 	public int getNum() {
 		return num;
 	}
@@ -57,7 +61,7 @@ public class ObjectResult extends PObject implements Result {
 
 	@Override
 	public ObjectResult deepClone() {
-		return (ObjectResult) super.deepClone();
+		return new ObjectResult(this);
 	}
 
 	@Override

@@ -11,9 +11,9 @@ import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 
-import net.sourceforge.jeval.Evaluator;
 import upsimulator.exceptions.TunnelNotExistException;
 import upsimulator.exceptions.UnpredictableDimensionException;
+import upsimulator.interfaces.BaseDimensional;
 import upsimulator.interfaces.Condition;
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Obj;
@@ -31,10 +31,9 @@ import upsimulator.rules.conditions.PriorityCondition;
  * @author quan
  *
  */
-public class PMembrane implements Membrane {
+public class PMembrane extends BaseDimensional implements Membrane {
 	private static final long serialVersionUID = -1932793470654198760L;
 
-	private String name;
 	private ConcurrentHashMap<Obj, Integer> objects = new ConcurrentHashMap<Obj, Integer>();
 	private ArrayList<Rule> rules = new ArrayList<>();
 
@@ -46,7 +45,8 @@ public class PMembrane implements Membrane {
 	 */
 	public PMembrane(String name) {
 		super();
-		this.name = name;
+		setName(name);
+
 		PTunnel tunnel = new PTunnel(TunnelType.Here);
 		tunnel.setSource(this);
 		tunnel.addTarget(this);
@@ -60,7 +60,7 @@ public class PMembrane implements Membrane {
 	 */
 	public PMembrane() {
 		super();
-		this.name = "NoType";
+		setName("NoType");
 		PTunnel tunnel = new PTunnel(TunnelType.Here);
 		tunnel.setSource(this);
 		tunnel.addTarget(this);
@@ -209,7 +209,7 @@ public class PMembrane implements Membrane {
 		urules.clear();
 
 		for (Rule rule : rules) {
-			if (rule.dimensionCount() > 0) {
+			if (rule.getDimensionSize() > 0) {
 				urules.putAll(rule.satisfiedRules(this));
 			} else {
 				int times = rule.satisfy(this);
@@ -284,25 +284,6 @@ public class PMembrane implements Membrane {
 		for (Tunnel t : tunnels)
 			t.pushResult();
 		return fetchedRules;
-	}
-
-	private String nameDim = null;
-
-	@Override
-	public String getNameDim() {
-		if (nameDim == null) {
-			nameDim = new String(name);
-			boolean first = true;
-			for (Integer dim : dimensions) {
-				nameDim += "[" + dim + "]";
-			}
-		}
-		return nameDim;
-	}
-
-	@Override
-	public String getName() {
-		return name;
 	}
 
 	@Override
@@ -407,11 +388,6 @@ public class PMembrane implements Membrane {
 		return mBuilder.toString();
 	}
 
-	@Override
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	private ConcurrentHashMap<String, Object> properties = new ConcurrentHashMap<>();
 
 	@Override
@@ -436,34 +412,8 @@ public class PMembrane implements Membrane {
 	}
 
 	@Override
-	public void setEval(Evaluator evaluator) {
-		return;// Only integer dimension used.
-	}
-
-	private LinkedList<Integer> dimensions = new LinkedList<>();
-
-	@Override
-	public void addDimension(Integer... dimensions) {
-		for (Integer dimension : dimensions) {
-			this.dimensions.add(dimension);
-		}
-	}
-
-	@Override
-	public void addDimension(String... formulas) {
-		for (String dimension : formulas) {
-			this.dimensions.add(Integer.parseInt(dimension));
-		}
-	}
-
-	@Override
-	public int dimensionCount() {
-		return dimensions.size();
-	}
-
-	@Override
-	public List<String> getDimensions() {
-		return null;
+	public void addDimension(String formula) {
+		addDimension(Long.parseLong(formula));
 	}
 
 	@Override
@@ -518,15 +468,6 @@ public class PMembrane implements Membrane {
 	@Override
 	public Map<String, Object> getProperties() {
 		return properties;
-	}
-
-	@Override
-	public void fixDimension() {
-	}
-
-	@Override
-	public Evaluator getEval() {
-		return null;
 	}
 
 	private boolean deleted = false;
@@ -608,5 +549,4 @@ public class PMembrane implements Membrane {
 	public List<Tunnel> getTunnels() {
 		return tunnels;
 	}
-
 }

@@ -12,8 +12,8 @@ import upsimulator.interfaces.Membrane;
  */
 public class PromoterCondition extends PObject implements Condition {
 
-	public PromoterCondition(PObject obj) {
-		super(obj);
+	public PromoterCondition(PromoterCondition promoterCondition) {
+		super(promoterCondition);
 	}
 
 	public PromoterCondition(String type, String... dims) {
@@ -50,6 +50,8 @@ public class PromoterCondition extends PObject implements Condition {
 
 	@Override
 	public PromoterCondition deepClone() {
-		return (PromoterCondition) super.deepClone();
+		if (isFixed())
+			return this;
+		return new PromoterCondition(this);
 	}
 }

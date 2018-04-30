@@ -1,111 +1,111 @@
 package upsimulator.interfaces;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
-import net.sourceforge.jeval.EvaluationException;
-import net.sourceforge.jeval.Evaluator;
+import com.googlecode.aviator.AviatorEvaluator;
+import com.googlecode.aviator.Expression;
 
-/**
- * Defines the functions of classes which have dimensions
- * 
- * @author quan
- *
- */
-public interface Dimension {
+public class Dimension {
+	private String text;
+	private Expression expression;
+	private Object value;
 
-	/**
-	 * Set evaluator
-	 * 
-	 * @param evaluator
-	 *            evaluator used to calculate dimension
-	 */
-	public void setEval(Evaluator evaluator);
-
-	/**
-	 * Get the evaluator
-	 * 
-	 * @return the evaluator inside
-	 */
-	public Evaluator getEval();
-
-	/**
-	 * Add new integer dimensions to an instance of dimension.
-	 * 
-	 * @param dimensions
-	 *            new dimensions
-	 */
-	public default void addDimension(Integer... dimensions) {
-		for (Integer dim : dimensions)
-			getDimensions().add(String.valueOf(dim));
+	public Dimension(String text, Object value) {
+		super();
+		AviatorEvaluator.compile(text, true);
+		this.value = value;
+		this.text = text;
 	}
 
-	/**
-	 * Add new formula dimensions to an instance of dimension. For example, a[i+1]
-	 * have a dimension {@code i+1} and {@code i+1} should be added to {@code a}.
-	 * 
-	 * @param formulas
-	 *            Formula dimensions
-	 */
-	public default void addDimension(String... formulas) {
-		for (String dim : formulas)
-			getDimensions().add(dim);
+	public Dimension(String text) {
+		super();
+		AviatorEvaluator.compile(text, true);
+		this.value = null;
+		this.text = text;
 	}
 
-	/**
-	 * Return the number of total dimensions
-	 * 
-	 * @return the number of total dimensions
-	 */
-	public default int dimensionCount() {
-		return getDimensions().size();
+	public Dimension(Dimension dimension) {
+		super();
+		this.expression = dimension.expression;
+		this.value = dimension.value;
+		this.text = dimension.text;
 	}
 
-	/**
-	 * Get all the dimensions of an instance
-	 * 
-	 * @return dimensions
-	 */
-	public List<String> getDimensions();
-
-	/**
-	 * Convert all the dimensions from {@code String} to {@code Integer}
-	 * 
-	 * @return Integer dimension list
-	 */
-	public default List<Integer> getIntDimensions() {
-		List<String> dims = getDimensions();
-		ArrayList<Integer> intDims = new ArrayList<>();
-		for (String dim : dims)
-			intDims.add(Integer.parseInt(dim));
-		return intDims;
+	public String getText() {
+		return text;
 	}
 
-	/**
-	 * Calculate all the formula dimensions and fix them
-	 */
-	public default void fixDimension() {
-		List<String> fixedDim = new ArrayList<>();
-		for (String dim : getDimensions()) {
-			fixedDim.add(fix(dim));
+	public void setText(String text) {
+		this.text = text;
+	}
+
+	public Object getValue() {
+		return value;
+	}
+
+	public Long getLongValue() {
+		return (Long) value;
+	}
+
+	public Boolean getBooleanValue() {
+		return (Boolean) value;
+	}
+
+	public void setValue(Object value) {
+		this.value = value;
+	}
+
+	public void fix(Map<String, Object> env) {
+		value = expression.execute(env);
+	}
+
+	public Dimension fixClone(Map<String, Object> env) {
+		Dimension clone = new Dimension(this);
+		clone.fix(env);
+		return clone;
+	}
+
+	public boolean isFixed() {
+		return value != null;
+	}
+
+	@Override
+	public String toString() {
+		if (isFixed()) {
+			return value.toString();
+		} else {
+			return text;
 		}
-		getDimensions().clear();
-		getDimensions().addAll(fixedDim);
 	}
 
-	/**
-	 * Fix a formula by calculating it using its own evaluator
-	 * 
-	 * @param str
-	 *            Formula dimension
-	 * @return Calculated value
-	 */
-	public default String fix(String str) {
-		try {
-			return getEval().evaluate(str);
-		} catch (EvaluationException e) {
-			e.printStackTrace();
-			return str;
-		}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((text == null) ? 0 : text.hashCode());
+		result = prime * result + ((value == null) ? 0 : value.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Dimension other = (Dimension) obj;
+		if (text == null) {
+			if (other.text != null)
+				return false;
+		} else if (!text.equals(other.text))
+			return false;
+		if (value == null) {
+			if (other.value != null)
+				return false;
+		} else if (!value.equals(other.value))
+			return false;
+		return true;
 	}
 }

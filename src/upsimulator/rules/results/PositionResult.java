@@ -4,13 +4,16 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import net.sourceforge.jeval.EvaluationException;
 import net.sourceforge.jeval.Evaluator;
 import upsimulator.core.PTunnel;
 import upsimulator.exceptions.TunnelNotExistException;
+import upsimulator.interfaces.BaseDimensional;
 import upsimulator.interfaces.Condition;
 import upsimulator.interfaces.Dimension;
+import upsimulator.interfaces.Dimensional;
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Result;
 import upsimulator.interfaces.Tunnel;
@@ -24,7 +27,7 @@ import upsimulator.rules.conditions.MembranePropertyCondition;
  * @author quan
  *
  */
-public class PositionResult implements Result, Dimension, Condition {
+public class PositionResult extends BaseDimensional implements Result, Condition {
 
 	public class Target implements Cloneable {
 		public String name;
@@ -230,44 +233,43 @@ public class PositionResult implements Result, Dimension, Condition {
 	private Evaluator evaluator;
 
 	@Override
-	public void setEval(Evaluator evaluator) {
-		this.evaluator = evaluator;
-		for (ObjectResult or : ors)
-			or.setEval(evaluator);
-	}
-
-	@Override
-	public void addDimension(Integer... dimensions) {
+	public void addDimension(Long dimensions) {
 
 	}
 
 	@Override
-	public void addDimension(String... formulas) {
+	public void addDimension(String formulas) {
 
 	}
 
 	@Override
-	public int dimensionCount() {
+	public int getDimensionSize() {
 		return 1;
 	}
 
 	@Override
-	public List<String> getDimensions() {
+	public ArrayList<Dimension> getDimensions() {
 		return null;
 	}
 
-	private String getNameDim() throws EvaluationException {
-		return getTargetsName();
+	@Override
+	public String getNameDim() {
+		try {
+			return getTargetsName();
+		} catch (EvaluationException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override
-	public void fixDimension() {
+	public void fix(Map<String, Object> mappedValues) {
 		if (fixed)
 			return;
 
 		for (ObjectResult or : ors)
-			if (or instanceof Dimension)
-				or.fixDimension();
+			if (or instanceof Dimensional)
+				or.fix(mappedValues);
 
 		ArrayList<String> nameDims = new ArrayList<>();
 		for (Target target : targets) {
@@ -289,11 +291,6 @@ public class PositionResult implements Result, Dimension, Condition {
 			}
 		});
 		fixed = true;
-	}
-
-	@Override
-	public Evaluator getEval() {
-		return evaluator;
 	}
 
 	private final int satisfy(Membrane membrane, List<MembranePropertyCondition> mpcs) {

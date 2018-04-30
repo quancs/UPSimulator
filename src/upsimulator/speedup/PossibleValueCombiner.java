@@ -12,10 +12,10 @@ import java.util.List;
  */
 public class PossibleValueCombiner extends Worker {
 
-	private LinkedList<Integer[]> pValues, combine1, combine2;
+	private LinkedList<Long[]> pValues, combine1, combine2;
 	int[] combine1Dims, combine2Dims;
 
-	private PossibleValueCombiner(LinkedList<Integer[]> combine1, LinkedList<Integer[]> combine2, int[] combine1Dims, int[] combine2Dims) {
+	private PossibleValueCombiner(LinkedList<Long[]> combine1, LinkedList<Long[]> combine2, int[] combine1Dims, int[] combine2Dims) {
 		super();
 		this.combine1 = combine1;
 		this.combine2 = combine2;
@@ -23,7 +23,7 @@ public class PossibleValueCombiner extends Worker {
 		this.combine2Dims = combine2Dims;
 	}
 
-	public static PossibleValueCombiner getWorker(LinkedList<Integer[]> combine1, LinkedList<Integer[]> combine2, int[] combine1Dims, int[] combine2Dims) {
+	public static PossibleValueCombiner getWorker(LinkedList<Long[]> combine1, LinkedList<Long[]> combine2, int[] combine1Dims, int[] combine2Dims) {
 		return new PossibleValueCombiner(combine1, combine2, combine1Dims, combine2Dims);
 	}
 
@@ -32,7 +32,7 @@ public class PossibleValueCombiner extends Worker {
 		pValues = combineValue(combine1, combine2, getIntersection(combine1Dims, combine2Dims));
 	}
 
-	public LinkedList<Integer[]> getPValues() {
+	public LinkedList<Long[]> getPValues() {
 		return pValues;
 	}
 
@@ -40,10 +40,10 @@ public class PossibleValueCombiner extends Worker {
 		return getUnion(combine1Dims, combine2Dims);
 	}
 
-	private LinkedList<Integer[]> combineValue(List<Integer[]> vs1, List<Integer[]> vs2, int[] dimCompare) {
-		LinkedList<Integer[]> newPValues = new LinkedList<>();
-		for (Integer[] pv1 : vs1) {
-			for (Integer[] pv2 : vs2) {
+	private LinkedList<Long[]> combineValue(List<Long[]> vs1, List<Long[]> vs2, int[] dimCompare) {
+		LinkedList<Long[]> newPValues = new LinkedList<>();
+		for (Long[] pv1 : vs1) {
+			for (Long[] pv2 : vs2) {
 				boolean canCombine = true;
 				if (dimCompare != null) {
 					for (int dim : dimCompare) {
@@ -54,7 +54,7 @@ public class PossibleValueCombiner extends Worker {
 					}
 				}
 				if (canCombine) {
-					Integer[] pvNew = new Integer[pv1.length];
+					Long[] pvNew = new Long[pv1.length];
 					for (int k = 0; k < pv1.length; k++) {
 						if (pv1[k] != null)
 							pvNew[k] = pv1[k];

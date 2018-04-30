@@ -1,6 +1,6 @@
 package upsimulator.interfaces;
 
-public interface Obj extends Dimension, Name, Cloneable {
+public interface Obj extends Dimensional, Name, Cloneable {
 
 	/**
 	 * Deep clone a {@code Obj}. If this {@code Obj} has dimensions then dimensions

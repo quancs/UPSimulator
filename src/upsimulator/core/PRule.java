@@ -12,10 +12,10 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import net.sourceforge.jeval.Evaluator;
 import upsimulator.exceptions.UnpredictableDimensionException;
+import upsimulator.interfaces.BaseDimensional;
 import upsimulator.interfaces.Condition;
-import upsimulator.interfaces.Dimension;
+import upsimulator.interfaces.Dimensional;
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Obj;
 import upsimulator.interfaces.Result;
@@ -38,7 +38,7 @@ import upsimulator.speedup.RuleChecker;
  * @author quan
  *
  */
-public class PRule implements Rule {
+public class PRule extends BaseDimensional implements Rule {
 	private static final long serialVersionUID = -3360118464623511714L;
 
 	private static Logger logger = Logger.getLogger(PRule.class);
@@ -46,57 +46,38 @@ public class PRule implements Rule {
 	private List<Condition> conditions;
 	private List<Result> results;
 
-	private Evaluator evaluator;
-
 	public PRule(String name, String... dims) {
 		conditions = new ArrayList<>();
-		dimensions = new LinkedList<>();
-		for (String dim : dims)
-			dimensions.add(dim);
 		results = new ArrayList<>();
-		this.name = name;
-		evaluator = new Evaluator();
+		for (String dim : dims)
+			addDimension(dim);
+		setName(name);
 	}
 
 	public PRule() {
 		conditions = new ArrayList<>();
-		dimensions = new LinkedList<>();
 		results = new ArrayList<>();
-		this.name = "NoType";
-		evaluator = new Evaluator();
+		setName("NoType");
 	}
 
-	@SuppressWarnings("unchecked")
+	public PRule(PRule rule) {
+		super(rule);
+
+		conditions = new ArrayList<>(rule.conditions.size());
+		results = new ArrayList<>(rule.results.size());
+
+		for (Condition condition : rule.conditions)
+			addCondition(condition.deepClone());
+
+		for (Result result : rule.results)
+			addResult(result.deepClone());
+	}
+
 	@Override
 	public PRule deepClone() {
-		try {
-			PRule cloned = (PRule) super.clone();
-
-			cloned.evaluator = new Evaluator();
-
-			cloned.conditions = new ArrayList<>();
-			for (Condition condition : conditions) {
-				Condition conditionCloned = (Condition) condition.deepClone();
-				if (conditionCloned instanceof Dimension)
-					((Dimension) conditionCloned).setEval(cloned.evaluator);
-
-				cloned.conditions.add(conditionCloned);
-			}
-
-			cloned.results = new ArrayList<>();
-			for (Result result : results) {
-				Result resultCloned = (Result) result.deepClone();
-				if (resultCloned instanceof Dimension)
-					((Dimension) resultCloned).setEval(cloned.evaluator);
-				cloned.results.add(resultCloned);
-			}
-
-			cloned.dimensions = (LinkedList<String>) dimensions.clone();
-			return cloned;
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-		}
-		return null;
+		if (isFixed())
+			return this;
+		return new PRule(this);
 	}
 
 	@Override
@@ -112,17 +93,17 @@ public class PRule implements Rule {
 		return min;
 	}
 
-	private LinkedList<Integer[]> findValues(DimensionInfo dInfo, Membrane membrane) {
-		LinkedList<Integer[]> pValues = new LinkedList<>();
+	private LinkedList<Long[]> findValues(DimensionInfo dInfo, Membrane membrane) {
+		LinkedList<Long[]> pValues = new LinkedList<>();
 		Iterator<Obj> iter = membrane.getObjects().keySet().iterator();
 		while (iter.hasNext()) {
 			Obj obj = iter.next();
-			if (obj.getName().equals(dInfo.getObj().getName()) && obj.dimensionCount() == dInfo.getObj().dimensionCount()) {
-				Integer pValue[] = new Integer[dimensionCount()];
+			if (obj.getName().equals(dInfo.getObj().getName()) && obj.getDimensionSize() == dInfo.getObj().getDimensionSize()) {
+				Long pValue[] = new Long[getDimensionSize()];
 
 				for (int i = 0; i < dInfo.size(); i++) {
 					try {
-						pValue[dInfo.getRuleDim(i)] = obj.getIntDimensions().get(dInfo.getObjDim(i));
+						pValue[dInfo.getRuleDim(i)] = obj.getDimensions().get(dInfo.getObjDim(i)).getLongValue();
 					} catch (Exception e) {
 						e.printStackTrace();
 						System.err.println(membrane.toString());
@@ -136,10 +117,10 @@ public class PRule implements Rule {
 		return pValues;
 	}
 
-	private LinkedList<Integer[]> combineValue(List<Integer[]> vs1, List<Integer[]> vs2, int[] dimCompare) {
-		LinkedList<Integer[]> newPValues = new LinkedList<>();
-		for (Integer[] pv1 : vs1) {
-			for (Integer[] pv2 : vs2) {
+	private LinkedList<Long[]> combineValue(List<Long[]> vs1, List<Long[]> vs2, int[] dimCompare) {
+		LinkedList<Long[]> newPValues = new LinkedList<>();
+		for (Long[] pv1 : vs1) {
+			for (Long[] pv2 : vs2) {
 				boolean canCombine = true;
 				if (dimCompare != null) {
 					for (int dim : dimCompare) {
@@ -150,7 +131,7 @@ public class PRule implements Rule {
 					}
 				}
 				if (canCombine) {
-					Integer[] pvNew = new Integer[dimensionCount()];
+					Long[] pvNew = new Long[getDimensionSize()];
 					for (int k = 0; k < pv1.length; k++) {
 						if (pv1[k] != null)
 							pvNew[k] = pv1[k];
@@ -171,11 +152,11 @@ public class PRule implements Rule {
 	 *            the membrane current rule in
 	 * @return All the possible value
 	 */
-	private List<Integer[]> getPossibleValues(Membrane membrane) {
-		LinkedList<LinkedList<Integer[]>> pValuesList = new LinkedList<>();
+	private List<Long[]> getPossibleValues(Membrane membrane) {
+		LinkedList<LinkedList<Long[]>> pValuesList = new LinkedList<>();
 		LinkedList<int[]> pValuesDim = new LinkedList<>();
 		for (DimensionInfo dInfo : dInfos) {
-			LinkedList<Integer[]> pList = findValues(dInfo, membrane);
+			LinkedList<Long[]> pList = findValues(dInfo, membrane);
 			if (pList.size() == 0)
 				return new LinkedList<>();
 			pValuesList.add(pList);
@@ -190,7 +171,7 @@ public class PRule implements Rule {
 		LinkedList<PossibleValueCombiner> workers = new LinkedList<>();
 		for (int total = pValuesList.size() - 1, current = 1; workers.size() != 0 || pValuesList.size() > 1;) {
 			for (; pValuesList.size() > 1;) {
-				LinkedList<Integer[]> last = pValuesList.removeFirst(), lastComp = null;
+				LinkedList<Long[]> last = pValuesList.removeFirst(), lastComp = null;
 				int[] lastDims = pValuesDim.removeFirst(), lastDimsComp = null;
 
 				for (int i = 0; i < pValuesDim.size(); i++) {
@@ -248,19 +229,17 @@ public class PRule implements Rule {
 
 	private void initDimInfos() throws UnpredictableDimensionException {
 		dInfos = new ArrayList<>();
-		graph = new ArrayList<>(dimensions.size());
+		graph = new ArrayList<>(getDimensionSize());
 
-		for (int i = 0; i < dimensionCount(); i++)
+		for (int i = 0; i < getDimensionSize(); i++)
 			graph.add(new ArrayList<>());
 
 		for (Condition condition : conditions) {
 			if ((condition instanceof Obj) && !(condition instanceof InhibitorCondition)) {
 				DimensionInfo dInfo = new DimensionInfo((Obj) condition);
-				for (int j = 0; j < ((Obj) condition).dimensionCount(); j++) {
-					String cDim = ((Obj) condition).getDimensions().get(j);
-					for (int i = 0; i < dimensions.size(); i++) {
-						String dimension = dimensions.get(i);
-						if (cDim.equals("#{" + dimension + "}")) {
+				for (int j = 0; j < ((Obj) condition).getDimensionSize(); j++) {
+					for (int i = 0; i < getDimensionSize(); i++) {
+						if (((Obj) condition).get(j).equals(get(i))) {
 							dInfo.addDimMap(j, i);
 							if (!graph.get(i).contains(dInfo))
 								graph.get(i).add(dInfo);
@@ -304,15 +283,15 @@ public class PRule implements Rule {
 
 		for (int i = 0; i < graph.size(); i++) {
 			if (graph.get(i).size() == 0) {
-				throw new UnpredictableDimensionException(this, dimensions.get(i));// Possible wrong form: Rule r1[i][j] = e[i] -> e[j]; Rule r1[i][j] = e[i] -> ;
-																					// Rule r1[i][j] = e[i] -> | !e[j]; ");
+				throw new UnpredictableDimensionException(this, getDimensions().get(i).toString());// Possible wrong form: Rule r1[i][j] = e[i] -> e[j]; Rule r1[i][j] = e[i] -> ;
+				// Rule r1[i][j] = e[i] -> | !e[j]; ");
 			}
 		}
 	}
 
 	@Override
 	public int fetch(Membrane membrane, int times) {
-		if (dimensions.size() > 0 && !fixed) {
+		if (getDimensionSize() > 0 && isFixed() == false) {
 			logger.error("Rule " + this + " has uncomputed dimension.");
 			return 0;
 		} else {
@@ -372,9 +351,6 @@ public class PRule implements Rule {
 			else
 				conditions.add(0, condition);
 		}
-		if (condition instanceof Dimension)
-			((Dimension) condition).setEval(evaluator);
-
 		if (condition instanceof Result)
 			addResult((Result) condition);
 	}
@@ -387,52 +363,6 @@ public class PRule implements Rule {
 		results.add(result);
 		if (result instanceof Condition)
 			addCondition((Condition) result);
-
-		if (result instanceof Dimension)
-			((Dimension) result).setEval(evaluator);
-	}
-
-	private LinkedList<String> dimensions;
-
-	@Override
-	public void addDimension(String... formulas) {
-		for (int i = 0; i < formulas.length; i++) {
-			dimensions.add(formulas[i]);
-		}
-	}
-
-	@Override
-	public void addDimension(Integer... dimensions) {
-		throw new RuntimeException("Integer dimensions in rule is not allowed.  " + toString());
-	}
-
-	@Override
-	public int dimensionCount() {
-		return dimensions.size();
-	}
-
-	private String name;
-
-	@Override
-	public String getNameDim() {
-		String name = this.name + "";
-		for (int i = 0; i < dimensions.size(); i++) {
-			if (i == 0)
-				name += dimensions.get(i);
-			else
-				name += "," + dimensions.get(i);
-		}
-		return name;
-	}
-
-	@Override
-	public String getName() {
-		return name;
-	}
-
-	@Override
-	public List<String> getDimensions() {
-		return dimensions;
 	}
 
 	private class DimensionInfo {
@@ -515,24 +445,10 @@ public class PRule implements Rule {
 	}
 
 	@Override
-	public void setEval(Evaluator evaluator) {
-		throw new RuntimeException("PRule doesnot need evaluator. it creates one.");
-	}
-
-	@Override
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	@Override
 	public String toString() {
 		StringBuilder sBuilder = new StringBuilder("Rule ");
-		sBuilder.append(getName());
-		for (String d : dimensions) {
-			sBuilder.append("[");
-			sBuilder.append(d);
-			sBuilder.append("]");
-		}
+		sBuilder.append(getNameDim());
+
 		sBuilder.append(" = ");
 
 		for (Condition condition : conditions) {
@@ -596,19 +512,6 @@ public class PRule implements Rule {
 		return results;
 	}
 
-	private boolean fixed = false;
-
-	@Override
-	public void fixDimension() {
-		for (Condition condition : conditions)
-			if (condition instanceof Dimension)
-				((Dimension) condition).fixDimension();
-		for (Result result : results)
-			if (result instanceof Dimension)
-				((Dimension) result).fixDimension();
-		fixed = true;
-	}
-
 	/**
 	 * Rule with dimensions check all the satisfied rule of it.
 	 * 
@@ -620,7 +523,7 @@ public class PRule implements Rule {
 		if (dInfos == null)
 			initDimInfos();
 		Calendar t1 = Calendar.getInstance();
-		List<Integer[]> pValues = getPossibleValues(membrane);
+		List<Long[]> pValues = getPossibleValues(membrane);
 		Calendar t2 = Calendar.getInstance();
 
 		HashMap<Rule, Integer> satisfiedRules = new HashMap<>();
@@ -658,8 +561,14 @@ public class PRule implements Rule {
 	}
 
 	@Override
-	public Evaluator getEval() {
-		return evaluator;
+	public void fix(Map<String, Object> mappedValues) {
+		super.fix(mappedValues);
+		for (Condition condition : conditions)
+			if (condition instanceof Dimensional)
+				((Dimensional) condition).fix(mappedValues);
+		for (Result result : results)
+			if (result instanceof Dimensional)
+				((Dimensional) result).fix(mappedValues);
 	}
 
 }

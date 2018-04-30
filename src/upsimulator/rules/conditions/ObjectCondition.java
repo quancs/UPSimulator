@@ -13,16 +13,21 @@ import upsimulator.interfaces.Membrane;
 public class ObjectCondition extends PObject implements Condition {
 	int num = 1;
 
+	public ObjectCondition() {
+		super();
+	}
+
+	public ObjectCondition(ObjectCondition objectCondition) {
+		super(objectCondition);
+		setNum(objectCondition.getNum());
+	}
+
 	public int getNum() {
 		return num;
 	}
 
 	public void setNum(int num) {
 		this.num = num;
-	}
-
-	public ObjectCondition() {
-		super();
 	}
 
 	public ObjectCondition(PObject object, int num) {
@@ -70,7 +75,9 @@ public class ObjectCondition extends PObject implements Condition {
 
 	@Override
 	public ObjectCondition deepClone() {
-		return (ObjectCondition) super.deepClone();
+		if (isFixed())
+			return this;
+		return new ObjectCondition(this);
 	}
 
 }

@@ -19,7 +19,7 @@ import upsimulator.interfaces.Tunnel.TunnelType;
 public class MembraneDissolveResult implements Result {
 
 	@Override
-	public MembraneDissolveResult deepClone() throws CloneNotSupportedException {
+	public MembraneDissolveResult deepClone() {
 		return this;
 	}
 

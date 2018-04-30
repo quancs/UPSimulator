@@ -1,13 +1,7 @@
 package upsimulator.rules.conditions;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import net.sourceforge.jeval.EvaluationException;
-import net.sourceforge.jeval.Evaluator;
-import upsimulator.exceptions.UnsupportedDimensionException;
+import upsimulator.interfaces.BaseDimensional;
 import upsimulator.interfaces.Condition;
-import upsimulator.interfaces.Dimension;
 import upsimulator.interfaces.Membrane;
 
 /**
@@ -16,61 +10,23 @@ import upsimulator.interfaces.Membrane;
  * @author quan
  *
  */
-public class BooleanCondition implements Dimension, Condition {
+public class BooleanCondition extends BaseDimensional implements Condition {
 
-	@Override
-	public void addDimension(Integer... dimensions) {
-		throw new UnsupportedDimensionException(this, dimensions);
+	public BooleanCondition() {
+
 	}
 
-	@SuppressWarnings("unchecked")
-	public Condition deepClone() {
-		// no need to deep clone dimensions
-		try {
-			BooleanCondition cloned = (BooleanCondition) super.clone();
-			cloned.evaluator = null;
-			cloned.dimensions = (LinkedList<String>) dimensions.clone();
-			return cloned;
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-		}
-		return null;
+	public BooleanCondition(BooleanCondition booleanCondition) {
+		super(booleanCondition);
 	}
 
-	private LinkedList<String> dimensions = new LinkedList<>();
-
-	@Override
-	public void addDimension(String... formulas) {
-		dimensions.add(formulas[0]);
-		// for (String formula : formulas) {
-		// dimensions.add(formula);
-		// }
-	}
-
-	@Override
-	public int dimensionCount() {
-		return 1;
-	}
-
-	@Override
-	public List<String> getDimensions() {
-		return dimensions;
+	public BooleanCondition(String formula) {
+		addDimension(formula);
 	}
 
 	@Override
 	public int satisfy(Membrane membrane) {
-		boolean satisfied = true;
-		String formula = dimensions.get(0);
-		try {
-			evaluator.parse("");
-			if (!evaluator.getBooleanResult(formula)) {
-				satisfied = false;
-			}
-		} catch (EvaluationException e) {
-			System.err.println("bad expr=" + formula);
-			e.printStackTrace();
-		}
-		if (satisfied)
+		if (get(0).getBooleanValue())
 			return Integer.MAX_VALUE;
 		else
 			return 0;
@@ -86,25 +42,16 @@ public class BooleanCondition implements Dimension, Condition {
 
 	}
 
-	private Evaluator evaluator;
-
-	@Override
-	public void setEval(Evaluator evaluator) {
-		this.evaluator = evaluator;
-	}
-
 	@Override
 	public String toString() {
-		String string = dimensions.getFirst();
-		if (dimensions.size() > 1)
-			string += "&";
-		for (int i = 1; i < dimensions.size(); i++)
-			string += "&" + dimensions.get(i);
-		return string;
+		return get(0).toString();
 	}
 
 	@Override
-	public Evaluator getEval() {
-		return evaluator;
+	public BooleanCondition deepClone() {
+		if (isFixed())
+			return this;
+		BooleanCondition bCondition = new BooleanCondition(this);
+		return bCondition;
 	}
 }

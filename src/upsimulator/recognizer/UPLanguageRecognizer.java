@@ -109,7 +109,7 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 			for (RecognizerAction action : actions)
 				UPSLogger.error(this, action);
 		}
-
+		logger.info("visitStart end");
 		return (T) skin;
 	}
 
@@ -326,7 +326,7 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 		PObject pobject = new PObject();
 		pobject.setName(ctx.objName().getText());
 		for (UPLanguageParser.IntDimContext idc : ctx.intDim())
-			pobject.addDimension(Integer.parseInt(idc.getText()));
+			pobject.addDimension(Long.parseLong(idc.getText()));
 
 		Object object[] = new Object[2];
 		object[0] = pobject;
@@ -516,7 +516,7 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 	@Override
 	public T visitBoolCondition(UPLanguageParser.BoolConditionContext ctx) {
 		BooleanCondition bCondition = new BooleanCondition();
-		bCondition.addDimension((String) getRuleFormulaString(ctx.getText(), currRule.getDimensions()));
+		bCondition.addDimension(ctx.getText());
 
 		return (T) bCondition;
 	}
@@ -592,43 +592,7 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 
 	@Override
 	public T visitFormulaDim(UPLanguageParser.FormulaDimContext ctx) {
-		return (T) getRuleFormulaString(ctx.getText(), currRule.getDimensions());
-	}
-
-	/**
-	 * 在规则的表达式维度（算术的或者逻辑的）中加入格式#{ }
-	 * 
-	 * @param text
-	 * @param dims
-	 * @return
-	 */
-	private String getRuleFormulaString(String text, List<String> dims) {
-		text = " " + text + " ";
-		// 对象的维度中 规则维度 的前后都不是 字母和数字 则说明 该维度就是规则的维度，将之改成 #{ * };
-		for (String dim : dims) {
-			for (int i = 1; i < text.length() - 1;) {
-				String subText = text.substring(i);
-				if (subText.startsWith(dim)) {
-					String front = text.substring(0, i);
-					String back = text.substring(i + dim.length());
-
-					Character flast = front.charAt(front.length() - 1);
-					Character bfirst = back.charAt(0);
-
-					boolean frontNotLetterNum = !Character.isLetterOrDigit(flast);
-					boolean backNotLetterNum = !Character.isLetterOrDigit(bfirst);
-
-					if (backNotLetterNum && frontNotLetterNum) {
-						text = front + "#{" + dim + "}" + back;
-						i = front.length() + 3 + dim.length();
-					} else
-						i++;
-				} else
-					i++;
-			}
-		}
-
-		return text.trim();
+		return (T) ctx.getText();
 	}
 
 	@Override

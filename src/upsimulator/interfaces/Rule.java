@@ -12,7 +12,7 @@ import upsimulator.exceptions.UnpredictableDimensionException;
  * @author quan
  *
  */
-public interface Rule extends Dimension, Name, Cloneable {
+public interface Rule extends Dimensional, Name, Cloneable {
 	static HashMap<String, List<Rule>> ruleSet = new HashMap<>();// 规则集
 
 	/**

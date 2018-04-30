@@ -21,9 +21,8 @@ public interface Result extends Cloneable {
 	 * Deep clone a result
 	 * 
 	 * @return the cloned result
-	 * @throws CloneNotSupportedException
 	 */
-	public Result deepClone() throws CloneNotSupportedException;
+	public Result deepClone();
 
 	/**
 	 * Select which tunnel this result will go through
