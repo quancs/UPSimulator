@@ -12,14 +12,14 @@ public class Dimension {
 
 	public Dimension(String text, Object value) {
 		super();
-		AviatorEvaluator.compile(text, true);
+		expression = AviatorEvaluator.compile(text, true);
 		this.value = value;
 		this.text = text;
 	}
 
 	public Dimension(String text) {
 		super();
-		AviatorEvaluator.compile(text, true);
+		expression = AviatorEvaluator.compile(text, true);
 		this.value = null;
 		this.text = text;
 	}
@@ -37,6 +37,7 @@ public class Dimension {
 
 	public void setText(String text) {
 		this.text = text;
+		expression = AviatorEvaluator.compile(text, true);
 	}
 
 	public Object getValue() {

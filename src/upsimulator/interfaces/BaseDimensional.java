@@ -76,8 +76,13 @@ public abstract class BaseDimensional implements Name, Dimensional {
 
 	@Override
 	public void fix(Map<String, Object> mappedValues) {
+		if (dimensions == null) {
+			fixed = true;
+			return;
+		}
 		for (Dimension dimension : dimensions)
 			dimension.fix(mappedValues);
+		fixed = true;
 	}
 
 	@Override
@@ -99,6 +104,7 @@ public abstract class BaseDimensional implements Name, Dimensional {
 	}
 
 	private String nameDim;
+	private boolean nameDimStatus;
 
 	@Override
 	public String getNameDim() {
@@ -107,6 +113,16 @@ public abstract class BaseDimensional implements Name, Dimensional {
 			if (getDimensionSize() > 0) {
 				for (Dimension dimension : dimensions)
 					nameDim += "[" + dimension + "]";
+			}
+			nameDimStatus = isFixed();
+		} else {
+			if (nameDimStatus != isFixed()) {
+				nameDim = name;
+				if (getDimensionSize() > 0) {
+					for (Dimension dimension : dimensions)
+						nameDim += "[" + dimension + "]";
+				}
+				nameDimStatus = isFixed();
 			}
 		}
 		return nameDim;

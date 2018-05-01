@@ -42,7 +42,7 @@ public class PObject extends BaseDimensional implements Obj {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((getName() == null) ? 0 : getName().hashCode());
+		result = prime * result + ((getNameDim() == null) ? 0 : getNameDim().hashCode());
 		return result;
 	}
 
@@ -54,7 +54,7 @@ public class PObject extends BaseDimensional implements Obj {
 			return false;
 		if (!(obj instanceof Obj))
 			return false;
-		PObject other = (PObject) obj;
+		Obj other = (Obj) obj;
 
 		if (getName() == null) {
 			if (other.getName() != null)

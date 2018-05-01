@@ -3,6 +3,7 @@ package upsimulator.rules.conditions;
 import upsimulator.core.PObject;
 import upsimulator.interfaces.Condition;
 import upsimulator.interfaces.Membrane;
+import upsimulator.interfaces.Obj;
 
 /**
  * Represents the object that will be consumed in reaction.
@@ -78,6 +79,16 @@ public class ObjectCondition extends PObject implements Condition {
 		if (isFixed())
 			return this;
 		return new ObjectCondition(this);
+	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj);
 	}
 
 }
