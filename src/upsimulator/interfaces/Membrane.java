@@ -93,7 +93,7 @@ public interface Membrane extends Name, Cloneable, Dimensional {
 	 *            P object
 	 * @return the quantity of object
 	 */
-	public int getNumOf(Obj object);
+	public Object getNumOf(Obj object);
 
 	/**
 	 * Add object to this membrane
@@ -103,7 +103,7 @@ public interface Membrane extends Name, Cloneable, Dimensional {
 	 * @param num
 	 *            the quantity of object
 	 */
-	public void addObject(Obj object, int num);
+	public void addObject(Obj object, Object num);
 
 	/**
 	 * Reduce object in this membrane
@@ -115,14 +115,14 @@ public interface Membrane extends Name, Cloneable, Dimensional {
 	 * @return if the object's quantity is greater than num, then reduce it and
 	 *         return {@code true}
 	 */
-	public boolean reduceObject(Obj object, int num);
+	public boolean reduceObject(Obj object, Object num);
 
 	/**
 	 * Get all the objects contained in this membrane
 	 * 
 	 * @return objects and their quantity
 	 */
-	public Map<Obj, Integer> getObjects();
+	public Map<Obj, Object> getObjects();
 
 	/**
 	 * Add a new rule

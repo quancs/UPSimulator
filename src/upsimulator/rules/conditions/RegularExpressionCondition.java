@@ -34,10 +34,10 @@ public class RegularExpressionCondition implements Condition {
 	public int satisfy(Membrane membrane) {
 		boolean match;
 		if (positive) {
-			int num = membrane.getNumOf(positiveObject);
+			int num = (Integer)membrane.getNumOf(positiveObject);
 			match = pattern.matcher(genStr(num, positiveObject.getName())).matches();
 		} else {
-			int num = membrane.getNumOf(negativeObject);
+			int num = (Integer)membrane.getNumOf(negativeObject);
 			match = pattern.matcher(genStr(num, negativeObject.getName())).matches();
 		}
 		if (match)

@@ -32,7 +32,7 @@ public class InhibitorCondition extends PObject implements Condition {
 
 	@Override
 	public int satisfy(Membrane membrane) {
-		if (membrane.getNumOf(this) == 0) {
+		if ((Integer)membrane.getNumOf(this) == 0) {
 			return Integer.MAX_VALUE;
 		} else
 			return 0;

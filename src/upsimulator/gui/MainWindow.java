@@ -899,7 +899,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 		for (Membrane son : ((PMembrane) membrane).getChildren()) {
 			node.add(genTreeNode(son, null));
 		}
-		for (Entry<Obj, Integer> obj : membrane.getObjects().entrySet()) {
+		for (Entry<Obj, Object> obj : membrane.getObjects().entrySet()) {
 			node.add(new DefaultMutableTreeNode(obj.getKey().getNameDim() + "^" + obj.getValue()));
 		}
 

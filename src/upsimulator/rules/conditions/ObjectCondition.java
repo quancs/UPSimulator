@@ -3,7 +3,6 @@ package upsimulator.rules.conditions;
 import upsimulator.core.PObject;
 import upsimulator.interfaces.Condition;
 import upsimulator.interfaces.Membrane;
-import upsimulator.interfaces.Obj;
 
 /**
  * Represents the object that will be consumed in reaction.
@@ -43,7 +42,7 @@ public class ObjectCondition extends PObject implements Condition {
 
 	@Override
 	public int satisfy(Membrane membrane) {
-		return membrane.getNumOf(this) / num;
+		return (Integer)membrane.getNumOf(this) / num;
 	}
 
 	@Override

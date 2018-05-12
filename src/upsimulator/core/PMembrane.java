@@ -34,7 +34,7 @@ import upsimulator.rules.conditions.PriorityCondition;
 public class PMembrane extends BaseDimensional implements Membrane {
 	private static final long serialVersionUID = -1932793470654198760L;
 
-	private ConcurrentHashMap<Obj, Integer> objects = new ConcurrentHashMap<Obj, Integer>();
+	private ConcurrentHashMap<Obj, Object> objects = new ConcurrentHashMap<Obj, Object>();
 	private ArrayList<Rule> rules = new ArrayList<>();
 
 	/**
@@ -109,12 +109,12 @@ public class PMembrane extends BaseDimensional implements Membrane {
 			for (Rule rule : m.getRules())
 				cloned.addRule(rule.deepClone());
 			// clone objects
-			Iterator<Entry<Obj, Integer>> iter = m.getObjects().entrySet().iterator();
+			Iterator<Entry<Obj, Object>> iter = m.getObjects().entrySet().iterator();
 			while (iter.hasNext()) {
-				Entry<Obj, Integer> entry = iter.next();
+				Entry<Obj, Object> entry = iter.next();
 				Obj key = entry.getKey();
-				Integer val = entry.getValue();
-				cloned.addObject(key.deepClone(), val.intValue());
+				Object val = entry.getValue();
+				cloned.addObject(key.deepClone(), val);
 			}
 			// clone properties
 			Iterator<Entry<String, Object>> iter2 = m.getProperties().entrySet().iterator();
@@ -145,7 +145,7 @@ public class PMembrane extends BaseDimensional implements Membrane {
 	}
 
 	@Override
-	public int getNumOf(Obj object) {
+	public Object getNumOf(Obj object) {
 		if (objects.containsKey(object)) {
 			return objects.get(object);
 		}
@@ -153,29 +153,57 @@ public class PMembrane extends BaseDimensional implements Membrane {
 	}
 
 	@Override
-	public void addObject(Obj object, int num) {
+	public void addObject(Obj object, Object num) {
 		if (object instanceof Condition)
 			System.err.println("add a condition as object");
 
 		if (!deleted) {
-			if (objects.containsKey(object)) {
-				objects.put(object, objects.get(object) + num);
+			if (object.getClass() == PNumericObject.class) {
+				Double stored = (Double) objects.get(object);
+				if (stored != null) {
+					objects.put(object, stored + (Double) num);
+				} else {
+					objects.put(object, num);
+				}
 			} else {
-				objects.put(object, num);
+				Integer stored = (Integer) objects.get(object);
+				if (stored != null) {
+					objects.put(object, stored + (Integer) num);
+				} else {
+					objects.put(object, num);
+				}
 			}
+
 		}
 	}
 
 	@Override
-	public boolean reduceObject(Obj object, int num) {
-		if (objects.containsKey(object) && objects.get(object) >= num) {
-			objects.put(object, objects.get(object) - num);
-			if (objects.get(object) == 0) {
-				objects.remove(object);
+	public boolean reduceObject(Obj object, Object num) {
+		if (object.getClass() == PNumericObject.class) {
+			Double storedNum = (Double) objects.get(object);
+			if (storedNum != null && storedNum >= (Double) num) {
+				storedNum = storedNum - (Double) num;
+				if (storedNum == 0) {
+					objects.remove(object);
+				} else {
+					objects.put(object, storedNum);
+				}
+				return true;
 			}
-			return true;
+			return false;
+		} else {
+			Integer storedNum = (Integer) objects.get(object);
+			if (storedNum != null && storedNum >= (Integer) num) {
+				storedNum = storedNum - (Integer) num;
+				if (storedNum == 0) {
+					objects.remove(object);
+				} else {
+					objects.put(object, storedNum);
+				}
+				return true;
+			}
+			return false;
 		}
-		return false;
 	}
 
 	@Override
@@ -198,7 +226,7 @@ public class PMembrane extends BaseDimensional implements Membrane {
 	}
 
 	@Override
-	public Map<Obj, Integer> getObjects() {
+	public Map<Obj, Object> getObjects() {
 		return objects;
 	}
 
@@ -304,22 +332,38 @@ public class PMembrane extends BaseDimensional implements Membrane {
 
 		if (withObject && objects.size() > 0) {
 			StringBuilder oBuilder = new StringBuilder(space + "Object ");
-			Iterator<Entry<Obj, Integer>> iter = objects.entrySet().iterator();
+			Iterator<Entry<Obj, Object>> iter = objects.entrySet().iterator();
 			while (iter.hasNext()) {
-				Entry<Obj, Integer> entry = iter.next();
+				Entry<Obj, Object> entry = iter.next();
 				Obj key = entry.getKey();
 				Object val = entry.getValue();
 				if (iter.hasNext()) {
-					if ((Integer) val > 1) {
-						oBuilder.append(key + "^" + val + ", ");
+					if (val instanceof Integer) {
+						if ((Integer) val > 1) {
+							oBuilder.append(key + "^" + val + ", ");
+						} else {
+							oBuilder.append(key + ", ");
+						}
 					} else {
-						oBuilder.append(key + ", ");
+						if ((Double) val > 0) {
+							oBuilder.append(key + "^" + val + ", ");
+						} else {
+							oBuilder.append(key + ", ");
+						}
 					}
 				} else {
-					if ((Integer) val > 1) {
-						oBuilder.append(key + "^" + val + "; \n");
+					if (val instanceof Integer) {
+						if ((Integer) val > 1) {
+							oBuilder.append(key + "^" + val + "; \n");
+						} else {
+							oBuilder.append(key + "; \n");
+						}
 					} else {
-						oBuilder.append(key + "; \n");
+						if ((Double) val > 0) {
+							oBuilder.append(key + "^" + val + "; \n");
+						} else {
+							oBuilder.append(key + "; \n");
+						}
 					}
 				}
 			}
@@ -448,7 +492,7 @@ public class PMembrane extends BaseDimensional implements Membrane {
 			addRule((Rule) rule.deepClone());
 		}
 
-		Map<Obj, Integer> objmap = template.getObjects();
+		Map<Obj, Object> objmap = template.getObjects();
 		Iterator<?> iter = objmap.entrySet().iterator();
 		while (iter.hasNext()) {
 			Map.Entry<?, ?> entry = (Map.Entry<?, ?>) iter.next();
