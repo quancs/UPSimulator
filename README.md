@@ -1,7 +1,7 @@
 # UPSimulator
 UPSimulator is an universal and high performance simulator for membrane computing. Now, we have supported most features of cell-like P system & tissue-like P system. Visit https://github.com/quancs/UPSimulator/releases to download the [latest version](https://github.com/quancs/UPSimulator/releases).
 # UPLanguage
-To describe the complex rules in various types of P systems, we designed a new language called UPLanguage. UPLanguage aims to describe Cell-like P System (supported now), Tissue-like P System (supported now), Neural-like P System (supported now), and the mixed P system of cell-like, tissue-like and neural-like. The UPLanguage description string is the input of UPSimulator, and the grammar file of UPL is placed in resources/grammar/UPLanguage.g4.
+To describe the complex rules in various types of P systems, we designed a new language called UPLanguage. UPLanguage aims to describe Cell-like P System (supported now), Tissue-like P System (supported now), Neural-like P System (supported in 2.0.0), and the mixed P system of cell-like, tissue-like and neural-like. The UPLanguage description string is the input of UPSimulator, and the grammar file of UPL is placed in resources/grammar/UPLanguage.g4.
 
 # Usage
 ## Required Environment
@@ -167,7 +167,7 @@ In the code above, **a** and **a[i]** are Object Conditions, and **a^2** means t
 Rule r1= a(aa)*/ a^2 -> a;
 Rule r2= b(bb)+/ b^2 -> b;
 ```
-In the code above, **a(aa)** and **b(bb)+** are both Regular Expression Conditions, and **a** represents positive spike and **b** represents negative spike.
+In the code above, **a(aa)** and **b(bb)+** are both Regular Expression Conditions, and both **a** and **b** represent spike.
 
 #### Property Condition or Status Condition
 ```
