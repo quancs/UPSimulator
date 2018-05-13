@@ -581,7 +581,7 @@ public class PMembrane extends BaseDimensional implements Membrane {
 		for (Tunnel t : tunnels) {
 			if (t.getType() == type) {
 				if (target == null) {
-					tunnelsTemp.add(t);
+					return t;
 				} else if (t.getTargetsName().equals(target)) {
 					tunnelsTemp.add(t);
 				}
