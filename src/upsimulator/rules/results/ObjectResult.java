@@ -47,7 +47,7 @@ public class ObjectResult extends PObject implements Result {
 
 	@Override
 	public void setResult(Membrane membrane, int times) {
-		membrane.addObject(new PObject(this), num);
+		membrane.addObject(new PObject(this), num * times);
 	}
 
 	@Override
