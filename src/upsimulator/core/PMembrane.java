@@ -576,17 +576,21 @@ public class PMembrane extends BaseDimensional implements Membrane {
 
 	@Override
 	public Tunnel getTunnel(TunnelType type, String target) {
+		LinkedList<Tunnel> tunnelsTemp = new LinkedList<>();
+
 		for (Tunnel t : tunnels) {
 			if (t.getType() == type) {
 				if (target == null) {
-					return t;
-				} else if (t.getTargetsName() == target) {
-					return t;
+					tunnelsTemp.add(t);
+				} else if (t.getTargetsName().equals(target)) {
+					tunnelsTemp.add(t);
 				}
-				return null;
 			}
 		}
-		return null;
+		if (tunnelsTemp.isEmpty())
+			return null;
+		else
+			return tunnelsTemp.get((int) (Math.random() * tunnelsTemp.size()));
 	}
 
 	@Override
