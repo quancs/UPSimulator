@@ -70,7 +70,8 @@ public class PRule extends BaseDimensional implements Rule {
 			addCondition(condition.deepClone());
 
 		for (Result result : rule.results)
-			addResult(result.deepClone());
+			if (!(result instanceof Condition))
+				addResult(result.deepClone());
 	}
 
 	@Override

@@ -111,28 +111,19 @@ public class PositionResult extends BaseDimensional implements Result, Condition
 			or.setResult(membrane, times);
 	}
 
-	private PositionResult cloned = null;
-
 	@Override
 	public PositionResult deepClone() {
 		try {
-			/* 因为PositionResult既是Result、又是Condition，因此此方法会被调用两次，第一次clone，第二次直接返回 */
-			if (cloned == null) {
-				// MemPropertyCondition没必要clone
-				cloned = (PositionResult) super.clone();
-				cloned.ors = new ArrayList<>();
-				for (ObjectResult or : ors)
-					cloned.addObjectResult(or.deepClone());
-				cloned.evaluator = null;
-				cloned.targets = new ArrayList<>(targets.size());
-				for (Target target : targets)
-					cloned.targets.add(target.deepClone());
-				return cloned;
-			} else {
-				PositionResult temp = cloned;
-				cloned = null;
-				return temp;
-			}
+			// MemPropertyCondition没必要clone
+			PositionResult cloned = (PositionResult) super.clone();
+			cloned.ors = new ArrayList<>();
+			for (ObjectResult or : ors)
+				cloned.addObjectResult(or.deepClone());
+			cloned.evaluator = null;
+			cloned.targets = new ArrayList<>(targets.size());
+			for (Target target : targets)
+				cloned.targets.add(target.deepClone());
+			return cloned;
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
 		}
