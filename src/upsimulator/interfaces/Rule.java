@@ -7,7 +7,7 @@ import java.util.Map;
 import upsimulator.exceptions.UnpredictableDimensionException;
 
 /**
- * 规则：规则的优先级不一定会被使用，只有当规则中存在优先级条件的时候才会被使用
+ * A general implementation of Rule
  * 
  * @author quan
  *

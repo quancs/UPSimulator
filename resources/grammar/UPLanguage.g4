@@ -41,8 +41,11 @@ prule			:	'Rule' ruleName ('[' abcDim ']')* '=' (regCondition '/')? propertyCond
 					('|' condition ('&' condition)* )? priorityCondition? ';';
 ruleName		:	Name | Letters;
 condition		:	promoterCondition | inhibitorCondition  | boolCondition ;
-result			:	objResult | positionResult | memDissolveResult | memCreateResult;
-memCreateResult	: 	membraneType ':' membraneName ('[' formulaDim ']')* ('{' objResult+ '}')? ;
+result			:	objResult | positionResult | memDissolveResult | memCreateResult | memDivisionResult;
+memDivisionResult: 'divide' '(' '{' additionalResults '}' ',' '{' additionalResults '}' ')';
+additionalResults	: 	propertyResult* objResult*;
+
+memCreateResult	: 	membraneType ':' membraneName ('[' formulaDim ']')* ('{' additionalResults '}')? ;
 memDissolveResult:	'dissolve';
 propertyResult:	'<' (propertyName '=')? propertyValue '>';//Default propertyName=Status
 objResult		:	objName ('[' formulaDim ']')* ('^' objNum)?;

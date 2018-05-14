@@ -1,6 +1,8 @@
 package upsimulator.core;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -9,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import upsimulator.exceptions.TunnelNotExistException;
@@ -16,6 +19,7 @@ import upsimulator.exceptions.UnpredictableDimensionException;
 import upsimulator.interfaces.BaseDimensional;
 import upsimulator.interfaces.Condition;
 import upsimulator.interfaces.Membrane;
+import upsimulator.interfaces.MembraneListener;
 import upsimulator.interfaces.Obj;
 import upsimulator.interfaces.Result;
 import upsimulator.interfaces.Rule;
@@ -36,6 +40,7 @@ public class PMembrane extends BaseDimensional implements Membrane {
 
 	private ConcurrentHashMap<Obj, Object> objects = new ConcurrentHashMap<Obj, Object>();
 	private ArrayList<Rule> rules = new ArrayList<>();
+	private ArrayList<MembraneListener> listeners = new ArrayList<>();
 
 	/**
 	 * Create an empty membrane with a name
@@ -235,6 +240,8 @@ public class PMembrane extends BaseDimensional implements Membrane {
 	@Override
 	public HashMap<Rule, Integer> getUsableRules() throws UnpredictableDimensionException, CloneNotSupportedException {
 		urules.clear();
+		for (int i = listeners.size() - 1; i >= 0; i--)
+			listeners.get(i).startChecking(this);
 
 		for (Rule rule : rules) {
 			if (rule.getDimensionSize() > 0) {
@@ -246,6 +253,10 @@ public class PMembrane extends BaseDimensional implements Membrane {
 				}
 			}
 		}
+
+		for (int i = listeners.size() - 1; i >= 0; i--)
+			listeners.get(i).endChecking(this);
+
 		return urules;
 	}
 
@@ -254,9 +265,14 @@ public class PMembrane extends BaseDimensional implements Membrane {
 	@Override
 	public Map<Rule, Integer> fetch() throws TunnelNotExistException {
 		fetchedRules.clear();
+		for (int i = listeners.size() - 1; i >= 0; i--)
+			listeners.get(i).startFetching(this);
 
+		
 		if (PriorityCondition.exist()) {
-			for (Map.Entry<Rule, Integer> entry : urules.entrySet()) {
+			List<Map.Entry<Rule, Integer>> entryList=new ArrayList<>(urules.entrySet());
+			Collections.shuffle(entryList);
+			for (Map.Entry<Rule, Integer> entry : entryList) {
 				Rule rule = entry.getKey();
 				Integer times = entry.getValue();
 				Integer trueTimes = rule.fetch(this, times);
@@ -274,15 +290,14 @@ public class PMembrane extends BaseDimensional implements Membrane {
 			}
 		} else {
 			LinkedList<Rule> rules = new LinkedList<>(urules.keySet());
+			Collections.shuffle(rules);
 			for (int i = 0; rules.size() > 0; i++) {
 				if (urules.size() > 100 && i % 1000 == 0)
 					UPSLogger.info(this, "Membrane " + getNameDim() + " has fetched " + rules.size() + "/" + urules.size() + " rules");
 
 				Rule first = rules.removeFirst();
 				Integer times = urules.get(first);
-				int readyToFetch = (int) (times * Math.random());
-				if (readyToFetch < 1)
-					readyToFetch = 1;
+				int readyToFetch = (int) (times * Math.random()) + 1;
 				int fetched = first.fetch(this, readyToFetch);
 				if (fetched > 0) {
 					addFetched(first, fetched);
@@ -296,6 +311,8 @@ public class PMembrane extends BaseDimensional implements Membrane {
 			}
 		}
 
+		for (int i = listeners.size() - 1; i >= 0; i--)
+			listeners.get(i).endFetching(this);
 		return fetchedRules;
 	}
 
@@ -309,8 +326,15 @@ public class PMembrane extends BaseDimensional implements Membrane {
 
 	@Override
 	public Map<Rule, Integer> setProducts() {
+		for (int i = listeners.size() - 1; i >= 0; i--)
+			listeners.get(i).startSetting(this);
+
 		for (Tunnel t : tunnels)
 			t.pushResult();
+
+		for (int i = listeners.size() - 1; i >= 0; i--)
+			listeners.get(i).endSetting(this);
+
 		return fetchedRules;
 	}
 
@@ -372,6 +396,7 @@ public class PMembrane extends BaseDimensional implements Membrane {
 		}
 
 		if (withProp && properties.size() > 0) {
+			boolean has = false;
 			StringBuilder pBuilder = new StringBuilder(space + "Property ");
 			Iterator<Entry<String, Object>> piter = this.properties.entrySet().iterator();
 			while (piter.hasNext()) {
@@ -380,13 +405,15 @@ public class PMembrane extends BaseDimensional implements Membrane {
 				Object val = entry.getValue();
 				if (!key.toString().startsWith("$")) {
 					pBuilder.append(key + "=" + val);
+					has = true;
 					if (piter.hasNext())
 						pBuilder.append(", ");
 					else
 						pBuilder.append(";\n");
 				}
 			}
-			mBuilder.append(pBuilder);
+			if (has)
+				mBuilder.append(pBuilder);
 		}
 
 		if (withSubmembrane && getChildren().size() > 0) {
@@ -596,5 +623,16 @@ public class PMembrane extends BaseDimensional implements Membrane {
 	@Override
 	public List<Tunnel> getTunnels() {
 		return tunnels;
+	}
+
+	@Override
+	public void addListener(MembraneListener listener) {
+		if (!listeners.contains(listener))
+			listeners.add(listener);
+	}
+
+	@Override
+	public void removeListener(MembraneListener listener) {
+		listeners.remove(listeners.lastIndexOf(listener));
 	}
 }

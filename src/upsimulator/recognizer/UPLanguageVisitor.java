@@ -1,5 +1,6 @@
-// Generated from UPLanguage.g4 by ANTLR 4.7.1
 package upsimulator.recognizer;
+
+// Generated from UPLanguage.g4 by ANTLR 4.7.1
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
@@ -154,6 +155,18 @@ public interface UPLanguageVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitResult(UPLanguageParser.ResultContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link UPLanguageParser#memDivisionResult}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMemDivisionResult(UPLanguageParser.MemDivisionResultContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link UPLanguageParser#additionalResults}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAdditionalResults(UPLanguageParser.AdditionalResultsContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link UPLanguageParser#memCreateResult}.
 	 * @param ctx the parse tree

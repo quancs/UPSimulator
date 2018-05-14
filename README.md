@@ -6,6 +6,12 @@ To describe the complex rules in various types of P systems, we designed a new l
 # Usage
 ## Required Environment
 Java 1.8+
+Run this software by using
+
+```
+java -jar UPSimulator.jar
+```
+or double click the UPSimulator.jar if you have linked jar file to JAVA.
 
 ## Simple Usage
 The result of the case bellow is an empty membrane "Environment". The explanation of code follows a double slash.
@@ -233,15 +239,21 @@ Rule r= a -> dissolve;
 ```
 In the code above, **dissolve** is Membrane Dissolve Result. Membrane Dissolve Result will dissolve current membrane and all the content inside.
 
+#### Membrane Division Result
+```
+Rule r= a -> divide({ <property=1> b },{ <property=2> c^3 });
+```
+In the code above, **divide** is Membrane Division Result. Membrane Division Result will divide current membrane into two parts. Inside the division result, **Property Result**s and **Object Result**s can be added.
+
 ## Mathematical Operators
-The mathematical expression's parsing and evaluation is done by [JEval](http://jeval.sourceforge.net/). Please check the supported operators at its website http://jeval.sourceforge.net/.
+The mathematical expression's parsing and evaluation is done by [aviator](https://github.com/killme2008/aviator). Please check the supported operators at its website https://github.com/killme2008/aviator/.
 
 # Other Projects used in UPSimulator
 ## ANTLR
 ANTLR is a powerful parser generator, used to recognize UPLanguage.
 
-## JEval
-JEval is an advanced library for high-performance, mathematical, boolean and functional expression parsing and evaluation, used to calculate the dimension relationship. 
+## aviator
+aviator is an advanced library for high-performance, mathematical, boolean and functional expression parsing and evaluation, used to calculate the dimension relationship in UPSimulator. 
 
 # Author
 * Changsheng Quan, quancs@qq.com  or quancs@cqu.edu.cn  

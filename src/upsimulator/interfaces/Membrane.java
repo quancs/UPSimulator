@@ -268,6 +268,21 @@ public interface Membrane extends Name, Cloneable, Dimensional {
 	public Map<String, Object> getProperties();
 
 	/**
+	 * Add a listener to this membrane
+	 * 
+	 * @param listener
+	 *            a membrane listener
+	 */
+	public void addListener(MembraneListener listener);
+
+	/**
+	 * Remove a listener from this membrane
+	 * 
+	 * @param listener
+	 */
+	public void removeListener(MembraneListener listener);
+
+	/**
 	 * Extend a template
 	 * 
 	 * @param template
@@ -315,6 +330,34 @@ public interface Membrane extends Name, Cloneable, Dimensional {
 			return tunnelOut.getTargets().get(0);
 		} else {
 			return null;
+		}
+	}
+
+	/**
+	 * Add a child to this membrane
+	 * 
+	 * @param tunnelClass
+	 *            the tunnel class of the two membrane
+	 * @param child
+	 *            child membrane
+	 */
+	public default void addChild(Class<?> tunnelClass, Membrane child) {
+		try {
+			Tunnel in = (Tunnel) tunnelClass.newInstance();
+			in.setType(TunnelType.In);
+			in.setSource(this);
+			in.addTarget(child);
+			this.addTunnel(in);
+
+			Tunnel out = (Tunnel) tunnelClass.newInstance();
+			out.setType(TunnelType.Out);
+			out.setSource(child);
+			out.addTarget(this);
+			child.addTunnel(out);
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
 		}
 	}
 }

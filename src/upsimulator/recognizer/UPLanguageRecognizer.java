@@ -18,6 +18,7 @@ import upsimulator.interfaces.Result;
 import upsimulator.interfaces.Rule;
 import upsimulator.interfaces.UPSLogger;
 import upsimulator.interfaces.Tunnel.TunnelType;
+import upsimulator.recognizer.UPLanguageParser.AdditionalResultsContext;
 import upsimulator.recognizer.UPLanguageParser.AllContext;
 import upsimulator.recognizer.UPLanguageParser.AndOptContext;
 import upsimulator.recognizer.UPLanguageParser.FormulaDimContext;
@@ -26,6 +27,7 @@ import upsimulator.recognizer.UPLanguageParser.HereContext;
 import upsimulator.recognizer.UPLanguageParser.InContext;
 import upsimulator.recognizer.UPLanguageParser.IntDimContext;
 import upsimulator.recognizer.UPLanguageParser.MemDissolveResultContext;
+import upsimulator.recognizer.UPLanguageParser.MemDivisionResultContext;
 import upsimulator.recognizer.UPLanguageParser.MembraneTypeContext;
 import upsimulator.recognizer.UPLanguageParser.ObjAssignContext;
 import upsimulator.recognizer.UPLanguageParser.ObjResultContext;
@@ -59,6 +61,7 @@ import upsimulator.rules.conditions.PromoterCondition;
 import upsimulator.rules.conditions.RegularExpressionCondition;
 import upsimulator.rules.results.MembraneCreateResult;
 import upsimulator.rules.results.MembraneDissolveResult;
+import upsimulator.rules.results.MembraneDivisionResult;
 import upsimulator.rules.results.MembranePropertyResult;
 import upsimulator.rules.results.MembraneStatusResult;
 import upsimulator.rules.results.ObjectResult;
@@ -413,8 +416,14 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 	@Override
 	public T visitMemCreateResult(UPLanguageParser.MemCreateResultContext ctx) {
 		MembraneCreateResult mcr = new MembraneCreateResult();
-		for (UPLanguageParser.ObjResultContext orc : ctx.objResult())
-			mcr.addResult((Result) visitObjResult(orc));
+
+		List<Object> list1 = (List<Object>) visitAdditionalResults(ctx.additionalResults());
+		LinkedList<ObjectResult> orList1 = (LinkedList<ObjectResult>) list1.get(0);
+		LinkedList<MembranePropertyResult> prList1 = (LinkedList<MembranePropertyResult>) list1.get(1);
+		for (ObjectResult or : orList1)
+			mcr.addResult(or);
+		for (MembranePropertyResult pr : prList1)
+			mcr.addResult(pr);
 
 		mcr.setTemplateMemName(ctx.membraneType().getText());
 		if (ctx.membraneName() == null) {
@@ -685,6 +694,43 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 	@Override
 	public T visitRegCondition(RegConditionContext ctx) {
 		return (T) new RegularExpressionCondition(ctx.getText());
+	}
+
+	@Override
+	public T visitMemDivisionResult(MemDivisionResultContext ctx) {
+		MembraneDivisionResult mdr = new MembraneDivisionResult();
+		List<Object> list1 = (List<Object>) visitAdditionalResults(ctx.additionalResults(0));
+		LinkedList<ObjectResult> orList1 = (LinkedList<ObjectResult>) list1.get(0);
+		LinkedList<MembranePropertyResult> prList1 = (LinkedList<MembranePropertyResult>) list1.get(1);
+		for (ObjectResult or : orList1)
+			mdr.addObjectResult1(or);
+		for (MembranePropertyResult pr : prList1)
+			mdr.addMembranePropertyResult1(pr);
+
+		List<Object> list2 = (List<Object>) visitAdditionalResults(ctx.additionalResults(1));
+		LinkedList<ObjectResult> orList2 = (LinkedList<ObjectResult>) list2.get(0);
+		LinkedList<MembranePropertyResult> prList2 = (LinkedList<MembranePropertyResult>) list1.get(1);
+		for (ObjectResult or : orList2)
+			mdr.addObjectResult2(or);
+		for (MembranePropertyResult pr : prList2)
+			mdr.addMembranePropertyResult2(pr);
+
+		return (T) mdr;
+	}
+
+	@Override
+	public T visitAdditionalResults(AdditionalResultsContext ctx) {
+		LinkedList<Object> list = new LinkedList<>();
+		LinkedList<ObjectResult> oList = new LinkedList<>();
+		for (ObjResultContext orc : ctx.objResult()) {
+			oList.add((ObjectResult) visitObjResult(orc));
+		}
+		LinkedList<MembranePropertyResult> membranePropertyResults = new LinkedList<>();
+		for (PropertyResultContext prc : ctx.propertyResult())
+			membranePropertyResults.add((MembranePropertyResult) visitPropertyResult(prc));
+		list.add(oList);
+		list.add(membranePropertyResults);
+		return (T) list;
 	}
 
 }
