@@ -34,6 +34,7 @@ import upsimulator.recognizer.UPLanguageParser.ObjResultContext;
 import upsimulator.recognizer.UPLanguageParser.ObjectsContext;
 import upsimulator.recognizer.UPLanguageParser.OrOptContext;
 import upsimulator.recognizer.UPLanguageParser.OutContext;
+import upsimulator.recognizer.UPLanguageParser.ProbabilisticConditionContext;
 import upsimulator.recognizer.UPLanguageParser.PropertiesContext;
 import upsimulator.recognizer.UPLanguageParser.PropertyConditionContext;
 import upsimulator.recognizer.UPLanguageParser.PropertyInitContext;
@@ -57,6 +58,7 @@ import upsimulator.rules.conditions.MembranePropertyCondition;
 import upsimulator.rules.conditions.MembraneStatusCondition;
 import upsimulator.rules.conditions.ObjectCondition;
 import upsimulator.rules.conditions.PriorityCondition;
+import upsimulator.rules.conditions.ProbabilisticCondition;
 import upsimulator.rules.conditions.PromoterCondition;
 import upsimulator.rules.conditions.RegularExpressionCondition;
 import upsimulator.rules.results.MembraneCreateResult;
@@ -731,6 +733,12 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 		list.add(oList);
 		list.add(membranePropertyResults);
 		return (T) list;
+	}
+
+	@Override
+	public T visitProbabilisticCondition(ProbabilisticConditionContext ctx) {
+		ProbabilisticCondition pCondition = new ProbabilisticCondition(Double.parseDouble(ctx.Double().getText()));
+		return (T) pCondition;
 	}
 
 }

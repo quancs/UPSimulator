@@ -294,6 +294,12 @@ public interface UPLanguageVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPriority(UPLanguageParser.PriorityContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link UPLanguageParser#probabilisticCondition}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitProbabilisticCondition(UPLanguageParser.ProbabilisticConditionContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link UPLanguageParser#regCondition}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

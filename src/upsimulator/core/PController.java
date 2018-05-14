@@ -134,7 +134,7 @@ public class PController extends Thread {
 				leftStep--;
 			}
 
-			for (; leftStep == -1 && runOneStep() > 0;)
+			for (; leftStep == -1 && (runOneStep() > 0 || satisfiedRulesCount > 0);)
 				;
 
 			leftStep = 0;
@@ -163,6 +163,8 @@ public class PController extends Thread {
 		leftStep = steps;
 	}
 
+	private int satisfiedRulesCount = 0;
+
 	/**
 	 * Simulate one step
 	 * 
@@ -175,6 +177,7 @@ public class PController extends Thread {
 		smList.clear();
 		fmList.clear();
 		rmList.clear();
+		satisfiedRulesCount = 0;
 
 		smList.add(environment);
 		for (int i = 0; i < smList.size(); i++) {
@@ -182,6 +185,8 @@ public class PController extends Thread {
 			try {
 				UPSLogger.info(this, "Membrane " + membrane.getNameDim() + " is checking usable rules");
 				Map<Rule, Integer> uRules = membrane.getUsableRules();
+				satisfiedRulesCount += uRules.size();
+
 				// 此处控制极大和极小并行，以及随机执行也是在此控制
 				smList.addAll(((PMembrane) membrane).getChildren());
 				fmList.add(membrane);
