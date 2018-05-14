@@ -50,8 +50,8 @@ public interface MembraneListener {
 	public void startSetting(Membrane membrane);
 
 	/**
-	 * End setting product in this membrane. Listeners only can be removed in this
-	 * function
+	 * End setting product in this membrane include all its sub-membranes. Listeners
+	 * only can be removed in this function
 	 * 
 	 * @param membrane
 	 *            this membrane

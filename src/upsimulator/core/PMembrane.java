@@ -1,7 +1,6 @@
 package upsimulator.core;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -11,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import upsimulator.exceptions.TunnelNotExistException;
@@ -35,7 +33,7 @@ import upsimulator.rules.conditions.PriorityCondition;
  * @author quan
  *
  */
-public class PMembrane extends BaseDimensional implements Membrane {
+public class PMembrane extends BaseDimensional implements Membrane, MembraneListener {
 	private static final long serialVersionUID = -1932793470654198760L;
 
 	private ConcurrentHashMap<Obj, Object> objects = new ConcurrentHashMap<Obj, Object>();
@@ -268,9 +266,8 @@ public class PMembrane extends BaseDimensional implements Membrane {
 		for (int i = listeners.size() - 1; i >= 0; i--)
 			listeners.get(i).startFetching(this);
 
-		
 		if (PriorityCondition.exist()) {
-			List<Map.Entry<Rule, Integer>> entryList=new ArrayList<>(urules.entrySet());
+			List<Map.Entry<Rule, Integer>> entryList = new ArrayList<>(urules.entrySet());
 			Collections.shuffle(entryList);
 			for (Map.Entry<Rule, Integer> entry : entryList) {
 				Rule rule = entry.getKey();
@@ -332,9 +329,7 @@ public class PMembrane extends BaseDimensional implements Membrane {
 		for (Tunnel t : tunnels)
 			t.pushResult();
 
-		for (int i = listeners.size() - 1; i >= 0; i--)
-			listeners.get(i).endSetting(this);
-
+		endSetting(this);
 		return fetchedRules;
 	}
 
@@ -591,6 +586,8 @@ public class PMembrane extends BaseDimensional implements Membrane {
 			}
 			i++;
 		}
+		// initial the membrane count
+		unfinishedMembraneCount = 1 + getChildren().size();
 	}
 
 	private ArrayList<Tunnel> tunnels = new ArrayList<>();
@@ -626,6 +623,12 @@ public class PMembrane extends BaseDimensional implements Membrane {
 	}
 
 	@Override
+	public void addChild(Class<?> tunnelClass, Membrane child) {
+		Membrane.super.addChild(tunnelClass, child);
+		child.addListener(this);
+	}
+
+	@Override
 	public void addListener(MembraneListener listener) {
 		if (!listeners.contains(listener))
 			listeners.add(listener);
@@ -634,5 +637,40 @@ public class PMembrane extends BaseDimensional implements Membrane {
 	@Override
 	public void removeListener(MembraneListener listener) {
 		listeners.remove(listeners.lastIndexOf(listener));
+	}
+
+	@Override
+	public void startChecking(Membrane membrane) {
+
+	}
+
+	@Override
+	public void endChecking(Membrane membrane) {
+
+	}
+
+	@Override
+	public void startFetching(Membrane membrane) {
+		unfinishedMembraneCount++;
+	}
+
+	@Override
+	public void endFetching(Membrane membrane) {
+
+	}
+
+	@Override
+	public void startSetting(Membrane membrane) {
+
+	}
+
+	private int unfinishedMembraneCount = 1;// this membrane
+
+	@Override
+	public void endSetting(Membrane membrane) {
+		unfinishedMembraneCount--;
+		if (unfinishedMembraneCount == 0)
+			for (int i = listeners.size() - 1; i >= 0; i--)
+				listeners.get(i).endSetting(this);
 	}
 }
