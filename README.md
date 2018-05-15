@@ -58,7 +58,7 @@ java -jar UPSimulator.jar
 or double click the UPSimulator.jar if you have linked jar file to JAVA.
 
 ## Simple Usage   
-The result of the case bellow is an empty membrane "Environment". The explanation of code follows a double slash. Following is just a simple usage, more more supported features can be found in [Conditions](#conditions) and [Results](#results). Save the following code to a file, and then import this file in the **Environment** column of UPSimulator. After that, initial it by clicking "Init". Then, Click "Run To End" to run it. 
+Following is just a simple usage, more more supported features can be found in [Conditions](#conditions) and [Results](#results). The explanation of code follows a double slash.  Save the following code to a file, and then import this file in the **Environment** column of UPSimulator. After that, initial it by clicking "Init". Then, Click "Run To End" to run it. 
 ### Cell-like P system
 ```
 Membrane A{// Membrane Class A
