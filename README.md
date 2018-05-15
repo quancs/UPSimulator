@@ -14,7 +14,7 @@ Table of Contents
     * [Create an Instance of one Membrane Class](#create-an-instance-of-one-membrane-class)
     * [Extend a Membrane Class](#extend-a-membrane-class)
     * [Create an Instance which does not belong to any Membrane Classes](#create-an-instance-which-does-not-belong-to-any-membrane-classes)
-  * [Object](#object)
+  * [Object or Spike](#object-or-spike)
   * [Membrane Property](#membrane-property)
   * [Tunnels](#tunnels)
   * [Rule](#rule)
@@ -188,8 +188,8 @@ Environment{
 }  
 ```
 
-## Object
-When declare a object, you need to specify its name and quantity (if more than one copy). And you can specify its dimension as well. Following is an example.
+## Object or Spike
+Spike is implemented as an object in UPSimulator. And no special symbol is used to defined a spike. So, the usage of spike is the same as object. When declare a object or spike, you need to specify its name and quantity (if more than one copy). And you can specify its dimension as well. Following is an example.
 
 ```
 Object a,b^2,c[1]^1,d[2][3];
