@@ -58,7 +58,7 @@ java -jar UPSimulator.jar
 or double click the UPSimulator.jar if you have linked jar file to JAVA.
 
 ## Simple Usage   
-The result of the case bellow is an empty membrane "Environment". The explanation of code follows a double slash. Following is just a simple usage, more more supported features can be found in [Conditions](#Conditions) and [Results](#Results). Save the following code to a file, and then import this file in the **Environment** column of UPSimulator. After that, initial it by clicking "Init". Then, Click "Run To End" to run it. 
+The result of the case bellow is an empty membrane "Environment". The explanation of code follows a double slash. Following is just a simple usage, more more supported features can be found in [Conditions](#conditions) and [Results](#results). Save the following code to a file, and then import this file in the **Environment** column of UPSimulator. After that, initial it by clicking "Init". Then, Click "Run To End" to run it. 
 ### Cell-like P system
 ```
 Membrane A{// Membrane Class A
@@ -80,7 +80,7 @@ Environment{// skin membrane
 }
 ```
 ### Tissue-like P system
-The differences between cell-like and tissue-like P system are the [Status Property](#Membrane-Property) and [Net Structure](#Tunnels)
+The differences between cell-like and tissue-like P system are the [Status Property](#membrane-property) and [Net Structure](#tunnels)
 
 ```
 Membrane A{// Membrane Class A
@@ -103,7 +103,7 @@ Environment{// skin membrane
 }
 ```
 ### Neural-like P system
-The differences between neural-like and tissue-like P system are the [Regular Expression Condition](#Regular-Expression-Condition)
+The differences between neural-like and tissue-like P system are the [Regular Expression Condition](#regular-expression-condition)
 
 ```
 Environment{
