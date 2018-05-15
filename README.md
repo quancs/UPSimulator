@@ -41,11 +41,11 @@ Table of Contents
 * [Help Needed](#help-needed)
 
 # UPSimulator
-UPSimulator is an universal and high performance simulator for membrane computing. Now, we have supported most features of cell-like P system & tissue-like P system. Visit https://github.com/quancs/UPSimulator/releases to download the [latest version](https://github.com/quancs/UPSimulator/releases).  
-Please notice that: **What you simulate in UPSimulator is what you use**. We are not going to make any limitation about the models you want to simulate, because we will never know that what kind of new P system will be proposed in the future, and what kind of new concepts the new P system has. If you want to simulate one kind of P system whose concepts ( conditions and results and tunnels ) have already been supported by UPSimulator, please just combine the conditions, results and tunnels to make it.  
+UPSimulator is an universal and high performance simulator for membrane computing. Now, we have supported most features of cell-like P system & tissue-like P system, and basic support for neural-like P system. Visit https://github.com/quancs/UPSimulator/releases to download the [latest version](https://github.com/quancs/UPSimulator/releases).  
+Please notice that: **What you simulate in UPSimulator is what you use**. We are not going to make any limitations about the models you want to simulate, because we will never know that what kind of new P system will be proposed in the future, and what kind of new concepts the new P system has. If you want to simulate one kind of P system whose concepts ( conditions and results and tunnels ) have already been supported by UPSimulator, please just combine the conditions, results and tunnels to make it.  
 
 # UPLanguage
-To describe the complex rules in various types of P systems, we designed a new language called UPLanguage. UPLanguage aims to describe Cell-like P System (supported now), Tissue-like P System (supported now), Neural-like P System (supported in 2.0.0), and the mixed P system of cell-like, tissue-like and neural-like. The UPLanguage description string is the input of UPSimulator, and the grammar file of UPL is placed in resources/grammar/UPLanguage.g4.
+To describe the complex rules in various types of P systems, we designed a new language called UPLanguage. UPLanguage aims to describe Cell-like P System (supported now), Tissue-like P System (supported now), Neural-like P System (supported since 2.0.0), and the mixed P system of cell-like, tissue-like and neural-like. The UPLanguage description string is the input of UPSimulator, and the grammar file of UPL is placed in resources/grammar/UPLanguage.g4.
 
 # Usage
 ## Required Environment
