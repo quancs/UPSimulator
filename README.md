@@ -1,10 +1,14 @@
 Table of Contents
 =================
+
 * [UPSimulator](#upsimulator)
 * [UPLanguage](#uplanguage)
 * [Usage](#usage)
   * [Required Environment](#required-environment)
   * [Simple Usage](#simple-usage)
+    * [Cell\-like P system](#cell-like-p-system)
+    * [Tissue\-like P system](#tissue-like-p-system)
+    * [Neural\-like P system](#neural-like-p-system)
   * [Skin Membrane or Simulation Environment](#skin-membrane-or-simulation-environment)
   * [Membrane Class](#membrane-class)
     * [Create an Instance of one Membrane Class](#create-an-instance-of-one-membrane-class)
@@ -15,15 +19,16 @@ Table of Contents
   * [Tunnels](#tunnels)
   * [Rule](#rule)
     * [Conditions](#conditions)
-      * [Object Condition](#object-condition)
+      * [Object Condition or Spike Condition](#object-condition-or-spike-condition)
       * [Regular Expression Condition](#regular-expression-condition)
       * [Property Condition or Status Condition](#property-condition-or-status-condition)
       * [Inhibitor Condition](#inhibitor-condition)
       * [Promoter Condition](#promoter-condition)
       * [Priority Condition](#priority-condition)
+      * [Probabilistic Condition](#probabilistic-condition)
       * [Boolean Condition](#boolean-condition)
     * [Results](#results)
-      * [Object Result](#object-result)
+      * [Object Result or Spike Result](#object-result-or-spike-result)
       * [Property Result or Status Result](#property-result-or-status-result)
       * [Membrane Create Result](#membrane-create-result)
       * [Membrane Dissolve Result](#membrane-dissolve-result)
@@ -36,13 +41,15 @@ Table of Contents
 * [Help Needed](#help-needed)
 
 # UPSimulator
-UPSimulator is an universal and high performance simulator for membrane computing. Now, we have supported most features of cell-like P system & tissue-like P system. Visit https://github.com/quancs/UPSimulator/releases to download the [latest version](https://github.com/quancs/UPSimulator/releases).
+UPSimulator is an universal and high performance simulator for membrane computing. Now, we have supported most features of cell-like P system & tissue-like P system. Visit https://github.com/quancs/UPSimulator/releases to download the [latest version](https://github.com/quancs/UPSimulator/releases).  
+Please notice that: **What you simulate in UPSimulator is what you use**. We are not going to make any limitation about the models you want to simulate, because we will never know that what kind of new P system will be proposed in the future, and what kind of new concepts the new P system has. If you want to simulate one kind of P system whose concepts ( conditions and results and tunnels ) have already been supported by UPSimulator, please just combine the conditions, results and tunnels to make it.  
+
 # UPLanguage
 To describe the complex rules in various types of P systems, we designed a new language called UPLanguage. UPLanguage aims to describe Cell-like P System (supported now), Tissue-like P System (supported now), Neural-like P System (supported in 2.0.0), and the mixed P system of cell-like, tissue-like and neural-like. The UPLanguage description string is the input of UPSimulator, and the grammar file of UPL is placed in resources/grammar/UPLanguage.g4.
 
 # Usage
 ## Required Environment
-Java 1.8+
+Java 1.8+ is required to run UPSimulator.  
 Run this software by using
 
 ```
@@ -50,15 +57,70 @@ java -jar UPSimulator.jar
 ```
 or double click the UPSimulator.jar if you have linked jar file to JAVA.
 
-## Simple Usage
-The result of the case bellow is an empty membrane "Environment". The explanation of code follows a double slash.
+## Simple Usage   
+The result of the case bellow is an empty membrane "Environment". The explanation of code follows a double slash. Following is just a simple usage, more more supported features can be found in [Conditions](#Conditions) and [Results](#Results). Save the following code to a file, and then import this file in the **Environment** column of UPSimulator. After that, initial it by clicking "Init". Then, Click "Run To End" to run it. 
+### Cell-like P system
+```
+Membrane A{// Membrane Class A
+	//objects and rules and properties can be defined here
+}
+
+Environment{// skin membrane
+	Object a^2,b,c[1][2][3],d[1];// objects or spikes
+	Rule r1= a^2 b -> c; //rule
+	Rule r2[i][j][k]= c[i][j][k] -> ( d[i+1][j*3][k/4], in a );// rules with dimension for the evolution of a class of objects
+	Rule r1[i]= d[i] -> ( d[i], in b[i]);// membrane target can also have dimensions in one rule
+	
+	Membrane A a{// an instance of Class A
+		//other objects and rules and properties can be defined here
+		//tunnels to neighbors can also be defined here
+	}
+	
+	Membrane A b[1];// another instance of Class A
+}
+```
+### Tissue-like P system
+The differences between cell-like and tissue-like P system are the [Status Property](#Membrane-Property) and [Net Structure](#Tunnels)
+
+```
+Membrane A{// Membrane Class A
+	Property status=1;
+	Rule r1= <status=1> a -> <status=2> b;
+}
+
+Environment{// skin membrane
+	Membrane A a1{
+		Object a;
+		Rule r2 = <status=2> b -> ( c, go a2 );
+		Tunnel a2;
+	}
+	
+	Membrane A a2{
+		Object a;
+		Rule r2 = <status=2> b -> ( c, go a1 );
+		Tunnel a1;
+	}
+}
+```
+### Neural-like P system
+The differences between neural-like and tissue-like P system are the [Regular Expression Condition](#Regular-Expression-Condition)
 
 ```
 Environment{
-	Object a^2,b;
-	Rule r1= a^2 b -> c;
+	Membrane a1{
+		Object a;//Spike
+		Rule r1 = a*/ a -> ( a, go a2 );
+		Tunnel a2;
+	}
+	
+	Membrane A a2{
+		Object a;
+		Rule r1 = a*/ a -> ( a, go a1 );
+		Tunnel a1;
+	}
 }
 ```
+
 ## Skin Membrane or Simulation Environment
 There is a special membrane named "Environment" in UPL. "Environment" can be treated as a skin membrane or an environment, and only the membranes or rules in "Environment" will be simulated.
 
@@ -197,7 +259,7 @@ Also, they can be written in membrane classes or instances.
 Rules are divided into two parts: conditions and results. 
 
 ### Conditions
-#### Object Condition
+#### Object Condition or Spike Condition
 ```
 Rule r= a -> b;
 Rule r= a^2 -> b;
@@ -214,10 +276,10 @@ In the code above, **a(aa)** and **b(bb)+** are both Regular Expression Conditio
 
 #### Property Condition or Status Condition
 ```
-Rule r= <Status=1> a -> b;
+Rule r= <status=1> a -> b;
 Rule r[i]=<1> a[i] -> b[i+1];
 ```
-In the code above, **<Status=1>** and **<1>** are Property Conditions, and **<1>** is the same as **<Status=1>**. Only status condition's name can be omitted.
+In the code above, **<status=1>** and **<1>** are Property Conditions, and **<1>** is the same as **<status=1>**. Only status condition's name can be omitted.
 
 #### Inhibitor Condition
 ```
@@ -238,7 +300,13 @@ In the code above, **@c** and **@c[i]** are Promoter Conditions.
 Rule r= a -> b ,1;
 Rule r[i]= a[i] -> b[i+1] | @c[i] ,1;
 ```
-In the code above, **,1** and is Priority Condition.
+In the code above, **,1** is a Priority Condition.
+
+#### Probabilistic Condition
+```
+Rule r= a -> b | probability=0.3;
+```
+In the code above, **probability=0.3** is a Probabilistic Condition.
 
 #### Boolean Condition
 ```
@@ -247,19 +315,32 @@ Rule r[i][j]= a[i] b[j] -> c[i+j] | @d & i!=j & i+j!=10;
 In the code above, **i!=j** and **i+j!=10** are Boolean Conditions.
 
 ### Results
-#### Object Result
+#### Object Result or Spike Result
 ```
 Rule r= a -> b;
 Rule r[i]=a[i] -> b[i+1];
+
+
+Rule r= a -> ( b, in d);
+Rule r= a -> ( b, in d & f & g);// in all of them
+Rule r= a -> ( b, in d | f | g);// in one of them
+Rule r= a -> ( b, in random);
+Rule r= a -> ( b, in all);
+
+Rule r= a -> ( b, go d);
+Rule r= a -> ( b, go d & f & g);// go all of them
+Rule r= a -> ( b, go d | f | g);// go one of them
+Rule r= a -> ( b, go random);
+Rule r= a -> ( b, go all);
 ```
-In the code above, **b** and **b[i+1]** are Object Results.
+In the code above, **b** and **b[i+1]** are Object Results or Spike Results. And most target instructions are supported. 
 
 #### Property Result or Status Result
 ```
 Rule r= a -> <2> b;
-Rule r[i]=a[i] -> <Status=2> b[i+1];
+Rule r[i]=a[i] -> <status=2> b[i+1];
 ```
-In the code above, **<2>** and **<Status=2>** are Property Results.
+In the code above, **<2>** and **<status=2>** are Property Results.
 
 #### Membrane Create Result
 ```
