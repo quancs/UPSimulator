@@ -14,7 +14,7 @@ import upsimulator.interfaces.Tunnel.TunnelType;
  *
  */
 public class ObjectResult extends PObject implements Result {
-	int num = 1;
+	private int num = 1;
 
 	public ObjectResult() {
 		super();
@@ -26,6 +26,7 @@ public class ObjectResult extends PObject implements Result {
 
 	public ObjectResult(ObjectResult object) {
 		super(object);
+		this.num = object.num;
 	}
 
 	public int getNum() {
@@ -47,7 +48,7 @@ public class ObjectResult extends PObject implements Result {
 
 	@Override
 	public void setResult(Membrane membrane, int times) {
-		membrane.addObject(new PObject(this), num * times);
+		membrane.addObject(this, num * times);
 	}
 
 	@Override
