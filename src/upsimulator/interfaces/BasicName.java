@@ -53,7 +53,7 @@ public class BasicName implements Name {
 	public BasicName(BasicName dimensional) {
 		super();
 		if (dimensional.isFixed() == false && dimensional.getDimensionSize() > 0) {
-			this.dimensions = new ArrayList<>(dimensional.getDimensionSize());
+			this.dimensions = new ArrayList<>(dimensional.doGetDimensionSize());
 			for (Dimension dimension : dimensional.dimensions)
 				this.dimensions.add(new Dimension(dimension));
 		} else
@@ -89,9 +89,13 @@ public class BasicName implements Name {
 		fixed = false;
 	}
 
+	private final ArrayList<Dimension> doGetDimensions() {
+		return dimensions;
+	}
+
 	@Override
 	public ArrayList<Dimension> getDimensions() {
-		return dimensions;
+		return doGetDimensions();
 	}
 
 	@Override
@@ -110,12 +114,16 @@ public class BasicName implements Name {
 		return fixed;
 	}
 
-	@Override
-	public int getDimensionSize() {
+	private final int doGetDimensionSize() {
 		if (dimensions == null)
 			return 0;
 		else
 			return dimensions.size();
+	}
+
+	@Override
+	public int getDimensionSize() {
+		return doGetDimensionSize();
 	}
 
 	@Override
@@ -130,7 +138,7 @@ public class BasicName implements Name {
 	public String getNameDim() {
 		if (nameDim == null) {
 			nameDim = name;
-			if (getDimensionSize() > 0) {
+			if (doGetDimensionSize() > 0) {
 				for (Dimension dimension : dimensions)
 					nameDim += "[" + dimension + "]";
 			}
@@ -138,7 +146,7 @@ public class BasicName implements Name {
 		} else {
 			if (nameDimStatus != isFixed()) {
 				nameDim = name;
-				if (getDimensionSize() > 0) {
+				if (doGetDimensionSize() > 0) {
 					for (Dimension dimension : dimensions)
 						nameDim += "[" + dimension + "]";
 				}
@@ -153,13 +161,17 @@ public class BasicName implements Name {
 		return name;
 	}
 
-	@Override
-	public Dimension get(int i) {
-		if (i >= getDimensionSize()) {
+	private final Dimension doGet(int i) {
+		if (i >= doGetDimensionSize()) {
 			throw new ArrayIndexOutOfBoundsException(i);
 		} else {
 			return dimensions.get(i);
 		}
+	}
+
+	@Override
+	public Dimension get(int i) {
+		return doGet(i);
 	}
 
 	@Override
@@ -172,7 +184,7 @@ public class BasicName implements Name {
 
 	private HashMap<Integer, Integer> getDimensionInfoMap(List<Dimension> dList) {
 		HashMap<Integer, Integer> dMap = new HashMap<>();
-		for (int i = 0; i < getDimensionSize(); i++) {
+		for (int i = 0; i < doGetDimensionSize(); i++) {
 			Dimension d = get(i);
 			if (d.isFixed())
 				continue;
@@ -191,7 +203,7 @@ public class BasicName implements Name {
 
 		while (iter.hasNext()) {
 			Name obj = (Name) iter.next();
-			if (obj.getName().equals(getName()) && obj.getDimensionSize() == getDimensionSize()) {
+			if (obj.getName().equals(getName()) && obj.getDimensionSize() == doGetDimensionSize()) {
 				Long pValue[] = new Long[dList.size()];
 
 				for (int i = 0; i < obj.getDimensionSize(); i++) {

@@ -276,11 +276,17 @@ public interface UPLanguageVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPropertyCondition(UPLanguageParser.PropertyConditionContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link UPLanguageParser#objCondtion}.
+	 * Visit a parse tree produced by {@link UPLanguageParser#objCondition}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitObjCondtion(UPLanguageParser.ObjCondtionContext ctx);
+	T visitObjCondition(UPLanguageParser.ObjConditionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link UPLanguageParser#objConditionWithTarget}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitObjConditionWithTarget(UPLanguageParser.ObjConditionWithTargetContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link UPLanguageParser#priorityCondition}.
 	 * @param ctx the parse tree

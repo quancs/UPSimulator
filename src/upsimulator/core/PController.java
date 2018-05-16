@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -171,8 +170,7 @@ public class PController extends Thread {
 	 * @return rules used
 	 */
 	private int runOneStep() {
-		Calendar startTime, endTime;
-		startTime = Calendar.getInstance();
+		long startTime = System.nanoTime();
 
 		smList.clear();
 		fmList.clear();
@@ -226,9 +224,9 @@ public class PController extends Thread {
 			m.newStepInit();
 		}
 
-		endTime = Calendar.getInstance();
-		long timeUsed = endTime.getTimeInMillis() - startTime.getTimeInMillis();
-		UPSLogger.result(this, "step:" + step + "\t\trules used : " + totalUsed + "\t\ttime used:" + timeUsed + "ms");
+		long endTime = System.nanoTime();
+		long timeUsed = endTime - startTime;
+		UPSLogger.result(this, "step:" + step + "\t\trules used : " + totalUsed + "\t\ttime used:" + ((double)timeUsed/1000000) + "ms");
 		UPSLogger.debug(this, "\n" + "step:" + step);
 		UPSLogger.debug(this, uMap);
 		UPSLogger.result(this, environment.toString() + "\n");

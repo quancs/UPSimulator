@@ -37,8 +37,9 @@ objName			:	Name | Letters;
 objNum			:	Integer;
 
 /*规则定义*/
-prule			:	'Rule' ruleName ('[' abcDim ']')* '=' (regCondition '/')? propertyCondition* objCondtion+ '->' propertyResult* result*
+prule			:	'Rule' ruleName ('[' abcDim ']')* '=' (regCondition '/')? propertyCondition* (objCondition | objConditionWithTarget)+ '->' propertyResult* result*
 					('|' condition ('&' condition)* )? priorityCondition? ';';
+
 ruleName		:	Name | Letters;
 condition		:	promoterCondition | inhibitorCondition  | boolCondition | probabilisticCondition;
 result			:	objResult | positionResult | memDissolveResult | memCreateResult | memDivisionResult;
@@ -70,7 +71,8 @@ boolCondition	:	( Letters | Name | Integer | '-' | '/' | '%' | '^' | '+' | '*' |
 promoterCondition: 	'@' objName ('[' formulaDim ']')* ;
 inhibitorCondition:	'!' objName ('[' formulaDim ']')* ;
 propertyCondition:	'<' (propertyName '=')? propertyValue '>';//Default propertyName=Status
-objCondtion		:	objName ('[' formulaDim ']')* ('^' objNum)?;
+objCondition		:	objName ('[' formulaDim ']')* ('^' objNum)?;
+objConditionWithTarget: ( 'out' | 'in.' membraneName ('[' formulaDim ']')* | 'go.' membraneName ('[' formulaDim ']')*) '{' objCondition+ '}';
 priorityCondition:	',' priority;
 priority		:	Integer;
 probabilisticCondition: 'probability' '=' Double;

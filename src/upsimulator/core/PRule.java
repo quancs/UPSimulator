@@ -16,6 +16,7 @@ import upsimulator.interfaces.BasicName;
 import upsimulator.interfaces.Condition;
 import upsimulator.interfaces.Dimensional;
 import upsimulator.interfaces.Membrane;
+import upsimulator.interfaces.Name;
 import upsimulator.interfaces.Obj;
 import upsimulator.interfaces.Result;
 import upsimulator.interfaces.Rule;
@@ -23,6 +24,7 @@ import upsimulator.interfaces.UPSLogger;
 import upsimulator.rules.conditions.InhibitorCondition;
 import upsimulator.rules.conditions.MembranePropertyCondition;
 import upsimulator.rules.conditions.ObjectCondition;
+import upsimulator.rules.conditions.ObjectConditionsWithTarget;
 import upsimulator.rules.conditions.PriorityCondition;
 import upsimulator.rules.conditions.RegularExpressionCondition;
 import upsimulator.rules.results.MembranePropertyResult;
@@ -97,33 +99,16 @@ public class PRule extends BasicName implements Rule {
 		return dInfo.getObj().predictPossibleValue(membrane, getDimensions());
 	}
 
-	/*private LinkedList<Long[]> combineValue(List<Long[]> vs1, List<Long[]> vs2, int[] dimCompare) {
-		LinkedList<Long[]> newPValues = new LinkedList<>();
-		for (Long[] pv1 : vs1) {
-			for (Long[] pv2 : vs2) {
-				boolean canCombine = true;
-				if (dimCompare != null) {
-					for (int dim : dimCompare) {
-						if (!pv1[dim].equals(pv2[dim])) {
-							canCombine = false;
-							break;
-						}
-					}
-				}
-				if (canCombine) {
-					Long[] pvNew = new Long[getDimensionSize()];
-					for (int k = 0; k < pv1.length; k++) {
-						if (pv1[k] != null)
-							pvNew[k] = pv1[k];
-						else
-							pvNew[k] = pv2[k];
-					}
-					newPValues.add(pvNew);
-				}
-			}
-		}
-		return newPValues;
-	}*/
+	/*
+	 * private LinkedList<Long[]> combineValue(List<Long[]> vs1, List<Long[]> vs2,
+	 * int[] dimCompare) { LinkedList<Long[]> newPValues = new LinkedList<>(); for
+	 * (Long[] pv1 : vs1) { for (Long[] pv2 : vs2) { boolean canCombine = true; if
+	 * (dimCompare != null) { for (int dim : dimCompare) { if
+	 * (!pv1[dim].equals(pv2[dim])) { canCombine = false; break; } } } if
+	 * (canCombine) { Long[] pvNew = new Long[getDimensionSize()]; for (int k = 0; k
+	 * < pv1.length; k++) { if (pv1[k] != null) pvNew[k] = pv1[k]; else pvNew[k] =
+	 * pv2[k]; } newPValues.add(pvNew); } } } return newPValues; }
+	 */
 
 	/**
 	 * Get the possible values of current rule
@@ -137,7 +122,7 @@ public class PRule extends BasicName implements Rule {
 		LinkedList<int[]> pValuesDim = new LinkedList<>();
 		for (DimensionInfo dInfo : dInfos) {
 			List<Long[]> pList = findValues(dInfo, membrane);
-			if (pList.size() == 0)
+			if (pList != null && pList.size() == 0)
 				return new LinkedList<>();
 			pValuesList.add(pList);
 			int[] pvds = new int[dInfo.size()];
@@ -204,8 +189,8 @@ public class PRule extends BasicName implements Rule {
 		return pValuesList.get(0);
 	}
 
-	private ArrayList<DimensionInfo> dInfos;//全部的维度
-	private ArrayList<ArrayList<DimensionInfo>> graph;//规则的某个维度 -> 可以计算这个维度的objs
+	private ArrayList<DimensionInfo> dInfos;// 全部的维度
+	private ArrayList<ArrayList<DimensionInfo>> graph;// 规则的某个维度 -> 可以计算这个维度的objs
 
 	private void initDimInfos() throws UnpredictableDimensionException {
 		dInfos = new ArrayList<>();
@@ -215,11 +200,11 @@ public class PRule extends BasicName implements Rule {
 			graph.add(new ArrayList<>());
 
 		for (Condition condition : conditions) {
-			if ((condition instanceof Obj) && !(condition instanceof InhibitorCondition)) {
-				DimensionInfo dInfo = new DimensionInfo((Obj) condition);
-				for (int j = 0; j < ((Obj) condition).getDimensionSize(); j++) {
+			if ((condition instanceof Obj || condition instanceof ObjectConditionsWithTarget) && !(condition instanceof InhibitorCondition)) {
+				DimensionInfo dInfo = new DimensionInfo((Name) condition);
+				for (int j = 0; j < ((Name) condition).getDimensionSize(); j++) {
 					for (int i = 0; i < getDimensionSize(); i++) {
-						if (((Obj) condition).get(j).equals(get(i))) {
+						if (((Name) condition).get(j).equals(get(i))) {
 							dInfo.addDimMap(j, i);
 							if (!graph.get(i).contains(dInfo))
 								graph.get(i).add(dInfo);
@@ -381,20 +366,20 @@ public class PRule extends BasicName implements Rule {
 			}
 		}
 
-		public DimensionInfo(Obj obj) {
+		public DimensionInfo(Name obj) {
 			super();
 			this.obj = obj;
 		}
 
 		private ArrayList<Pair<Integer, Integer>> infos = new ArrayList<>();// <objDim,ruleDim>
 
-		private Obj obj;
+		private Name obj;
 
-		public Obj getObj() {
+		public Name getObj() {
 			return obj;
 		}
 
-		public void setObj(Obj obj) {
+		public void setObj(Name obj) {
 			this.obj = obj;
 		}
 
@@ -444,7 +429,7 @@ public class PRule extends BasicName implements Rule {
 		}
 
 		for (Condition condition : conditions) {
-			if (condition instanceof ObjectCondition) {
+			if (condition instanceof ObjectCondition || condition instanceof ObjectConditionsWithTarget) {
 				sBuilder.append(condition + " ");
 			}
 		}
@@ -465,7 +450,7 @@ public class PRule extends BasicName implements Rule {
 		StringBuilder otherBuilder = new StringBuilder("| ");
 		for (Condition condition : conditions) {
 			if (condition instanceof MembranePropertyCondition || condition instanceof ObjectCondition || condition instanceof Result || condition instanceof PriorityCondition
-					|| condition instanceof RegularExpressionCondition)
+					|| condition instanceof RegularExpressionCondition || condition instanceof ObjectConditionsWithTarget)
 				continue;
 			otherBuilder.append(condition + " ");
 		}
