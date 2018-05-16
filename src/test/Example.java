@@ -13,6 +13,13 @@ import upsimulator.rules.results.ObjectResult;
 public class Example {
 
 	public static void main(String[] args) {
+		ObjectCondition oCondition = new ObjectCondition("a", 1);
+		PObject object = new PObject("a");
+		System.err.println(object.equals(oCondition));
+		System.err.println(oCondition.equals(object));
+		System.err.println(object.hashCode());
+		System.err.println(oCondition.hashCode());
+
 		PMembrane environment = new PMembrane("Environment");
 		PMembrane a = new PMembrane("a");
 
@@ -36,9 +43,9 @@ public class Example {
 			System.out.println(environment.getChildren().get(0).setProducts());
 			System.out.println(environment.toString("  ", true, true, true, true, true));
 			System.out.println();
-			
+
 			environment.newStepInit();
-			
+
 			System.out.println(environment.getChildren().get(0).getUsableRules());
 			System.out.println(environment.getChildren().get(0).fetch());
 			System.out.println(environment.getChildren().get(0).setProducts());
@@ -51,7 +58,7 @@ public class Example {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 }

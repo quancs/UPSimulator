@@ -1,6 +1,6 @@
 package upsimulator.rules.conditions;
 
-import upsimulator.interfaces.BaseDimensional;
+import upsimulator.interfaces.BasicName;
 import upsimulator.interfaces.Condition;
 import upsimulator.interfaces.Membrane;
 
@@ -10,7 +10,7 @@ import upsimulator.interfaces.Membrane;
  * @author quan
  *
  */
-public class BooleanCondition extends BaseDimensional implements Condition {
+public class BooleanCondition extends BasicName implements Condition {
 
 	public BooleanCondition() {
 

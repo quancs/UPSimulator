@@ -11,7 +11,7 @@ import upsimulator.interfaces.Membrane;
  *
  */
 public class ObjectCondition extends PObject implements Condition {
-	int num = 1;
+	private int num = 1;
 
 	public ObjectCondition() {
 		super();
@@ -42,7 +42,7 @@ public class ObjectCondition extends PObject implements Condition {
 
 	@Override
 	public int satisfy(Membrane membrane) {
-		return (Integer)membrane.getNumOf(this) / num;
+		return (Integer) membrane.getNumOf(this) / num;
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class ObjectCondition extends PObject implements Condition {
 
 	@Override
 	public void withdrawFetch(Membrane membrane, int times) {
-		membrane.addObject(new PObject(this), num * times);
+		membrane.addObject(this, num * times);
 	}
 
 	@Override

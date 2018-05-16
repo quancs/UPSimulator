@@ -84,4 +84,16 @@ public interface Dimensional {
 	 * @return cloned Dimensional
 	 */
 	public Dimensional deepClone();
+
+	/**
+	 * Predict the possible values in this membrane
+	 * 
+	 * @param membrane
+	 *            targetMembrane
+	 * @param dList
+	 *            the list of dimensions which want to be predicted their value
+	 * @return possible value list for all dimensions. If dimension is fixed, null
+	 *         will be returned
+	 */
+	public List<Long[]> predictPossibleValue(Membrane membrane, List<Dimension> dList);
 }

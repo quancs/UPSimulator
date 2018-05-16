@@ -1,6 +1,6 @@
 package upsimulator.core;
 
-import upsimulator.interfaces.BaseDimensional;
+import upsimulator.interfaces.BasicName;
 import upsimulator.interfaces.Obj;
 
 /**
@@ -9,7 +9,7 @@ import upsimulator.interfaces.Obj;
  * @author quan
  *
  */
-public class PObject extends BaseDimensional implements Obj {
+public class PObject extends BasicName implements Obj {
 	private static final long serialVersionUID = 918301397917102425L;
 
 	public PObject(String name, String... dims) {

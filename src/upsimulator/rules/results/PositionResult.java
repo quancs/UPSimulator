@@ -1,19 +1,16 @@
 package upsimulator.rules.results;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import net.sourceforge.jeval.EvaluationException;
-import net.sourceforge.jeval.Evaluator;
 import upsimulator.core.PTunnel;
 import upsimulator.exceptions.TunnelNotExistException;
-import upsimulator.interfaces.BaseDimensional;
+import upsimulator.interfaces.BasicName;
 import upsimulator.interfaces.Condition;
 import upsimulator.interfaces.Dimension;
-import upsimulator.interfaces.Dimensional;
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Result;
 import upsimulator.interfaces.Tunnel;
@@ -27,21 +24,10 @@ import upsimulator.rules.conditions.MembranePropertyCondition;
  * @author quan
  *
  */
-public class PositionResult extends BaseDimensional implements Result, Condition {
+public class PositionResult extends BasicName implements Result, Condition {
 
-	public class Target implements Cloneable {
-		public String name;
-		public String nameDim;
-		public ArrayList<String> formulaDims = new ArrayList<>();
+	public class Target extends BasicName implements Cloneable {
 		public ArrayList<MembranePropertyCondition> conditions = new ArrayList<>();
-
-		private String unfixedNameDim;
-
-		public String getNameDim() {
-			if (nameDim == null)
-				return name;
-			return nameDim;
-		}
 
 		public Target deepClone() {
 			try {
@@ -58,21 +44,10 @@ public class PositionResult extends BaseDimensional implements Result, Condition
 
 		@Override
 		public String toString() {
-			if (nameDim != null) {
-				String string = nameDim;
-				for (MembranePropertyCondition mpc : conditions)
-					string += mpc.toString();
-				return string;
-			}
-
-			if (unfixedNameDim == null) {
-				unfixedNameDim = name;
-				for (String fString : formulaDims)
-					unfixedNameDim += "[" + fString + "]";
-				for (MembranePropertyCondition mpc : conditions)
-					unfixedNameDim += mpc.toString();
-			}
-			return unfixedNameDim;
+			String string = getNameDim();
+			for (MembranePropertyCondition mpc : conditions)
+				string += mpc.toString();
+			return string;
 		}
 	}
 
@@ -80,19 +55,16 @@ public class PositionResult extends BaseDimensional implements Result, Condition
 	private ArrayList<Target> targets = new ArrayList<>();
 	private ArrayList<ObjectResult> ors = new ArrayList<>();
 	private boolean checkSubmembraneProp;
-	private boolean fixed;
 
 	public PositionResult() {
 		super();
 		move = TunnelType.Here;
 		checkSubmembraneProp = false;
-		fixed = false;
 	}
 
 	public PositionResult(TunnelType move) {
 		this.move = move;
 		checkSubmembraneProp = false;
-		fixed = false;
 	}
 
 	public void addObjectResult(ObjectResult or) {
@@ -119,7 +91,6 @@ public class PositionResult extends BaseDimensional implements Result, Condition
 			cloned.ors = new ArrayList<>();
 			for (ObjectResult or : ors)
 				cloned.addObjectResult(or.deepClone());
-			cloned.evaluator = null;
 			cloned.targets = new ArrayList<>(targets.size());
 			for (Target target : targets)
 				cloned.targets.add(target.deepClone());
@@ -174,7 +145,7 @@ public class PositionResult extends BaseDimensional implements Result, Condition
 			StringBuilder sBuilder = new StringBuilder("in ");
 			for (int i = 0; i < targets.size() - 1; i++) {
 				sBuilder.append(targets.get(i).toString());
-				sBuilder.append("&");
+				sBuilder.append(" & ");
 			}
 			sBuilder.append(targets.get(targets.size() - 1).toString());
 			position = sBuilder.toString();
@@ -184,7 +155,7 @@ public class PositionResult extends BaseDimensional implements Result, Condition
 			StringBuilder sBuilder = new StringBuilder("go ");
 			for (int i = 0; i < targets.size() - 1; i++) {
 				sBuilder.append(targets.get(i).toString());
-				sBuilder.append("&");
+				sBuilder.append(" & ");
 			}
 			sBuilder.append(targets.get(targets.size() - 1).toString());
 			position = sBuilder.toString();
@@ -194,7 +165,7 @@ public class PositionResult extends BaseDimensional implements Result, Condition
 			StringBuilder sBuilder = new StringBuilder("in ");
 			for (int i = 0; i < targets.size() - 1; i++) {
 				sBuilder.append(targets.get(i).toString());
-				sBuilder.append("|");
+				sBuilder.append(" | ");
 			}
 			sBuilder.append(targets.get(targets.size() - 1).toString());
 			position = sBuilder.toString();
@@ -204,7 +175,7 @@ public class PositionResult extends BaseDimensional implements Result, Condition
 			StringBuilder sBuilder = new StringBuilder("go ");
 			for (int i = 0; i < targets.size() - 1; i++) {
 				sBuilder.append(targets.get(i).toString());
-				sBuilder.append("|");
+				sBuilder.append(" | ");
 			}
 			sBuilder.append(targets.get(targets.size() - 1).toString());
 			position = sBuilder.toString();
@@ -220,8 +191,6 @@ public class PositionResult extends BaseDimensional implements Result, Condition
 		string += ", " + position + ")";
 		return string;
 	}
-
-	private Evaluator evaluator;
 
 	@Override
 	public void addDimension(Long dimensions) {
@@ -254,34 +223,33 @@ public class PositionResult extends BaseDimensional implements Result, Condition
 	}
 
 	@Override
+	public boolean isFixed() {
+		boolean allFixed = true;
+		for (Target target : targets) {
+			if (!target.isFixed())
+				allFixed = false;
+		}
+
+		for (ObjectResult objectResult : ors)
+			if (!objectResult.isFixed())
+				allFixed = false;
+
+		if (!super.isFixed())
+			allFixed = false;
+		return allFixed;
+	}
+
+	@Override
 	public void fix(Map<String, Object> mappedValues) {
-		if (fixed)
+		if (isFixed())
 			return;
 
 		for (ObjectResult or : ors)
-			if (or instanceof Dimensional)
-				or.fix(mappedValues);
+			or.fix(mappedValues);
 
-		ArrayList<String> nameDims = new ArrayList<>();
-		for (Target target : targets) {
-			target.nameDim = target.name;
-			for (String dim : target.formulaDims) {
-				try {
-					target.nameDim += "[" + evaluator.evaluate(dim) + "]";
-				} catch (EvaluationException e) {
-					e.printStackTrace();
-					UPSLogger.error(this, e);
-				}
-			}
-			nameDims.add(target.nameDim);
-		}
-		nameDims.sort(new Comparator<String>() {
-			@Override
-			public int compare(String o1, String o2) {
-				return o1.compareTo(o2);
-			}
-		});
-		fixed = true;
+		for (Target target : targets)
+			target.fix(mappedValues);
+
 	}
 
 	private final int satisfy(Membrane membrane, List<MembranePropertyCondition> mpcs) {
@@ -302,7 +270,7 @@ public class PositionResult extends BaseDimensional implements Result, Condition
 		for (Membrane membrane : membranes) {
 			int satisfy = 0;
 			for (Target target : targets) {
-				if (target.nameDim.equals(membrane.getNameDim())) {
+				if (target.getNameDim().equals(membrane.getNameDim())) {
 					satisfy = satisfy(membrane, target.conditions);
 					break;
 				}
@@ -318,7 +286,7 @@ public class PositionResult extends BaseDimensional implements Result, Condition
 	private final int satisfyOne(List<Target> targets, List<Membrane> membranes) {
 		for (Membrane membrane : membranes) {
 			for (Target target : targets) {
-				if (target.nameDim.equals(membrane.getNameDim())) {
+				if (target.getNameDim().equals(membrane.getNameDim())) {
 					int satisfy = satisfy(membrane, target.conditions);
 					if (satisfy > 0)
 						return satisfy;
@@ -329,9 +297,6 @@ public class PositionResult extends BaseDimensional implements Result, Condition
 		return 0;
 	}
 
-	// private Membrane satisfiedMem;
-
-	// Check MembranePropertyCondition
 	@Override
 	public int satisfy(Membrane membrane) {
 		if (checkSubmembraneProp == false || move == TunnelType.Here || move == TunnelType.Out)
@@ -471,8 +436,9 @@ public class PositionResult extends BaseDimensional implements Result, Condition
 		}
 		if (tunnel == null) {
 			try {
-				UPSLogger.error(this, "Tunnel does not exist and cannot be created : " + getTargetsName());
-				throw new TunnelNotExistException(current, move, getTargetsName());
+				TunnelNotExistException exception = new TunnelNotExistException(current, move, getTargetsName(), this);
+				UPSLogger.error(this, exception.getMessage());
+				throw exception;
 			} catch (EvaluationException e) {
 				e.printStackTrace();
 				UPSLogger.error(this, e);

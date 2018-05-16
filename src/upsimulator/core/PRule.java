@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +12,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import upsimulator.exceptions.UnpredictableDimensionException;
-import upsimulator.interfaces.BaseDimensional;
+import upsimulator.interfaces.BasicName;
 import upsimulator.interfaces.Condition;
 import upsimulator.interfaces.Dimensional;
 import upsimulator.interfaces.Membrane;
@@ -38,7 +37,7 @@ import upsimulator.speedup.RuleChecker;
  * @author quan
  *
  */
-public class PRule extends BaseDimensional implements Rule {
+public class PRule extends BasicName implements Rule {
 	private static final long serialVersionUID = -3360118464623511714L;
 
 	private static Logger logger = Logger.getLogger(PRule.class);
@@ -94,31 +93,11 @@ public class PRule extends BaseDimensional implements Rule {
 		return min;
 	}
 
-	private LinkedList<Long[]> findValues(DimensionInfo dInfo, Membrane membrane) {
-		LinkedList<Long[]> pValues = new LinkedList<>();
-		Iterator<Obj> iter = membrane.getObjects().keySet().iterator();
-		while (iter.hasNext()) {
-			Obj obj = iter.next();
-			if (obj.getName().equals(dInfo.getObj().getName()) && obj.getDimensionSize() == dInfo.getObj().getDimensionSize()) {
-				Long pValue[] = new Long[getDimensionSize()];
-
-				for (int i = 0; i < dInfo.size(); i++) {
-					try {
-						pValue[dInfo.getRuleDim(i)] = obj.getDimensions().get(dInfo.getObjDim(i)).getLongValue();
-					} catch (Exception e) {
-						e.printStackTrace();
-						System.err.println(membrane.toString());
-						throw e;
-					}
-				}
-				pValues.add(pValue);
-			}
-		}
-
-		return pValues;
+	private List<Long[]> findValues(DimensionInfo dInfo, Membrane membrane) {
+		return dInfo.getObj().predictPossibleValue(membrane, getDimensions());
 	}
 
-	private LinkedList<Long[]> combineValue(List<Long[]> vs1, List<Long[]> vs2, int[] dimCompare) {
+	/*private LinkedList<Long[]> combineValue(List<Long[]> vs1, List<Long[]> vs2, int[] dimCompare) {
 		LinkedList<Long[]> newPValues = new LinkedList<>();
 		for (Long[] pv1 : vs1) {
 			for (Long[] pv2 : vs2) {
@@ -144,7 +123,7 @@ public class PRule extends BaseDimensional implements Rule {
 			}
 		}
 		return newPValues;
-	}
+	}*/
 
 	/**
 	 * Get the possible values of current rule
@@ -154,10 +133,10 @@ public class PRule extends BaseDimensional implements Rule {
 	 * @return All the possible value
 	 */
 	private List<Long[]> getPossibleValues(Membrane membrane) {
-		LinkedList<LinkedList<Long[]>> pValuesList = new LinkedList<>();
+		LinkedList<List<Long[]>> pValuesList = new LinkedList<>();
 		LinkedList<int[]> pValuesDim = new LinkedList<>();
 		for (DimensionInfo dInfo : dInfos) {
-			LinkedList<Long[]> pList = findValues(dInfo, membrane);
+			List<Long[]> pList = findValues(dInfo, membrane);
 			if (pList.size() == 0)
 				return new LinkedList<>();
 			pValuesList.add(pList);
@@ -172,7 +151,7 @@ public class PRule extends BaseDimensional implements Rule {
 		LinkedList<PossibleValueCombiner> workers = new LinkedList<>();
 		for (int total = pValuesList.size() - 1, current = 1; workers.size() != 0 || pValuesList.size() > 1;) {
 			for (; pValuesList.size() > 1;) {
-				LinkedList<Long[]> last = pValuesList.removeFirst(), lastComp = null;
+				List<Long[]> last = pValuesList.removeFirst(), lastComp = null;
 				int[] lastDims = pValuesDim.removeFirst(), lastDimsComp = null;
 
 				for (int i = 0; i < pValuesDim.size(); i++) {
@@ -225,8 +204,8 @@ public class PRule extends BaseDimensional implements Rule {
 		return pValuesList.get(0);
 	}
 
-	private ArrayList<DimensionInfo> dInfos;
-	private ArrayList<ArrayList<DimensionInfo>> graph;
+	private ArrayList<DimensionInfo> dInfos;//全部的维度
+	private ArrayList<ArrayList<DimensionInfo>> graph;//规则的某个维度 -> 可以计算这个维度的objs
 
 	private void initDimInfos() throws UnpredictableDimensionException {
 		dInfos = new ArrayList<>();
@@ -571,5 +550,4 @@ public class PRule extends BaseDimensional implements Rule {
 			if (result instanceof Dimensional)
 				((Dimensional) result).fix(mappedValues);
 	}
-
 }

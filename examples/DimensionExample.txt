@@ -1,0 +1,13 @@
+Membrane A{
+
+}
+
+Environment{
+	Object a[1][2]^3, b[2][3]^3, c[4][5]^8, e[1];
+	Rule r1[i][j][k]= a[i][j] b[j][k]  -> f[i][j][k][i+j][j+k];
+	Rule r2[i]= c[i][i+1] -> g[i];
+	Rule r3[i]= e[i] -> ( k[i], in a[i] | b[i]);
+	
+	
+	Membrane A a[1]{}
+}

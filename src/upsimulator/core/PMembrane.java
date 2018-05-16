@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import upsimulator.exceptions.TunnelNotExistException;
 import upsimulator.exceptions.UnpredictableDimensionException;
-import upsimulator.interfaces.BaseDimensional;
+import upsimulator.interfaces.BasicName;
 import upsimulator.interfaces.Condition;
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.MembraneListener;
@@ -33,7 +33,7 @@ import upsimulator.rules.conditions.PriorityCondition;
  * @author quan
  *
  */
-public class PMembrane extends BaseDimensional implements Membrane, MembraneListener {
+public class PMembrane extends BasicName implements Membrane, MembraneListener {
 	private static final long serialVersionUID = -1932793470654198760L;
 
 	private ConcurrentHashMap<Obj, Object> objects = new ConcurrentHashMap<Obj, Object>();
@@ -276,12 +276,7 @@ public class PMembrane extends BaseDimensional implements Membrane, MembraneList
 				if (trueTimes > 0) {
 					fetchedRules.put(rule, trueTimes);
 					for (Result result : rule.getResults()) {
-						try {
-							result.selectTunnel(this).holdResult(result, trueTimes);
-						} catch (TunnelNotExistException e) {
-							e.printStackTrace();
-							throw e;
-						}
+						result.selectTunnel(this).holdResult(result, trueTimes);
 					}
 				}
 			}

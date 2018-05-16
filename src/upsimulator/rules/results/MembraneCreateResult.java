@@ -15,7 +15,7 @@ import upsimulator.core.PTunnel;
 import upsimulator.exceptions.TimesException;
 import upsimulator.exceptions.TunnelNotExistException;
 import upsimulator.exceptions.UnknownMembraneClassException;
-import upsimulator.interfaces.BaseDimensional;
+import upsimulator.interfaces.BasicName;
 import upsimulator.interfaces.Dimensional;
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Result;
@@ -28,7 +28,7 @@ import upsimulator.interfaces.Tunnel.TunnelType;
  * @author quan
  *
  */
-public class MembraneCreateResult extends BaseDimensional implements Result {
+public class MembraneCreateResult extends BasicName implements Result {
 
 	private String templateMemName;
 

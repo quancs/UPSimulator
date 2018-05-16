@@ -12,10 +12,10 @@ import java.util.List;
  */
 public class PossibleValueCombiner extends Worker {
 
-	private LinkedList<Long[]> pValues, combine1, combine2;
+	private List<Long[]> pValues, combine1, combine2;
 	int[] combine1Dims, combine2Dims;
 
-	private PossibleValueCombiner(LinkedList<Long[]> combine1, LinkedList<Long[]> combine2, int[] combine1Dims, int[] combine2Dims) {
+	private PossibleValueCombiner(List<Long[]> combine1, List<Long[]> combine2, int[] combine1Dims, int[] combine2Dims) {
 		super();
 		this.combine1 = combine1;
 		this.combine2 = combine2;
@@ -23,7 +23,7 @@ public class PossibleValueCombiner extends Worker {
 		this.combine2Dims = combine2Dims;
 	}
 
-	public static PossibleValueCombiner getWorker(LinkedList<Long[]> combine1, LinkedList<Long[]> combine2, int[] combine1Dims, int[] combine2Dims) {
+	public static PossibleValueCombiner getWorker(List<Long[]> combine1, List<Long[]> combine2, int[] combine1Dims, int[] combine2Dims) {
 		return new PossibleValueCombiner(combine1, combine2, combine1Dims, combine2Dims);
 	}
 
@@ -32,7 +32,7 @@ public class PossibleValueCombiner extends Worker {
 		pValues = combineValue(combine1, combine2, getIntersection(combine1Dims, combine2Dims));
 	}
 
-	public LinkedList<Long[]> getPValues() {
+	public List<Long[]> getPValues() {
 		return pValues;
 	}
 

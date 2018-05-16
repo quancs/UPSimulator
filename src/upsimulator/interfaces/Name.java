@@ -1,6 +1,6 @@
 package upsimulator.interfaces;
 
-public interface Name {
+public interface Name extends Dimensional {
 	/**
 	 * Set the name
 	 * 
@@ -23,4 +23,11 @@ public interface Name {
 	 * @return name
 	 */
 	public String getName();
+
+	/**
+	 * Clone the name
+	 * 
+	 * @return name
+	 */
+	public Name deepClone();
 }

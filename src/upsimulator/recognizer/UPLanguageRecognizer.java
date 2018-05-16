@@ -278,6 +278,8 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 		currMembrane = membrane;
 
 		membrane.setName(ctx.membraneName().getText());
+		for (IntDimContext iContext : ctx.intDim())
+			membrane.addDimension(Long.parseLong(iContext.getText()));
 
 		for (ObjectsContext oc : ctx.objects()) {
 			List<Object[]> objects = (List<Object[]>) visitObjects(oc);
@@ -631,12 +633,12 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 		logger.info("visitTarget:" + tString);
 
 		Target target = currPositionResult.new Target();
-		target.name = ctx.membraneName().getText();
+		target.setName(ctx.membraneName().getText());
 
 		boolean needCheck = true;
 		for (FormulaDimContext fdc : ctx.formulaDim()) {
 			String dim = (String) visitFormulaDim(fdc);
-			target.formulaDims.add(dim);
+			target.addDimension(dim);
 			try {
 				Integer.parseInt(dim);
 			} catch (Exception e) {

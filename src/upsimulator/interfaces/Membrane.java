@@ -15,7 +15,7 @@ import upsimulator.interfaces.Tunnel.TunnelType;
  * @author quan
  *
  */
-public interface Membrane extends Name, Cloneable, Dimensional {
+public interface Membrane extends Name, Cloneable {
 
 	public static HashMap<String, Membrane> membraneClass = new HashMap<>();
 	public static HashMap<String, Boolean> membraneClassStatus = new HashMap<>();

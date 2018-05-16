@@ -207,6 +207,8 @@ public class PController extends Thread {
 				rmList.add(membrane);
 			} catch (TunnelNotExistException e) {
 				e.printStackTrace();
+				leftStep = 0;
+				return 0;
 			}
 		}
 
