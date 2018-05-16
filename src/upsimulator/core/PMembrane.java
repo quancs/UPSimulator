@@ -86,7 +86,7 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 			Membrane m = membranes.get(i);
 			List<Tunnel> tList = m.getTunnels();
 			for (Tunnel t : tList) {
-				if (!(t.getType() == TunnelType.In || (t.getType() == TunnelType.Out && t.getSource() != this)))
+				if (!(t.getType() == TunnelType.In || t.getType() == TunnelType.Go || (t.getType() == TunnelType.Out && t.getSource() != this)))
 					continue;
 				if (tunnels.contains(t))
 					continue;

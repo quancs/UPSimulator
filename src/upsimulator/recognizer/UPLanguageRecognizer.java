@@ -622,7 +622,7 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 	public T visitTunnelTarget(TunnelTargetContext ctx) {
 		String mName = ctx.membraneName().getText();
 		for (IntDimContext intDimContext : ctx.intDim()) {
-			mName += "[" + intDimContext.toString() + "]";
+			mName += "[" + intDimContext.getText() + "]";
 		}
 		return (T) mName;
 	}
