@@ -1,0 +1,21 @@
+Environment{
+	Membrane a{
+		Object a^3;
+		Tunnel b,c;
+		
+		Rule r1= a+/ a -> ( a, go all);
+		Rule r2= a+/ a -> ( a, go b);
+		Rule r3= a+/ a -> ( a, go b | c);
+		Rule r4= a+/ a -> ( a, go b & c);
+	}
+	
+	Membrane b{
+		Rule r1= a+/ a -> ( a, go all);
+		Tunnel a;
+	}
+	
+	Membrane c{
+		Rule r1= a+/ a -> ( a, go all);
+		Tunnel a;
+	}
+}

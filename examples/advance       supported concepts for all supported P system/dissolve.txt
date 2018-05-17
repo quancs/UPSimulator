@@ -1,0 +1,6 @@
+Environment{
+	Membrane a{
+		Object b;
+		Rule r2= b -> dissolve;
+	}
+}

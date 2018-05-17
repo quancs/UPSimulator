@@ -1,0 +1,6 @@
+Environment{
+	Membrane a{
+		Object b[1];
+		Rule r1= b[1] -> divide( {b} , {b} );
+	}
+}

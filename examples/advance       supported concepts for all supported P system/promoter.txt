@@ -1,0 +1,5 @@
+Environment{
+	Object a,b,c[1],e[1];
+	Rule r1= a -> c | @b;
+	Rule r[i]= c[i] -> f[i] | @e[i];
+}

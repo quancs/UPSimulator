@@ -1,0 +1,5 @@
+Environment{
+	Object a^3,b^2,c^3;
+	Rule r1= a b -> c ,1;
+	Rule r2= a c -> f ,2;
+}

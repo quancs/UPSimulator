@@ -1,0 +1,26 @@
+Environment{
+	Membrane a{
+		Object a^3;
+		Property status=1;
+		Tunnel b,c;
+		
+		Rule r1= <1> a -> <2> ( a, go all);
+		Rule r2= <1> a -> <1> ( a, go b);
+		Rule r3= <1> a -> <1> ( a, go b | c);
+		Rule r4= <1> a -> <1> ( a, go b & c);
+	}
+	
+	Membrane b{
+		Tunnel a;
+		Property status=1;
+		
+		Rule r1= <1> a -> <1> ( a, go all);
+	}
+	
+	Membrane c{
+		Tunnel a;
+		Property status=1;
+		
+		Rule r1= <1> a -> <2> ( a, go a);
+	}
+}

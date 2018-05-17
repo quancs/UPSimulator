@@ -1,3 +1,5 @@
+//Dimensions can be added to objects, rules, membranes and tunnels. 
+
 Membrane A{
 
 }

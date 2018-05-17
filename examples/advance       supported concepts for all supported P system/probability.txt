@@ -1,0 +1,6 @@
+Environment{
+	Membrane b {
+		Object a^100000;
+		Rule r1= a -> b | probability=0.3;
+	}
+}

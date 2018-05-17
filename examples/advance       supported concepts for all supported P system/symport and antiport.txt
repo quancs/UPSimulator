@@ -1,0 +1,12 @@
+Environment{
+	Object a^3,b^3,d;
+	
+	Rule r1 = in.b{ c d } -> c d ;//symport
+	//Rule r2 = in.b{ c } d -> c (d,in b) ;//antiport
+	
+	Membrane b{
+		Object c^3,d^3;
+		//Rule r1= out{ a^2 b^2 } -> a^2 b^2 ;//symport
+		//Rule r2 = out{ a^2 } c^2 -> a^2 (c^2,out) ;//antiport
+	}
+}

@@ -1,0 +1,9 @@
+Membrane B{
+	
+}
+
+Environment{
+	Object a[1],f;
+	Rule r[i]= a[i] -> B:b[i]{ c };
+	Rule r2= f -> B:d{ g };
+}

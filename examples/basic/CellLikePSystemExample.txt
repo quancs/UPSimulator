@@ -1,0 +1,17 @@
+Environment{
+	
+	Rule r1= a -> ( a, in all);
+	Rule r2= a -> ( a, in a);
+	Rule r3= a -> ( a, in a | b);
+	Rule r4= a -> ( a, in a & b);
+	
+	Membrane a{
+		Object a^3;
+		Rule r1= a -> ( a, out);
+	}
+	
+	Membrane b{
+
+	}
+	
+}

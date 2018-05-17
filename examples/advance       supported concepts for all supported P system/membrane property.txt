@@ -1,0 +1,8 @@
+Environment{
+	Membrane a{
+		Object a^3;
+		Property polarity=0;
+		
+		Rule r1= <polarity=0> a -> <polarity=+> b;
+	}
+}
