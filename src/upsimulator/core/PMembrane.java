@@ -24,6 +24,7 @@ import upsimulator.interfaces.Rule;
 import upsimulator.interfaces.Tunnel;
 import upsimulator.interfaces.Tunnel.TunnelType;
 import upsimulator.interfaces.UPSLogger;
+import upsimulator.rules.conditions.ObjectCondition;
 import upsimulator.rules.conditions.PriorityCondition;
 
 /**
@@ -157,9 +158,6 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 
 	@Override
 	public void addObject(Obj object, Object num) {
-		if (object instanceof Condition)
-			System.err.println("add a condition as object");
-
 		if (!deleted) {
 			if (object.getClass() == PNumericObject.class) {
 				Double stored = (Double) objects.get(object);
@@ -173,10 +171,11 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 				if (stored != null) {
 					objects.put(object, stored + (Integer) num);
 				} else {
+					if (object instanceof ObjectCondition)
+						object = new PObject((PObject) object);
 					objects.put(object, num);
 				}
 			}
-
 		}
 	}
 
@@ -268,7 +267,28 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 
 		if (PriorityCondition.exist()) {
 			List<Map.Entry<Rule, Integer>> entryList = new ArrayList<>(urules.entrySet());
-			Collections.shuffle(entryList);
+			entryList.sort(new Comparator<Map.Entry<Rule, Integer>>() {
+				@Override
+				public int compare(Entry<Rule, Integer> o1, Entry<Rule, Integer> o2) {
+					Rule r1 = o1.getKey();
+					Rule r2 = o2.getKey();
+					PriorityCondition p1 = getPriorityCondition(r1);
+					PriorityCondition p2 = getPriorityCondition(r2);
+					if (p1.getPriority() != p2.getPriority())
+						return p1.getPriority() - p2.getPriority();
+					else
+						return Math.random() > 0.5 ? -1 : 1;
+				}
+
+				private PriorityCondition getPriorityCondition(Rule rule) {
+					for (Condition condition : rule.getConditions())
+						if (condition instanceof PriorityCondition)
+							return (PriorityCondition) condition;
+					return new PriorityCondition(0);
+				}
+
+			});
+
 			for (Map.Entry<Rule, Integer> entry : entryList) {
 				Rule rule = entry.getKey();
 				Integer times = entry.getValue();
@@ -321,8 +341,8 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 		for (int i = listeners.size() - 1; i >= 0; i--)
 			listeners.get(i).startSetting(this);
 
-		for (Tunnel t : tunnels)
-			t.pushResult();
+		for (int i = 0, size = tunnels.size(); i < size; i++)
+			tunnels.get(i).pushResult();
 
 		endSetting(this);
 		return fetchedRules;
