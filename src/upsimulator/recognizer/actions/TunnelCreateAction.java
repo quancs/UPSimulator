@@ -30,7 +30,7 @@ public class TunnelCreateAction extends RecognizerAction {
 
 	@Override
 	public boolean ready() {
-		return super.ready(target);
+		return true;
 	}
 
 	@Override
