@@ -1,0 +1,4 @@
+Environment{
+	Object a^-1;// anti-spike
+	Rule r1= a^-1 -> a^2;// consume one anti-spike and then produce two spike
+}
