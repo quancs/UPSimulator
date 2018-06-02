@@ -115,7 +115,7 @@ public interface Membrane extends Name, Cloneable {
 	 * @return if the object's quantity is greater than num, then reduce it and
 	 *         return {@code true}
 	 */
-	public boolean reduceObject(Obj object, Object num);
+	public boolean reduceObject(Obj object, Number num);
 
 	/**
 	 * Get all the objects contained in this membrane

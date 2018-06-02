@@ -57,7 +57,8 @@ public class PController extends Thread {
 	public PController(String string) {
 		this.method = PMethod.maximum;
 		environment = getEnvironment(string);
-		records.add((Membrane) environment.deepClone());
+		if (environment != null)
+			records.add((Membrane) environment.deepClone());
 		step = 1;
 	}
 
@@ -88,20 +89,27 @@ public class PController extends Thread {
 		}
 
 		// recoginze
-		UPLanguageLexer lexer = new UPLanguageLexer(new ANTLRInputStream(modelInstanceStr));
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		tokens.fill();
+		UPLanguageRecognizer<Object> visitor = null;
+		PMembrane membrane = null;
+		try {
+			UPLanguageLexer lexer = new UPLanguageLexer(new ANTLRInputStream(modelInstanceStr));
+			CommonTokenStream tokens = new CommonTokenStream(lexer);
+			tokens.fill();
 
-		UPLanguageParser parser = new UPLanguageParser(tokens);
+			UPLanguageParser parser = new UPLanguageParser(tokens);
 
-		parser.setContext(new ParserRuleContext());
+			parser.setContext(new ParserRuleContext());
 
-		UPLanguageParser.StartContext tree = parser.start();
+			UPLanguageParser.StartContext tree = parser.start();
 
-		UPLanguageRecognizer<Object> visitor = new UPLanguageRecognizer<>();
-		PMembrane membrane = (PMembrane) visitor.visit(tree);
+			visitor = new UPLanguageRecognizer<>();
+			membrane = (PMembrane) visitor.visit(tree);
+		} catch (Exception e) {
+			System.err.println(e);
+		}
 
 		// read error messages
+		System.err.flush();
 		System.err.close();
 		System.setErr(syserr);
 		try {
@@ -117,7 +125,7 @@ public class PController extends Thread {
 			UPSLogger.debug(this, membrane);
 			UPSLogger.result(this, membrane);
 		} else {
-			UPSLogger.debug(this, "Recogize environment failed.\n");
+			UPSLogger.error(this, "Recogize environment failed.\n");
 		}
 
 		return membrane;
@@ -226,7 +234,7 @@ public class PController extends Thread {
 
 		long endTime = System.nanoTime();
 		long timeUsed = endTime - startTime;
-		UPSLogger.result(this, "step:" + step + "\t\trules used : " + totalUsed + "\t\ttime used:" + ((double)timeUsed/1000000) + "ms");
+		UPSLogger.result(this, "step:" + step + "\t\trules used : " + totalUsed + "\t\ttime used:" + ((double) timeUsed / 1000000) + "ms");
 		UPSLogger.debug(this, "\n" + "step:" + step);
 		UPSLogger.debug(this, uMap);
 		UPSLogger.result(this, environment.toString() + "\n");

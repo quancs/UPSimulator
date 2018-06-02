@@ -33,8 +33,8 @@ membraneName	: 	Name | Letters | Integer;
 /*对象定义与赋值*/
 objects 		:	'Object' objAssign (','  objAssign )* ';';
 objAssign		:	objName ('[' intDim ']')* ('^' objNum)?;
-objName			:	Name | Letters;
-objNum			:	'-'? Integer;
+objName			:	'-'? (Name | Letters);
+objNum			:	Integer;
 
 /*规则定义*/
 prule			:	'Rule' ruleName ('[' abcDim ']')* '=' (regCondition '/')? propertyCondition* (objCondition | objConditionWithTarget)+ '->' propertyResult* result*
@@ -76,7 +76,7 @@ objConditionWithTarget: ( 'out' | 'in.' membraneName ('[' formulaDim ']')* | 'go
 priorityCondition:	',' priority;
 priority		:	Integer;
 probabilisticCondition: 'probability' '=' Double;
-regCondition	:	(Letters | '+' | '(' | ')' | '[' | ']' | '{' | '}' | ',' | '^' | '*' | '+' | '?' | '|' )+;
+regCondition	:	(Letters| '-' | '+' | '(' | ')' | '[' | ']' | '{' | '}' | ',' | '^' | '*' | '+' | '?' | '|' )+;
 
 /*所有的维度类型*/
 intDim			:	Integer;//整数维度

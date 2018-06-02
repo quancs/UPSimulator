@@ -24,7 +24,6 @@ import upsimulator.interfaces.Rule;
 import upsimulator.interfaces.Tunnel;
 import upsimulator.interfaces.Tunnel.TunnelType;
 import upsimulator.interfaces.UPSLogger;
-import upsimulator.rules.conditions.ObjectCondition;
 import upsimulator.rules.conditions.PriorityCondition;
 import upsimulator.rules.results.ObjectResult;
 
@@ -152,7 +151,13 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 	@Override
 	public Number getNumOf(Obj object) {
 		if (objects.containsKey(object)) {
-			return objects.get(object);
+			if (object.isAntiObject()) {
+				if (object.getClass() == PNumericObject.class)
+					return (Double) objects.get(object) * -1;
+				else
+					return (Integer) objects.get(object) * -1;
+			} else
+				return objects.get(object);
 		}
 		return 0;
 	}
@@ -160,20 +165,30 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 	@Override
 	public void addObject(Obj object, Number num) {
 		if (!deleted) {
+			if (object.isAntiObject()) {
+				if (object.getClass() == PNumericObject.class) {
+					num = (Double) num * -1;
+				} else {
+					num = (Integer) num * -1;
+				}
+			}
+
 			if (object.getClass() == PNumericObject.class) {
 				Double stored = (Double) objects.get(object);
 				if (stored != null) {
 					objects.put(object, stored + (Double) num);
 				} else {
-					objects.put(object, num);
+					objects.put(object, (Double) num);
 				}
 			} else {
 				Integer stored = (Integer) objects.get(object);
 				if (stored != null) {
 					objects.put(object, stored + (Integer) num);
 				} else {
-					if (object instanceof ObjectResult)
+					if (object instanceof ObjectResult || object.isAntiObject()) {
 						object = new PObject((PObject) object);
+						((PObject) object).setAnti(false);
+					}
 					objects.put(object, num);
 				}
 			}
@@ -181,7 +196,15 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 	}
 
 	@Override
-	public boolean reduceObject(Obj object, Object num) {
+	public boolean reduceObject(Obj object, Number num) {
+		if (object.isAntiObject()) {
+			if (object.getClass() == PNumericObject.class) {
+				num = (Double) num * -1;
+			} else {
+				num = (Integer) num * -1;
+			}
+		}
+
 		if (object.getClass() == PNumericObject.class) {
 			Double storedNum = (Double) objects.get(object);
 			if (storedNum != null && storedNum >= (Double) num) {
@@ -372,32 +395,46 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 				Entry<Obj, Number> entry = iter.next();
 				Obj key = entry.getKey();
 				Number val = entry.getValue();
+
+				String name = key.toString();
+				if (val instanceof Integer) {
+					if ((Integer) val < 0) {
+						val = (Integer) val * -1;
+						name = "-" + name;
+					}
+				} else {
+					if ((Double) val < 0) {
+						val = (Double) val * -1;
+						name = "-" + name;
+					}
+				}
+
 				if (iter.hasNext()) {
 					if (val instanceof Integer) {
 						if (val.intValue() == 1) {
-							oBuilder.append(key + ", ");
+							oBuilder.append(name + ", ");
 						} else {
-							oBuilder.append(key + "^" + val + ", ");
+							oBuilder.append(name + "^" + val + ", ");
 						}
 					} else {
 						if ((Double) val > 0) {
-							oBuilder.append(key + "^" + val + ", ");
+							oBuilder.append(name + "^" + val + ", ");
 						} else {
-							oBuilder.append(key + ", ");
+							oBuilder.append(name + ", ");
 						}
 					}
 				} else {
 					if (val instanceof Integer) {
 						if (val.intValue() == 1) {
-							oBuilder.append(key + "; \n");
+							oBuilder.append(name + "; \n");
 						} else {
-							oBuilder.append(key + "^" + val + "; \n");
+							oBuilder.append(name + "^" + val + "; \n");
 						}
 					} else {
 						if ((Double) val > 0) {
-							oBuilder.append(key + "^" + val + "; \n");
+							oBuilder.append(name + "^" + val + "; \n");
 						} else {
-							oBuilder.append(key + "; \n");
+							oBuilder.append(name + "; \n");
 						}
 					}
 				}

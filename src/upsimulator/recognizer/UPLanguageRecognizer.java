@@ -355,14 +355,17 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 
 	@Override
 	public T visitObjAssign(ObjAssignContext ctx) {
-		PObject pobject = new PObject();
-		pobject.setName(ctx.objName().getText());
+		String name = ctx.objName().getText();
+		int num = (int) visitObjNum(ctx.objNum());
+
+		PObject pobject = new PObject(name);
+
 		for (IntDimContext idc : ctx.intDim())
 			pobject.addDimension(Long.parseLong(idc.getText()));
 
 		Object object[] = new Object[2];
 		object[0] = pobject;
-		object[1] = (int) visitObjNum(ctx.objNum());
+		object[1] = num;
 		return (T) object;
 	}
 
@@ -500,10 +503,12 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 	@Override
 	public T visitObjResult(ObjResultContext ctx) {
 		ObjectResult or = new ObjectResult();
-		or.setName(ctx.objName().getText());
+		String name = ctx.objName().getText();
+		int num = (int) visitObjNum(ctx.objNum());
+		or.setName(name);
 		for (FormulaDimContext fdc : ctx.formulaDim())
 			or.addDimension((String) visitFormulaDim(fdc));
-		or.setNum((int) visitObjNum(ctx.objNum()));
+		or.setNum(num);
 		return (T) or;
 	}
 
@@ -602,10 +607,12 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 	@Override
 	public T visitObjCondition(ObjConditionContext ctx) {
 		ObjectCondition objectCondition = new ObjectCondition();
-		objectCondition.setName(ctx.objName().getText());
+		String name = ctx.objName().getText();
+		int num = (int) visitObjNum(ctx.objNum());
+		objectCondition.setName(name);
 		for (FormulaDimContext fdc : ctx.formulaDim())
 			objectCondition.addDimension((String) visitFormulaDim(fdc));
-		objectCondition.setNum((int) visitObjNum(ctx.objNum()));
+		objectCondition.setNum(num);
 		return (T) objectCondition;
 	}
 

@@ -9,14 +9,14 @@ import upsimulator.interfaces.Membrane;
 public class RegularExpressionCondition implements Condition {
 	private Pattern pattern;
 	private boolean positive;
-	public static PObject positiveObject = new PObject("a"), negativeObject = new PObject("b");
+	public static PObject positiveObject = new PObject("a"), negativeObject = new PObject("-a");
 
 	public RegularExpressionCondition(String pattern) {
 		super();
-		if (pattern.contains(positiveObject.getName()))
-			positive = true;
-		else if (pattern.contains(negativeObject.getName()))
+		if (pattern.contains(negativeObject.toString()))
 			positive = false;
+		else if (pattern.contains(positiveObject.toString()))
+			positive = true;
 		else
 			throw new IllegalArgumentException("Spike symbol must be " + positiveObject + " or " + negativeObject + ": " + pattern);
 
@@ -24,7 +24,7 @@ public class RegularExpressionCondition implements Condition {
 	}
 
 	private String genStr(int length, String cha) {
-		StringBuilder sBuilder = new StringBuilder(length);
+		StringBuilder sBuilder = new StringBuilder(length * cha.length());
 		for (int i = 0; i < length; i++)
 			sBuilder.append(cha);
 		return sBuilder.toString();
@@ -34,11 +34,11 @@ public class RegularExpressionCondition implements Condition {
 	public int satisfy(Membrane membrane) {
 		boolean match;
 		if (positive) {
-			int num = (Integer)membrane.getNumOf(positiveObject);
-			match = pattern.matcher(genStr(num, positiveObject.getName())).matches();
+			int num = (Integer) membrane.getNumOf(positiveObject);
+			match = pattern.matcher(genStr(num, positiveObject.toString())).matches();
 		} else {
-			int num = (Integer)membrane.getNumOf(negativeObject);
-			match = pattern.matcher(genStr(num, negativeObject.getName())).matches();
+			int num = (Integer) membrane.getNumOf(negativeObject);
+			match = pattern.matcher(genStr(num, negativeObject.toString())).matches();
 		}
 		if (match)
 			return Integer.MAX_VALUE;

@@ -67,9 +67,9 @@ public class ObjectCondition extends PObject implements Condition {
 	@Override
 	public String toString() {
 		if (num == 1) {
-			return getNameDim();
+			return super.toString();
 		} else {
-			return getNameDim() + "^" + num;
+			return super.toString() + "^" + num;
 		}
 	}
 

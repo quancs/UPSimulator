@@ -11,6 +11,7 @@ import upsimulator.interfaces.Obj;
  */
 public class PObject extends BasicName implements Obj {
 	private static final long serialVersionUID = 918301397917102425L;
+	private boolean anti = false;
 
 	public PObject(String name, String... dims) {
 		setName(name);
@@ -24,6 +25,16 @@ public class PObject extends BasicName implements Obj {
 
 	public PObject(PObject object) {
 		super(object);
+		anti = object.anti;
+	}
+
+	@Override
+	public void setName(String name) {
+		if (name.startsWith("-")) {
+			anti = true;
+			name = name.replaceFirst("-", "");
+		}
+		super.setName(name);
 	}
 
 	@Override
@@ -35,7 +46,10 @@ public class PObject extends BasicName implements Obj {
 
 	@Override
 	public String toString() {
-		return getNameDim();
+		if (anti)
+			return "-" + getNameDim();
+		else
+			return getNameDim();
 	}
 
 	@Override
@@ -62,5 +76,18 @@ public class PObject extends BasicName implements Obj {
 		} else if (!getNameDim().equals(other.getNameDim()))
 			return false;
 		return true;
+	}
+
+	@Override
+	public boolean isAntiObject() {
+		return anti;
+	}
+
+	public boolean isAnti() {
+		return anti;
+	}
+
+	public void setAnti(boolean anti) {
+		this.anti = anti;
 	}
 }
