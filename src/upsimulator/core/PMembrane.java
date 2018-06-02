@@ -37,7 +37,7 @@ import upsimulator.rules.conditions.PriorityCondition;
 public class PMembrane extends BasicName implements Membrane, MembraneListener {
 	private static final long serialVersionUID = -1932793470654198760L;
 
-	private ConcurrentHashMap<Obj, Object> objects = new ConcurrentHashMap<Obj, Object>();
+	private ConcurrentHashMap<Obj, Number> objects = new ConcurrentHashMap<Obj, Number>();
 	private ArrayList<Rule> rules = new ArrayList<>();
 	private ArrayList<MembraneListener> listeners = new ArrayList<>();
 
@@ -113,11 +113,11 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 			for (Rule rule : m.getRules())
 				cloned.addRule(rule.deepClone());
 			// clone objects
-			Iterator<Entry<Obj, Object>> iter = m.getObjects().entrySet().iterator();
+			Iterator<Entry<Obj, Number>> iter = m.getObjects().entrySet().iterator();
 			while (iter.hasNext()) {
-				Entry<Obj, Object> entry = iter.next();
+				Entry<Obj, Number> entry = iter.next();
 				Obj key = entry.getKey();
-				Object val = entry.getValue();
+				Number val = entry.getValue();
 				cloned.addObject(key.deepClone(), val);
 			}
 			// clone properties
@@ -149,7 +149,7 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 	}
 
 	@Override
-	public Object getNumOf(Obj object) {
+	public Number getNumOf(Obj object) {
 		if (objects.containsKey(object)) {
 			return objects.get(object);
 		}
@@ -157,7 +157,7 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 	}
 
 	@Override
-	public void addObject(Obj object, Object num) {
+	public void addObject(Obj object, Number num) {
 		if (!deleted) {
 			if (object.getClass() == PNumericObject.class) {
 				Double stored = (Double) objects.get(object);
@@ -228,7 +228,7 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 	}
 
 	@Override
-	public Map<Obj, Object> getObjects() {
+	public Map<Obj, Number> getObjects() {
 		return objects;
 	}
 
@@ -366,11 +366,11 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 
 		if (withObject && objects.size() > 0) {
 			StringBuilder oBuilder = new StringBuilder(space + "Object ");
-			Iterator<Entry<Obj, Object>> iter = objects.entrySet().iterator();
+			Iterator<Entry<Obj, Number>> iter = objects.entrySet().iterator();
 			while (iter.hasNext()) {
-				Entry<Obj, Object> entry = iter.next();
+				Entry<Obj, Number> entry = iter.next();
 				Obj key = entry.getKey();
-				Object val = entry.getValue();
+				Number val = entry.getValue();
 				if (iter.hasNext()) {
 					if (val instanceof Integer) {
 						if ((Integer) val > 1) {
@@ -529,7 +529,7 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 			addRule((Rule) rule.deepClone());
 		}
 
-		Map<Obj, Object> objmap = template.getObjects();
+		Map<Obj, Number> objmap = template.getObjects();
 		Iterator<?> iter = objmap.entrySet().iterator();
 		while (iter.hasNext()) {
 			Map.Entry<?, ?> entry = (Map.Entry<?, ?>) iter.next();

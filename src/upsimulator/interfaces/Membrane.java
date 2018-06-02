@@ -93,7 +93,7 @@ public interface Membrane extends Name, Cloneable {
 	 *            P object
 	 * @return the quantity of object
 	 */
-	public Object getNumOf(Obj object);
+	public Number getNumOf(Obj object);
 
 	/**
 	 * Add object to this membrane
@@ -103,7 +103,7 @@ public interface Membrane extends Name, Cloneable {
 	 * @param num
 	 *            the quantity of object
 	 */
-	public void addObject(Obj object, Object num);
+	public void addObject(Obj object, Number num);
 
 	/**
 	 * Reduce object in this membrane
@@ -122,7 +122,7 @@ public interface Membrane extends Name, Cloneable {
 	 * 
 	 * @return objects and their quantity
 	 */
-	public Map<Obj, Object> getObjects();
+	public Map<Obj, Number> getObjects();
 
 	/**
 	 * Add a new rule
