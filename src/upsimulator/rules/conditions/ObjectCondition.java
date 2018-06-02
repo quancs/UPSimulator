@@ -66,10 +66,10 @@ public class ObjectCondition extends PObject implements Condition {
 
 	@Override
 	public String toString() {
-		if (num > 1) {
-			return getNameDim() + "^" + num;
-		} else {
+		if (num == 1) {
 			return getNameDim();
+		} else {
+			return getNameDim() + "^" + num;
 		}
 	}
 

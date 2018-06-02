@@ -26,6 +26,7 @@ import upsimulator.interfaces.Tunnel.TunnelType;
 import upsimulator.interfaces.UPSLogger;
 import upsimulator.rules.conditions.ObjectCondition;
 import upsimulator.rules.conditions.PriorityCondition;
+import upsimulator.rules.results.ObjectResult;
 
 /**
  * The default membrane implementation, a container of objects & rules & tunnels
@@ -171,7 +172,7 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 				if (stored != null) {
 					objects.put(object, stored + (Integer) num);
 				} else {
-					if (object instanceof ObjectCondition)
+					if (object instanceof ObjectResult)
 						object = new PObject((PObject) object);
 					objects.put(object, num);
 				}
@@ -373,10 +374,10 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 				Number val = entry.getValue();
 				if (iter.hasNext()) {
 					if (val instanceof Integer) {
-						if ((Integer) val > 1) {
-							oBuilder.append(key + "^" + val + ", ");
-						} else {
+						if (val.intValue() == 1) {
 							oBuilder.append(key + ", ");
+						} else {
+							oBuilder.append(key + "^" + val + ", ");
 						}
 					} else {
 						if ((Double) val > 0) {
@@ -387,10 +388,10 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 					}
 				} else {
 					if (val instanceof Integer) {
-						if ((Integer) val > 1) {
-							oBuilder.append(key + "^" + val + "; \n");
-						} else {
+						if (val.intValue() == 1) {
 							oBuilder.append(key + "; \n");
+						} else {
+							oBuilder.append(key + "^" + val + "; \n");
 						}
 					} else {
 						if ((Double) val > 0) {

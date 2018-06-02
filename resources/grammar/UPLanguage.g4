@@ -34,7 +34,7 @@ membraneName	: 	Name | Letters | Integer;
 objects 		:	'Object' objAssign (','  objAssign )* ';';
 objAssign		:	objName ('[' intDim ']')* ('^' objNum)?;
 objName			:	Name | Letters;
-objNum			:	Integer;
+objNum			:	'-'? Integer;
 
 /*规则定义*/
 prule			:	'Rule' ruleName ('[' abcDim ']')* '=' (regCondition '/')? propertyCondition* (objCondition | objConditionWithTarget)+ '->' propertyResult* result*
