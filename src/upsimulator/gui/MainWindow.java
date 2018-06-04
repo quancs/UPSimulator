@@ -62,6 +62,8 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
+import org.antlr.v4.gui.TestRig;
+
 import upsimulator.core.PController;
 import upsimulator.core.PMembrane;
 import upsimulator.gui.FileDescriber.State;
@@ -329,7 +331,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 	private void initialize() {
 		frmUpsimulator = new JFrame();
 		frmUpsimulator.setTitle("UPSimulator\r\n");
-		frmUpsimulator.setBounds(100, 100, 784, 651);
+		frmUpsimulator.setBounds(100, 100, 894, 811);
 		frmUpsimulator.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frmUpsimulator.getContentPane().setLayout(new BorderLayout(0, 0));
 		frmUpsimulator.addWindowListener(new WindowListener() {
@@ -566,9 +568,9 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 		gbc_stepByStepPanel.gridy = 0;
 		simulatePanel.add(stepByStepPanel, gbc_stepByStepPanel);
 		GridBagLayout gbl_stepByStepPanel = new GridBagLayout();
-		gbl_stepByStepPanel.columnWidths = new int[] { 0, 0, 0, 0 };
+		gbl_stepByStepPanel.columnWidths = new int[] { 50, 50, 50, 50, 0 };
 		gbl_stepByStepPanel.rowHeights = new int[] { 0, 0, 0, 0, 0 };
-		gbl_stepByStepPanel.columnWeights = new double[] { 1.0, 1.0, 1.0, Double.MIN_VALUE };
+		gbl_stepByStepPanel.columnWeights = new double[] { 1.0, 1.0, 1.0, 1.0, Double.MIN_VALUE };
 		gbl_stepByStepPanel.rowWeights = new double[] { 0.0, 1.0, 0.0, 1.0, Double.MIN_VALUE };
 		stepByStepPanel.setLayout(gbl_stepByStepPanel);
 
@@ -583,69 +585,85 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 		singleInstance.addItemListener(this);
 		singleInstance.setBackground(Color.WHITE);
 		GridBagConstraints gbc_singleInstance = new GridBagConstraints();
-		gbc_singleInstance.gridwidth = 2;
-		gbc_singleInstance.insets = new Insets(0, 0, 5, 0);
 		gbc_singleInstance.fill = GridBagConstraints.HORIZONTAL;
+		gbc_singleInstance.gridwidth = 3;
+		gbc_singleInstance.insets = new Insets(0, 0, 5, 0);
 		gbc_singleInstance.gridx = 1;
 		gbc_singleInstance.gridy = 0;
 		stepByStepPanel.add(singleInstance, gbc_singleInstance);
-
-		JButton btnStart = new JButton("Init");
-		btnStart.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				try {
-					resultConsole.setText("");
-					debugConsole.setText("");
-					initMembrane();
-				} catch (Exception e2) {
-					e2.printStackTrace();
-					// resultLog(this, e2.toString());
-				}
-			}
-		});
-		GridBagConstraints gbc_btnStart = new GridBagConstraints();
-		gbc_btnStart.insets = new Insets(0, 0, 5, 5);
-		gbc_btnStart.gridx = 0;
-		gbc_btnStart.gridy = 2;
-		stepByStepPanel.add(btnStart, gbc_btnStart);
-
-		JButton btnPause = new JButton("Run to End");
-		btnPause.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				String instance = singleInstance.getSelectedItem().toString();
-				PController controller = controllerMap.get(instance);
-				if (controller != null) {
-					controller.setEnableRecords(getEnableRecords().isSelected());
-					controller.runToStop();
-				} else
-					resultLog(this, "Instance is not selected.");
-			}
-		});
-		GridBagConstraints gbc_btnPause = new GridBagConstraints();
-		gbc_btnPause.insets = new Insets(0, 0, 5, 5);
-		gbc_btnPause.gridx = 1;
-		gbc_btnPause.gridy = 2;
-		stepByStepPanel.add(btnPause, gbc_btnPause);
-
-		JButton btnOneStep = new JButton("Run One Step");
-		btnOneStep.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				String instance = singleInstance.getSelectedItem().toString();
-				PController controller = controllerMap.get(instance);
-				if (controller != null) {
-					controller.setEnableRecords(getEnableRecords().isSelected());
-					controller.runSteps(1);
-				}
-			}
-		});
-		GridBagConstraints gbc_btnOneStep = new GridBagConstraints();
-		gbc_btnOneStep.insets = new Insets(0, 0, 5, 0);
-		gbc_btnOneStep.gridx = 2;
-		gbc_btnOneStep.gridy = 2;
-		stepByStepPanel.add(btnOneStep, gbc_btnOneStep);
+				
+						JButton btnPause = new JButton("Run to End");
+						btnPause.setToolTipText("Simulate till no rules can be used");
+						btnPause.addMouseListener(new MouseAdapter() {
+							@Override
+							public void mouseClicked(MouseEvent e) {
+								String instance = singleInstance.getSelectedItem().toString();
+								PController controller = controllerMap.get(instance);
+								if (controller != null) {
+									controller.setEnableRecords(getEnableRecords().isSelected());
+									controller.runToStop();
+								} else
+									resultLog(this, "Instance is not selected.");
+							}
+						});
+						
+								JButton btnStart = new JButton("Init");
+								btnStart.setToolTipText("Initialize the simulation environment of selected file");
+								btnStart.addMouseListener(new MouseAdapter() {
+									@Override
+									public void mouseClicked(MouseEvent e) {
+										try {
+											resultConsole.setText("");
+											debugConsole.setText("");
+											initMembrane();
+										} catch (Exception e2) {
+											e2.printStackTrace();
+											// resultLog(this, e2.toString());
+										}
+									}
+								});
+								
+										JButton btnGrammerCheck = new JButton("Check Grammar");
+										btnGrammerCheck.setToolTipText("Check the grammar of selected environment");
+										btnGrammerCheck.addActionListener(new ActionListener() {
+											public void actionPerformed(ActionEvent e) {
+												grammerCheck();
+											}
+										});
+										GridBagConstraints gbc_btnGrammerCheck = new GridBagConstraints();
+										gbc_btnGrammerCheck.insets = new Insets(0, 0, 5, 5);
+										gbc_btnGrammerCheck.gridx = 0;
+										gbc_btnGrammerCheck.gridy = 2;
+										stepByStepPanel.add(btnGrammerCheck, gbc_btnGrammerCheck);
+								GridBagConstraints gbc_btnStart = new GridBagConstraints();
+								gbc_btnStart.insets = new Insets(0, 0, 5, 5);
+								gbc_btnStart.gridx = 1;
+								gbc_btnStart.gridy = 2;
+								stepByStepPanel.add(btnStart, gbc_btnStart);
+						GridBagConstraints gbc_btnPause = new GridBagConstraints();
+						gbc_btnPause.insets = new Insets(0, 0, 5, 5);
+						gbc_btnPause.gridx = 2;
+						gbc_btnPause.gridy = 2;
+						stepByStepPanel.add(btnPause, gbc_btnPause);
+				
+						JButton btnOneStep = new JButton("Run One Step");
+						btnOneStep.setToolTipText("Simulate one step");
+						btnOneStep.addMouseListener(new MouseAdapter() {
+							@Override
+							public void mouseClicked(MouseEvent e) {
+								String instance = singleInstance.getSelectedItem().toString();
+								PController controller = controllerMap.get(instance);
+								if (controller != null) {
+									controller.setEnableRecords(getEnableRecords().isSelected());
+									controller.runSteps(1);
+								}
+							}
+						});
+						GridBagConstraints gbc_btnOneStep = new GridBagConstraints();
+						gbc_btnOneStep.insets = new Insets(0, 0, 5, 0);
+						gbc_btnOneStep.gridx = 3;
+						gbc_btnOneStep.gridy = 2;
+						stepByStepPanel.add(btnOneStep, gbc_btnOneStep);
 
 		JPanel consolePanel = new JPanel();
 		consolePanel.setBackground(Color.WHITE);
@@ -853,6 +871,35 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 			}
 		});
 		popupMenu2.add(mntmRemove_1);
+	}
+
+	protected void grammerCheck() {
+		if (singleInstance.getSelectedIndex() < 0) {
+			resultLog(this, "No instance selected!!!");
+			return;
+		}
+
+		ArrayList<File> files = new ArrayList<>();
+		files.add(instances.getFileDescriber(singleInstance.getSelectedIndex()).getFile());
+		for (int i = 0; i < models.size(); i++) {
+			files.add(models.getFileDescriber(i).getFile());
+		}
+
+		ArrayList<String> argsList = new ArrayList<>();
+		argsList.add("upsimulator.recognizer.UPLanguage");
+		argsList.add("start");
+		argsList.add("-gui");
+		for (File file : files)
+			argsList.add(file.getAbsolutePath());
+		String[] args = new String[argsList.size()];
+		argsList.toArray(args);
+		TestRig rig;
+		try {
+			rig = new TestRig(args);
+			rig.process();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	protected void cycleChange(Integer value) {
