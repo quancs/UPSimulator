@@ -311,6 +311,9 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 	}
 
 	private void editorTextChange() {
+		// if (editor.getText().equals(fileInEditor.getUnsavedText()))
+		// return;
+
 		fileInEditor.setUnsavedText(editor.getText());
 		setFileDescriptorState(fileInEditor, State.Unsaved);
 	}
@@ -591,79 +594,79 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 		gbc_singleInstance.gridx = 1;
 		gbc_singleInstance.gridy = 0;
 		stepByStepPanel.add(singleInstance, gbc_singleInstance);
-				
-						JButton btnPause = new JButton("Run to End");
-						btnPause.setToolTipText("Simulate till no rules can be used");
-						btnPause.addMouseListener(new MouseAdapter() {
-							@Override
-							public void mouseClicked(MouseEvent e) {
-								String instance = singleInstance.getSelectedItem().toString();
-								PController controller = controllerMap.get(instance);
-								if (controller != null) {
-									controller.setEnableRecords(getEnableRecords().isSelected());
-									controller.runToStop();
-								} else
-									resultLog(this, "Instance is not selected.");
-							}
-						});
-						
-								JButton btnStart = new JButton("Init");
-								btnStart.setToolTipText("Initialize the simulation environment of selected file");
-								btnStart.addMouseListener(new MouseAdapter() {
-									@Override
-									public void mouseClicked(MouseEvent e) {
-										try {
-											resultConsole.setText("");
-											debugConsole.setText("");
-											initMembrane();
-										} catch (Exception e2) {
-											e2.printStackTrace();
-											// resultLog(this, e2.toString());
-										}
-									}
-								});
-								
-										JButton btnGrammerCheck = new JButton("Check Grammar");
-										btnGrammerCheck.setToolTipText("Check the grammar of selected environment");
-										btnGrammerCheck.addActionListener(new ActionListener() {
-											public void actionPerformed(ActionEvent e) {
-												grammerCheck();
-											}
-										});
-										GridBagConstraints gbc_btnGrammerCheck = new GridBagConstraints();
-										gbc_btnGrammerCheck.insets = new Insets(0, 0, 5, 5);
-										gbc_btnGrammerCheck.gridx = 0;
-										gbc_btnGrammerCheck.gridy = 2;
-										stepByStepPanel.add(btnGrammerCheck, gbc_btnGrammerCheck);
-								GridBagConstraints gbc_btnStart = new GridBagConstraints();
-								gbc_btnStart.insets = new Insets(0, 0, 5, 5);
-								gbc_btnStart.gridx = 1;
-								gbc_btnStart.gridy = 2;
-								stepByStepPanel.add(btnStart, gbc_btnStart);
-						GridBagConstraints gbc_btnPause = new GridBagConstraints();
-						gbc_btnPause.insets = new Insets(0, 0, 5, 5);
-						gbc_btnPause.gridx = 2;
-						gbc_btnPause.gridy = 2;
-						stepByStepPanel.add(btnPause, gbc_btnPause);
-				
-						JButton btnOneStep = new JButton("Run One Step");
-						btnOneStep.setToolTipText("Simulate one step");
-						btnOneStep.addMouseListener(new MouseAdapter() {
-							@Override
-							public void mouseClicked(MouseEvent e) {
-								String instance = singleInstance.getSelectedItem().toString();
-								PController controller = controllerMap.get(instance);
-								if (controller != null) {
-									controller.setEnableRecords(getEnableRecords().isSelected());
-									controller.runSteps(1);
-								}
-							}
-						});
-						GridBagConstraints gbc_btnOneStep = new GridBagConstraints();
-						gbc_btnOneStep.insets = new Insets(0, 0, 5, 0);
-						gbc_btnOneStep.gridx = 3;
-						gbc_btnOneStep.gridy = 2;
-						stepByStepPanel.add(btnOneStep, gbc_btnOneStep);
+
+		JButton btnPause = new JButton("Run to End");
+		btnPause.setToolTipText("Simulate till no rules can be used");
+		btnPause.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				String instance = singleInstance.getSelectedItem().toString();
+				PController controller = controllerMap.get(instance);
+				if (controller != null) {
+					controller.setEnableRecords(getEnableRecords().isSelected());
+					controller.runToStop();
+				} else
+					resultLog(this, "Instance is not selected.");
+			}
+		});
+
+		JButton btnStart = new JButton("Initialize Environment");
+		btnStart.setToolTipText("Initialize the simulation environment of selected file");
+		btnStart.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					resultConsole.setText("");
+					debugConsole.setText("");
+					initMembrane();
+				} catch (Exception e2) {
+					e2.printStackTrace();
+					// resultLog(this, e2.toString());
+				}
+			}
+		});
+
+		JButton btnGrammerCheck = new JButton("Check Grammar");
+		btnGrammerCheck.setToolTipText("Check the grammar of selected environment");
+		btnGrammerCheck.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				grammerCheck();
+			}
+		});
+		GridBagConstraints gbc_btnGrammerCheck = new GridBagConstraints();
+		gbc_btnGrammerCheck.insets = new Insets(0, 0, 5, 5);
+		gbc_btnGrammerCheck.gridx = 0;
+		gbc_btnGrammerCheck.gridy = 2;
+		stepByStepPanel.add(btnGrammerCheck, gbc_btnGrammerCheck);
+		GridBagConstraints gbc_btnStart = new GridBagConstraints();
+		gbc_btnStart.insets = new Insets(0, 0, 5, 5);
+		gbc_btnStart.gridx = 1;
+		gbc_btnStart.gridy = 2;
+		stepByStepPanel.add(btnStart, gbc_btnStart);
+		GridBagConstraints gbc_btnPause = new GridBagConstraints();
+		gbc_btnPause.insets = new Insets(0, 0, 5, 5);
+		gbc_btnPause.gridx = 2;
+		gbc_btnPause.gridy = 2;
+		stepByStepPanel.add(btnPause, gbc_btnPause);
+
+		JButton btnOneStep = new JButton("Run One Step");
+		btnOneStep.setToolTipText("Simulate one step");
+		btnOneStep.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				String instance = singleInstance.getSelectedItem().toString();
+				PController controller = controllerMap.get(instance);
+				if (controller != null) {
+					controller.setEnableRecords(getEnableRecords().isSelected());
+					controller.runSteps(1);
+				}
+			}
+		});
+		GridBagConstraints gbc_btnOneStep = new GridBagConstraints();
+		gbc_btnOneStep.insets = new Insets(0, 0, 5, 0);
+		gbc_btnOneStep.gridx = 3;
+		gbc_btnOneStep.gridy = 2;
+		stepByStepPanel.add(btnOneStep, gbc_btnOneStep);
 
 		JPanel consolePanel = new JPanel();
 		consolePanel.setBackground(Color.WHITE);
@@ -751,7 +754,12 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 		editor.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				editorTextChange();
+				if (e.isControlDown() || e.getKeyCode() == KeyEvent.VK_CONTROL) {
+					if (e.getKeyCode() == KeyEvent.VK_S)
+						save();
+				} else {
+					editorTextChange();
+				}
 			}
 		});
 		scrollPane.setViewportView(editor);
