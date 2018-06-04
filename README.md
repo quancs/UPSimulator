@@ -58,7 +58,7 @@ java -jar UPSimulator.jar
 or double click the UPSimulator.jar if you have linked jar file to JAVA.
 
 ## Simple Usage   
-Following is just a simple usage, more more supported features can be found in [Conditions](#conditions) and [Results](#results). The explanation of code follows a double slash.  Save the following code to a file, and then import this file in the **Environment** column of UPSimulator. After that, initial it by clicking "Init". Then, Click "Run To End" to run it. 
+Following is just a simple usage, more more supported features can be found in [Conditions](#conditions) and [Results](#results). The explanation of code follows a double slash.  Save the following code to a file, and then import this file in the **Environment** column of UPSimulator. After that, initialize it by clicking "Initialize Environment". Then, Click "Run To End" to run it. If any errors have been pointed out after initialization, you can click "Check Grammar" to get an overview about the errors.
 ### Cell-like P system
 ```
 Membrane A{// Membrane Class A
@@ -80,7 +80,7 @@ Environment{// skin membrane
 }
 ```
 ### Tissue-like P system
-The differences between cell-like and tissue-like P system are the [Status Property](#membrane-property) and [Net Structure](#tunnels)
+The differences between cell-like and tissue-like P system are the [Status Property](#membrane-property) and [Net Structure(tunnels)](#tunnels)
 
 ```
 Membrane A{// Membrane Class A
@@ -211,7 +211,11 @@ Environment{
 	}
 }
 ```
+Anti-object or anti-spike can be represented as follows
 
+```
+Object -a,-b^2,-c[1]^1,-d[2][3];
+```
 ## Membrane Property
 Membrane property is some property on the membrane, including **polarity**, **thickness**, **status in tissue-like P system**, and other properties. Membrane property can be used to restrict the execution of rules. And the execution of rules can change properties as well. In the case below, r1 will execute while property 'p' of B equals to 1, and r2 will change the property 'p' to 2.
 
@@ -270,9 +274,9 @@ In the code above, **a** and **a[i]** are Object Conditions, and **a^2** means t
 #### Regular Expression Condition
 ```
 Rule r1= a(aa)*/ a^2 -> a;
-Rule r2= b(bb)+/ b^2 -> b;
+Rule r2= -a/ -a -> a;
 ```
-In the code above, **a(aa)** and **b(bb)+** are both Regular Expression Conditions, and both **a** and **b** represent spike.
+In the code above, **a(aa)** and **-a** are both Regular Expression Conditions. **a** and **-a** represent spike or anti-spike respectively.
 
 #### Property Condition or Status Condition
 ```
@@ -375,7 +379,7 @@ aviator is an advanced library for high-performance, mathematical, boolean and f
 
 # Author
 * Changsheng Quan, quancs@qq.com  or quancs@cqu.edu.cn  
-If you need any help for usage and development, or you want to make contributions to this project, please contact me.
+If you need any help for usage or development, or you want to make contributions to this project, please contact me.
 
 # Help Needed
 Do you have a new P system need to simulate? Are you a software developer with java skills? Do you have expertise in building software? Are you an experienced lead technical writer? Do you like contributing to open source projects? Come and join us in helping UPSimulator to thrive and universal.
