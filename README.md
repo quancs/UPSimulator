@@ -109,18 +109,20 @@ The differences between neural-like and tissue-like P system are the [Regular Ex
 Environment{
 	Membrane a1{
 		Object a;//Spike
-		Rule r1 = a*/ a -> ( a, go a2 );
+		Rule r1 = aa/ a -> ( a, go all );// aa/a -> a
+		Rule r2 = aaa/ a -> ( a, go all );// aaa/a -> a
+		Rule r3 = [^aa|aaa]/ a -> ( a, go all );// this rule represents the rule: a-> a
 		Tunnel a2;
 	}
 	
 	Membrane A a2{
 		Object a;
-		Rule r1 = a*/ a -> ( a, go a1 );
+		Rule r1 = a*/ a -> ( a, go all );
 		Tunnel a1;
 	}
 }
 ```
-
+**Notice:** If you want to simulate a spiking rule like **a -> a**, which doesn't have a Regular Expression, you must write its hidden Regular Expression as showed in rule **r3**. If you don't write the hidden Regular Expression, the rule without a Regular Expression will be simulated in the way of cell-like P system.
 ## Skin Membrane or Simulation Environment
 There is a special membrane named "Environment" in UPL. "Environment" can be treated as a skin membrane or an environment, and only the membranes or rules in "Environment" will be simulated.
 
