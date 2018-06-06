@@ -452,10 +452,12 @@ public class PRule extends BasicName implements Rule {
 			if (condition instanceof MembranePropertyCondition || condition instanceof ObjectCondition || condition instanceof Result || condition instanceof PriorityCondition
 					|| condition instanceof RegularExpressionCondition || condition instanceof ObjectConditionsWithTarget)
 				continue;
-			otherBuilder.append(condition + " ");
+			otherBuilder.append(condition + " & ");
 		}
-		if (otherBuilder.length() > 2)
+		if (otherBuilder.length() > 2) {
+			otherBuilder.setLength(otherBuilder.length() - 2);
 			sBuilder.append(otherBuilder);
+		}
 
 		sBuilder.replace(sBuilder.length() - 1, sBuilder.length(), "");
 		for (Condition condition : conditions) {
