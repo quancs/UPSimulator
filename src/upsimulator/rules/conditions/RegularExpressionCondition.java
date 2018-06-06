@@ -41,7 +41,7 @@ public class RegularExpressionCondition implements Condition {
 			match = pattern.matcher(genStr(num, negativeObject.toString())).matches();
 		}
 		if (match)
-			return Integer.MAX_VALUE;
+			return 1;
 		else
 			return 0;
 	}
