@@ -111,7 +111,7 @@ Environment{
 		Object a;//Spike
 		Rule r1 = aa/ a -> ( a, go all );// aa/a -> a
 		Rule r2 = aaa/ a -> ( a, go all );// aaa/a -> a
-		Rule r3 = [^aa|aaa]/ a -> ( a, go all );// this rule represents the rule: a-> a
+		Rule r3 = a/ a -> ( a, go all );// this rule represents the rule: a-> a
 		Tunnel a2;
 	}
 	
