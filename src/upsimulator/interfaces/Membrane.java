@@ -239,6 +239,7 @@ public interface Membrane extends Name, Cloneable {
 	 * 
 	 * @return the cloned membrane
 	 */
+	@Override
 	public Membrane deepClone();
 
 	/**
@@ -341,6 +342,7 @@ public interface Membrane extends Name, Cloneable {
 	 * @param child
 	 *            child membrane
 	 */
+	@SuppressWarnings("deprecation")
 	public default void addChild(Class<?> tunnelClass, Membrane child) {
 		try {
 			Tunnel in = (Tunnel) tunnelClass.newInstance();

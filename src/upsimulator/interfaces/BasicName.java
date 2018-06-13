@@ -72,6 +72,7 @@ public class BasicName implements Name {
 			fixed = false;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void addDimension(Long dimension) {
 		if (dimensions == null)

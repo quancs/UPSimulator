@@ -43,6 +43,9 @@ public class RuleChecker extends Worker {
 			int satisfy = rule.satisfy(target);
 			if (satisfy > 0) {
 				satisfiedRules.put(rule, satisfy);
+//				System.err.println(map);
+//				System.err.println(rule);
+//				System.err.println(satisfy);
 			}
 		}
 	}

@@ -29,5 +29,6 @@ public interface Name extends Dimensional {
 	 * 
 	 * @return name
 	 */
+	@Override
 	public Name deepClone();
 }

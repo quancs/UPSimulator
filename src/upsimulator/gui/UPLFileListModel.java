@@ -18,6 +18,7 @@ public class UPLFileListModel extends DefaultListModel<String> {
 
 	private ArrayList<FileDescriber> files = new ArrayList<>();
 
+	@Override
 	public String remove(int index) {
 		files.remove(index);
 		return super.remove(index);

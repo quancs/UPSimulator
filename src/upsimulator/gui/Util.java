@@ -14,6 +14,8 @@ import javax.swing.text.Document;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
+import upsimulator.interfaces.UPSLogger;
+
 /**
  * Some useful functions are collected in {@code Util}
  * 
@@ -46,7 +48,7 @@ public class Util {
 			inputStream.read(fileContent);
 			inputStream.close();
 		} catch (Exception e) {
-			MainWindow.error(new Object(), e.getMessage());
+			UPSLogger.error(new Object(), e.getMessage());
 		}
 		String string = new String(fileContent);
 

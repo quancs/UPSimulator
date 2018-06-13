@@ -73,6 +73,7 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 		fetchedRules = new HashMap<Rule, Integer>(1000);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public PMembrane deepClone() {
 		// no need to clone name , they won't change.
@@ -178,7 +179,7 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 				if (stored != null) {
 					objects.put(object, stored + (Double) num);
 				} else {
-					objects.put(object, (Double) num);
+					objects.put(object, num);
 				}
 			} else {
 				Integer stored = (Integer) objects.get(object);
@@ -535,6 +536,7 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 		addDimension(Long.parseLong(formula));
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void extend(Membrane template) {
 		for (Tunnel t : template.getTunnels()) {
@@ -564,7 +566,7 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 		}
 
 		for (Rule rule : template.getRules()) {
-			addRule((Rule) rule.deepClone());
+			addRule(rule.deepClone());
 		}
 
 		Map<Obj, Number> objmap = template.getObjects();

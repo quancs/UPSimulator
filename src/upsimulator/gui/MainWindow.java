@@ -52,8 +52,10 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextPane;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.WindowConstants;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -105,6 +107,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				try {
 					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -335,7 +338,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 		frmUpsimulator = new JFrame();
 		frmUpsimulator.setTitle("UPSimulator\r\n");
 		frmUpsimulator.setBounds(100, 100, 894, 811);
-		frmUpsimulator.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		frmUpsimulator.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		frmUpsimulator.getContentPane().setLayout(new BorderLayout(0, 0));
 		frmUpsimulator.addWindowListener(new WindowListener() {
 			@Override
@@ -391,6 +394,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 		btnSave.setText("Save");
 		// btnSave.setPreferredSize(new Dimension(30, 60));
 		btnSave.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				save();
 			}
@@ -492,6 +496,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 
 		JMenuItem mntmImportModelFile = new JMenuItem("Import Model File");
 		mntmImportModelFile.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				importModel();
 			}
@@ -500,6 +505,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 
 		JMenuItem mntmImportInstanceFile = new JMenuItem("Import Instance File");
 		mntmImportInstanceFile.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				importInstance();
 			}
@@ -511,6 +517,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 
 		JMenuItem mntmSave = new JMenuItem("Save");
 		mntmSave.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				save();
 			}
@@ -519,6 +526,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 
 		JMenuItem mntmSaveAll = new JMenuItem("Save All");
 		mntmSaveAll.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				saveAll();
 			}
@@ -530,6 +538,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 
 		JMenuItem mntmExit = new JMenuItem("Exit");
 		mntmExit.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				exit();
 			}
@@ -542,8 +551,9 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 		enableRecords = new JCheckBoxMenuItem("Record Results(Affect Efficiency)");
 		mnSettings.add(enableRecords);
 
-		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane = new JTabbedPane(SwingConstants.TOP);
 		tabbedPane.addChangeListener(new ChangeListener() {
+			@Override
 			public void stateChanged(ChangeEvent e) {
 				if (tabbedPane.getSelectedIndex() == 2)
 					cycleChange((Integer) cycleSelected.getValue());
@@ -629,6 +639,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 		JButton btnGrammerCheck = new JButton("Check Grammar");
 		btnGrammerCheck.setToolTipText("Check the grammar of selected environment");
 		btnGrammerCheck.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				grammerCheck();
 			}
@@ -699,6 +710,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 
 		resultConsoleEnable = new JCheckBoxMenuItem("Enable Log");
 		resultConsoleEnable.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 
 			}
@@ -708,6 +720,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 
 		JMenuItem mntmClear_1 = new JMenuItem("Clear All");
 		mntmClear_1.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				resultConsole.setText("");
 			}
@@ -730,6 +743,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 
 		JMenuItem mntmClear = new JMenuItem("Clear All");
 		mntmClear.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				debugConsole.setText("");
 			}
@@ -800,6 +814,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 
 		cycleSelected = new JSpinner();
 		cycleSelected.addChangeListener(new ChangeListener() {
+			@Override
 			public void stateChanged(ChangeEvent e) {
 				cycleChange((Integer) ((JSpinner) e.getSource()).getValue());
 			}
@@ -827,7 +842,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 		membraneTree.addTreeSelectionListener(this);
 		splitPaneVisualization.setLeftComponent(membraneTree);
 
-		JTabbedPane tabbedPane_1 = new JTabbedPane(JTabbedPane.TOP);
+		JTabbedPane tabbedPane_1 = new JTabbedPane(SwingConstants.TOP);
 		splitPaneVisualization.setRightComponent(tabbedPane_1);
 
 		JPanel panel_1 = new JPanel();
@@ -845,6 +860,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 
 		JMenuItem mntmImport = new JMenuItem("import");
 		mntmImport.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				importInstance();
 			}
@@ -853,6 +869,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 
 		JMenuItem mntmRemove = new JMenuItem("remove");
 		mntmRemove.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				instances.remove(instanceFileJList.getSelectedIndex());
 				updatePane();
@@ -865,6 +882,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 
 		JMenuItem mntmImport_1 = new JMenuItem("import");
 		mntmImport_1.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				importModel();
 			}
@@ -873,6 +891,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 
 		JMenuItem mntmRemove_1 = new JMenuItem("remove");
 		mntmRemove_1.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				models.remove(modelFileJList.getSelectedIndex());
 				updatePane();
@@ -985,12 +1004,14 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 
 	private static void addPopup(Component component, final JPopupMenu popup) {
 		component.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mousePressed(MouseEvent e) {
 				if (e.isPopupTrigger()) {
 					showMenu(e);
 				}
 			}
 
+			@Override
 			public void mouseReleased(MouseEvent e) {
 				if (e.isPopupTrigger()) {
 					showMenu(e);
@@ -1016,7 +1037,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 			} else if (msg instanceof HashMap<?, ?>) {
 				Iterator<Entry<Membrane, Map<?, ?>>> it = ((HashMap<Membrane, Map<?, ?>>) msg).entrySet().iterator();
 				for (int j = 0; j < 100 & it.hasNext(); j++) {
-					Map.Entry<Membrane, Map<?, ?>> mentry = (Entry<Membrane, Map<?, ?>>) it.next();
+					Map.Entry<Membrane, Map<?, ?>> mentry = it.next();
 					Membrane membrane = mentry.getKey();
 					Map<Rule, Integer> ruleUsedTimes = (Map<Rule, Integer>) mentry.getValue();
 

@@ -107,5 +107,6 @@ public interface Rule extends Name, Cloneable {
 	 * 
 	 * @return the cloned rule
 	 */
+	@Override
 	public Rule deepClone();
 }

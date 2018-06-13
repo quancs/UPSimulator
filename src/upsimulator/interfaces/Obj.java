@@ -15,5 +15,6 @@ public interface Obj extends Name, Cloneable {
 	 * 
 	 * @return the cloned value
 	 */
+	@Override
 	public Obj deepClone();
 }

@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import net.sourceforge.jeval.EvaluationException;
 import upsimulator.core.PTunnel;
 import upsimulator.exceptions.TunnelNotExistException;
 import upsimulator.interfaces.BasicName;
@@ -29,17 +28,22 @@ public class PositionResult extends BasicName implements Result, Condition {
 	public class Target extends BasicName implements Cloneable {
 		public ArrayList<MembranePropertyCondition> conditions = new ArrayList<>();
 
+		public Target() {
+		}
+		
+		public Target(Target target) {
+			super(target);
+
+			conditions = new ArrayList<>(target.conditions.size());
+			for (MembranePropertyCondition condition : target.conditions)
+				conditions.add(condition.deepClone());
+		}
+		
+		@Override
 		public Target deepClone() {
-			try {
-				Target cloned = (Target) this.clone();
-				cloned.conditions = new ArrayList<>(conditions.size());
-				for (MembranePropertyCondition condition : conditions)
-					cloned.conditions.add(condition.deepClone());
-				return cloned;
-			} catch (CloneNotSupportedException e) {
-				e.printStackTrace();
-			}
-			return null;
+			if(isFixed())
+				return this;
+			return new Target(this);
 		}
 
 		@Override
@@ -214,12 +218,7 @@ public class PositionResult extends BasicName implements Result, Condition {
 
 	@Override
 	public String getNameDim() {
-		try {
-			return getTargetsName();
-		} catch (EvaluationException e) {
-			e.printStackTrace();
-		}
-		return null;
+		return getTargetsName();
 	}
 
 	@Override
@@ -327,7 +326,7 @@ public class PositionResult extends BasicName implements Result, Condition {
 		return 0;
 	}
 
-	private final String getTargetsName() throws EvaluationException {
+	private final String getTargetsName() {
 		switch (move) {
 		case Here:
 		case Out:
@@ -399,51 +398,44 @@ public class PositionResult extends BasicName implements Result, Condition {
 		case Go:
 		case Go_all_of_specified:
 		case Go_one_of_specified:
-			try {
-				tunnel = current.getTunnel(move, getTargetsName());
-				if (tunnel == null) {
-					List<Membrane> scope;
-					if (move == TunnelType.In || move == TunnelType.In_all_of_specified || move == TunnelType.In_one_of_specified) {
-						scope = current.getChildren();
-					} else {
-						scope = current.getNeighbors();
-					}
-					LinkedList<Membrane> targetsMem = new LinkedList<>();
-					for (Target target : targets) {
-						for (Membrane m : scope) {
-							if (target.getNameDim().equals(m.getNameDim())) {
-								targetsMem.add(m);
-								break;
-							}
+			tunnel = current.getTunnel(move, getTargetsName());
+			if (tunnel == null) {
+				List<Membrane> scope;
+				if (move == TunnelType.In || move == TunnelType.In_all_of_specified || move == TunnelType.In_one_of_specified) {
+					scope = current.getChildren();
+				} else {
+					scope = current.getNeighbors();
+				}
+				LinkedList<Membrane> targetsMem = new LinkedList<>();
+				for (Target target : targets) {
+					for (Membrane m : scope) {
+						if (target.getNameDim().equals(m.getNameDim())) {
+							targetsMem.add(m);
+							break;
 						}
 					}
-					if (targetsMem.size() == targets.size()) {
-						tunnel = new PTunnel(move);
-						tunnel.setSource(current);
-						for (Membrane target : targetsMem)
-							tunnel.addTarget(target);
-						current.addTunnel(tunnel);
-					}
 				}
-				break;
-			} catch (EvaluationException e) {
-				e.printStackTrace();
-				UPSLogger.error(this, e);
+				if (targetsMem.size() == targets.size()) {
+					tunnel = new PTunnel(move);
+					tunnel.setSource(current);
+					for (Membrane target : targetsMem)
+						tunnel.addTarget(target);
+					current.addTunnel(tunnel);
+				}
 			}
+			break;
 
 		default:
 			break;
 		}
 		if (tunnel == null) {
-			try {
-				TunnelNotExistException exception = new TunnelNotExistException(current, move, getTargetsName(), this);
-				UPSLogger.error(this, exception.getMessage());
-				throw exception;
-			} catch (EvaluationException e) {
-				e.printStackTrace();
-				UPSLogger.error(this, e);
-			}
-			return null;
+			System.err.println(current.toString());
+			System.err.println(move);
+			System.err.println(getTargetsName());
+			System.err.println(this.toString());
+			TunnelNotExistException exception = new TunnelNotExistException(current, move, getTargetsName(), this);
+			UPSLogger.error(this, exception.getMessage());
+			throw exception;
 		} else
 			return tunnel;
 	}
