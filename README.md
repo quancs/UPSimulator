@@ -360,8 +360,9 @@ In the code above, **A:subm**, **A:subm{ c }**, **A:subm[i]** and **A:subm[i]{ c
 #### Membrane Dissolve Result
 ```
 Rule r= a -> dissolve;
+Rule r= a -> dissolve(all);
 ```
-In the code above, **dissolve** is Membrane Dissolve Result. Membrane Dissolve Result will dissolve current membrane and then all the content inside will be the content of parent membrane.
+In the code above, **dissolve** is MembraneDissolveResult and **dissolve(all)** is a MembraneDissolveAllResult. MembraneDissolveResult will dissolve current membrane and then all the content inside will be the content of parent membrane. MembraneDissolveAllResult will dissolve the current membrane and all the content inside.
 
 #### Membrane Division Result
 ```

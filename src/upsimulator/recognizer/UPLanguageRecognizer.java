@@ -87,6 +87,7 @@ import upsimulator.rules.conditions.ProbabilisticCondition;
 import upsimulator.rules.conditions.PromoterCondition;
 import upsimulator.rules.conditions.RegularExpressionCondition;
 import upsimulator.rules.results.MembraneCreateResult;
+import upsimulator.rules.results.MembraneDissolveAllResult;
 import upsimulator.rules.results.MembraneDissolveResult;
 import upsimulator.rules.results.MembraneDivisionResult;
 import upsimulator.rules.results.MembranePropertyResult;
@@ -476,8 +477,13 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 
 	@Override
 	public T visitMemDissolveResult(MemDissolveResultContext ctx) {
-		MembraneDissolveResult mdr = new MembraneDissolveResult();
-		return (T) mdr;
+		if (ctx.getText().contains("all")) {
+			MembraneDissolveAllResult mdar = new MembraneDissolveAllResult();
+			return (T) mdar;
+		} else {
+			MembraneDissolveResult mdr = new MembraneDissolveResult();
+			return (T) mdr;
+		}
 	}
 
 	@Override

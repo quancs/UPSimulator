@@ -47,7 +47,7 @@ memDivisionResult: 'divide' '(' '{' additionalResults '}' ',' '{' additionalResu
 additionalResults: 	propertyResult* objResult*;
 
 memCreateResult	: 	membraneType ':' membraneName ('[' formulaDim ']')* ('{' additionalResults '}')? ;
-memDissolveResult:	'dissolve';
+memDissolveResult:	'dissolve' ( '(' 'all' ')' )?;
 propertyResult	:	'<' (propertyName '=')? propertyValue '>';//Default propertyName=Status
 objResult		:	objName ('[' formulaDim ']')* ('^' objNum)?;
 positionResult	:	'(' objResult+ ',' (out | here | 

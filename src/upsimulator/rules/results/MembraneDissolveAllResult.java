@@ -16,10 +16,10 @@ import upsimulator.interfaces.Tunnel.TunnelType;
  * @author quan
  *
  */
-public class MembraneDissolveResult implements Result {
+public class MembraneDissolveAllResult implements Result {
 
 	@Override
-	public MembraneDissolveResult deepClone() {
+	public MembraneDissolveAllResult deepClone() {
 		return this;
 	}
 
@@ -30,7 +30,7 @@ public class MembraneDissolveResult implements Result {
 
 	@Override
 	public String toString() {
-		return "dissolve";
+		return "dissolve(all)";
 	}
 
 	@Override

@@ -1,0 +1,15 @@
+Environment{
+	Membrane a{
+		Object b,c,d,e;
+		Rule r1= b -> dissolve(all);
+		Rule r2= c -> (a, in b);
+		
+		Membrane b{
+			Object f;
+		}
+		
+		Membrane c{
+		
+		}
+	}
+}
