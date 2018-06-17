@@ -149,13 +149,25 @@ public interface Membrane extends Name, Cloneable {
 	public void addTunnel(Tunnel t);
 
 	/**
+	 * Remove a tunnel from this membranes.
+	 * 
+	 * @param t
+	 *            the tunnel between two membrane, through it the results of rules
+	 *            can be set.
+	 * @return
+	 */
+	public default void removeTunnel(Tunnel t) {
+		getTunnels().remove(t);
+	}
+
+	/**
 	 * Get the tunnel from current to target
 	 * 
 	 * @param type
 	 *            the type of the tunnel
 	 * @param target
 	 *            the name of the target membrane. It can be null if the type is
-	 *            Out, Here, One2Multi or One2MultiRandom.
+	 *            Out, Here, in/go all/random.
 	 * @return the tunnel to target. Null will be returned if not found.
 	 */
 	public Tunnel getTunnel(TunnelType type, String target);
@@ -342,7 +354,6 @@ public interface Membrane extends Name, Cloneable {
 	 * @param child
 	 *            child membrane
 	 */
-	@SuppressWarnings("deprecation")
 	public default void addChild(Class<?> tunnelClass, Membrane child) {
 		try {
 			Tunnel in = (Tunnel) tunnelClass.newInstance();

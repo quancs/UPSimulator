@@ -361,7 +361,7 @@ In the code above, **A:subm**, **A:subm{ c }**, **A:subm[i]** and **A:subm[i]{ c
 ```
 Rule r= a -> dissolve;
 ```
-In the code above, **dissolve** is Membrane Dissolve Result. Membrane Dissolve Result will dissolve current membrane and all the content inside.
+In the code above, **dissolve** is Membrane Dissolve Result. Membrane Dissolve Result will dissolve current membrane and then all the content inside will be the content of parent membrane.
 
 #### Membrane Division Result
 ```

@@ -598,16 +598,6 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 		deleted = true;
 		for (Tunnel tunnel : tunnels) {
 			tunnel.close();
-			if (tunnel.getSource() == this && (tunnel.getType() == TunnelType.Go || tunnel.getType() == TunnelType.Out)) {
-				for (Membrane target : tunnel.getTargets()) {
-					List<Tunnel> ts = target.getTunnels();
-					for (int i = 0; i < ts.size(); i++) {
-						Tunnel t = ts.get(i);
-						if (t.getSource() == this || t.getTargets().contains(this))
-							t.close();
-					}
-				}
-			}
 		}
 	}
 
