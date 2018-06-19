@@ -31,6 +31,23 @@ public class MembraneDivisionResult implements Result, Condition, Dimensional, M
 		mpResults2 = new ArrayList<>();
 	}
 
+	public MembraneDivisionResult(MembraneDivisionResult mdr) {
+		oResults1 = new ArrayList<>();
+		oResults2 = new ArrayList<>();
+		mpResults1 = new ArrayList<>();
+		mpResults2 = new ArrayList<>();
+
+		for (ObjectResult or : mdr.oResults1)
+			oResults1.add(or.deepClone());
+		for (ObjectResult or : mdr.oResults2)
+			oResults2.add(or.deepClone());
+
+		for (MembranePropertyResult or : mdr.mpResults1)
+			mpResults1.add(or.deepClone());
+		for (MembranePropertyResult or : mdr.mpResults2)
+			mpResults2.add(or.deepClone());
+	}
+
 	public void addObjectResult1(ObjectResult oResult) {
 		oResults1.add(oResult);
 	}
@@ -56,13 +73,10 @@ public class MembraneDivisionResult implements Result, Condition, Dimensional, M
 
 	@Override
 	public MembraneDivisionResult deepClone() {
-		try {
-			return (MembraneDivisionResult) super.clone();
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-			UPSLogger.error(this, e);
-			return null;
-		}
+		if (isFixed())
+			return this;
+		else
+			return new MembraneDivisionResult(this);
 	}
 
 	@Override
@@ -205,10 +219,10 @@ public class MembraneDivisionResult implements Result, Condition, Dimensional, M
 	@Override
 	public boolean isFixed() {
 		for (ObjectResult or : oResults1)
-			if(!or.isFixed())
+			if (!or.isFixed())
 				return false;
 		for (ObjectResult or : oResults2)
-			if(!or.isFixed())
+			if (!or.isFixed())
 				return false;
 		return true;
 	}
