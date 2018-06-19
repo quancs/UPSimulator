@@ -1,6 +1,6 @@
 Environment{
 	Membrane a{
 		Object b[1];
-		Rule r1= b[1] -> divide( {b} , {b} );
+		Rule r1[i]= b[i] -> divide( {b[i]} , {b[i]} );
 	}
 }

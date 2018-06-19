@@ -1,12 +1,17 @@
 package upsimulator.rules.results;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import upsimulator.core.PTunnel;
 import upsimulator.exceptions.TimesException;
 import upsimulator.exceptions.TunnelNotExistException;
 import upsimulator.exceptions.UnknownMembraneClassException;
+import upsimulator.interfaces.BasicName;
 import upsimulator.interfaces.Condition;
+import upsimulator.interfaces.Dimension;
+import upsimulator.interfaces.Dimensional;
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.MembraneListener;
 import upsimulator.interfaces.Result;
@@ -14,7 +19,7 @@ import upsimulator.interfaces.Tunnel;
 import upsimulator.interfaces.Tunnel.TunnelType;
 import upsimulator.interfaces.UPSLogger;
 
-public class MembraneDivisionResult implements Result, Condition, MembraneListener {
+public class MembraneDivisionResult implements Result, Condition, Dimensional, MembraneListener {
 
 	private ArrayList<ObjectResult> oResults1, oResults2;// source cloned
 	private ArrayList<MembranePropertyResult> mpResults1, mpResults2;
@@ -167,5 +172,59 @@ public class MembraneDivisionResult implements Result, Condition, MembraneListen
 			sBuilder.append(" " + or.toString());
 		sBuilder.append(" })");
 		return sBuilder.toString();
+	}
+
+	@Override
+	public void addDimension(Dimension dimension) {
+
+	}
+
+	@Override
+	public void addDimension(Long dimension) {
+
+	}
+
+	@Override
+	public void addDimension(String dimension) {
+
+	}
+
+	@Override
+	public List<Dimension> getDimensions() {
+		return null;
+	}
+
+	@Override
+	public void fix(Map<String, Object> mappedValues) {
+		for (ObjectResult or : oResults1)
+			or.fix(mappedValues);
+		for (ObjectResult or : oResults2)
+			or.fix(mappedValues);
+	}
+
+	@Override
+	public boolean isFixed() {
+		for (ObjectResult or : oResults1)
+			if(!or.isFixed())
+				return false;
+		for (ObjectResult or : oResults2)
+			if(!or.isFixed())
+				return false;
+		return true;
+	}
+
+	@Override
+	public int getDimensionSize() {
+		return 0;
+	}
+
+	@Override
+	public Dimension get(int i) {
+		return null;
+	}
+
+	@Override
+	public List<Long[]> predictPossibleValue(Membrane membrane, List<Dimension> dList) {
+		return null;
 	}
 }
