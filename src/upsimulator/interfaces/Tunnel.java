@@ -25,7 +25,7 @@ public interface Tunnel extends Cloneable {
 	public String getName();
 
 	/**
-	 * Target's names are combined by "|" or "&", according to the tunnel type, and
+	 * Target's names are combined by "|" or "&amp;", according to the tunnel type, and
 	 * all the names are sorted by {@code String.compareTo}
 	 * 
 	 * @return the united name of all the targets

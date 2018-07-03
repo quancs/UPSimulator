@@ -127,8 +127,8 @@ public interface Membrane extends Name, Cloneable {
 	/**
 	 * Add a new rule
 	 * 
-	 * @param a
-	 *            new rule
+	 * @param rule
+	 *            A new rule
 	 */
 	public void addRule(Rule rule);
 
@@ -154,7 +154,6 @@ public interface Membrane extends Name, Cloneable {
 	 * @param t
 	 *            the tunnel between two membrane, through it the results of rules
 	 *            can be set.
-	 * @return
 	 */
 	public default void removeTunnel(Tunnel t) {
 		getTunnels().remove(t);
@@ -196,7 +195,6 @@ public interface Membrane extends Name, Cloneable {
 	/**
 	 * Check all the rules inside if they are satisfied, and return all the usable
 	 * rules.
-	 * <p>
 	 * <ul>
 	 * <li>Maximum parallelism and minimum parallelism can be controlled by editing
 	 * the returned list.</li>
@@ -242,6 +240,8 @@ public interface Membrane extends Name, Cloneable {
 	 *            whether show rules or not
 	 * @param withSubmembrane
 	 *            whether show sub-membranes or not
+	 * @param withTunnel
+	 *            whether show tunnels
 	 * @return a string which represents this membrane
 	 */
 	public String toString(String space, boolean withObject, boolean withProp, boolean withRule, boolean withSubmembrane, boolean withTunnel);
@@ -292,6 +292,7 @@ public interface Membrane extends Name, Cloneable {
 	 * Remove a listener from this membrane
 	 * 
 	 * @param listener
+	 *            the listener you want to remove
 	 */
 	public void removeListener(MembraneListener listener);
 
@@ -299,11 +300,12 @@ public interface Membrane extends Name, Cloneable {
 	 * Extend a template
 	 * 
 	 * @param template
+	 *            template membrane
 	 */
 	public void extend(Membrane template);
 
 	/**
-	 * Get all the children to whom this membrane has a <tt>in</to> tunnel
+	 * Get all the children to whom this membrane has a <tt>in</tt> tunnel
 	 * 
 	 * @return all the children
 	 */
@@ -318,7 +320,7 @@ public interface Membrane extends Name, Cloneable {
 	}
 
 	/**
-	 * Get all the neighbors to whom this membrane has a <tt>go</to> tunnel
+	 * Get all the neighbors to whom this membrane has a <tt>go</tt> tunnel
 	 * 
 	 * @return all the neighbors
 	 */

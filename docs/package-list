@@ -1,0 +1,10 @@
+test
+upsimulator.core
+upsimulator.exceptions
+upsimulator.gui
+upsimulator.interfaces
+upsimulator.recognizer
+upsimulator.recognizer.actions
+upsimulator.rules.conditions
+upsimulator.rules.results
+upsimulator.speedup

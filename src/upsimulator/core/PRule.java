@@ -482,8 +482,13 @@ public class PRule extends BasicName implements Rule {
 	/**
 	 * Rule with dimensions check all the satisfied rule of it.
 	 * 
+	 * @param membrane
+	 *            the test membrane
+	 * @return All the satisfied rules and satisfied times
 	 * @throws UnpredictableDimensionException
+	 *             if rule has dimension whose value cannot be predicted
 	 * @throws CloneNotSupportedException
+	 *             if clone failed
 	 */
 	@Override
 	public Map<Rule, Integer> satisfiedRules(Membrane membrane) throws UnpredictableDimensionException, CloneNotSupportedException {

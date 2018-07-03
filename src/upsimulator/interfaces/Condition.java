@@ -22,7 +22,7 @@ public interface Condition extends Cloneable {
 	 * 
 	 * @param membrane
 	 *            the membrane where to fetch objects
-	 * @param times
+	 * @param tryTimes
 	 *            how many times going to fetch
 	 * @return the times successfully fetch
 	 */

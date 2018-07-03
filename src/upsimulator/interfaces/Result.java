@@ -32,6 +32,7 @@ public interface Result extends Cloneable {
 	 * @return the tunnel selected. If none has been selected, null will be
 	 *         returned.
 	 * @throws TunnelNotExistException
+	 *             if tunnel doesn't exist and cannot be created
 	 */
 	public Tunnel selectTunnel(Membrane current) throws TunnelNotExistException;
 

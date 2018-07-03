@@ -28,8 +28,8 @@ import upsimulator.rules.conditions.PriorityCondition;
 import upsimulator.rules.results.ObjectResult;
 
 /**
- * The default membrane implementation, a container of objects & rules & tunnels
- * & properties.
+ * The default membrane implementation, a container of objects, rules, tunnels,
+ * and properties.
  * 
  * @author quan
  *
