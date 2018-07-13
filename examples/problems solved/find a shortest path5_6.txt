@@ -28,9 +28,9 @@ Membrane SPM{
 	Rule r19[i]=s6[i]->start[i] d |!c;
 	
 	Rule r20[i][j]=end[i] fp[i][j] -> end[j] edge[j][i] d | i!=j;
-	Rule r21[i]=start[i] end[i] -> dissolve;
+	Rule r21[i]=start[i] end[i] -> dissolve(all);
 	Rule r22= c->;
-	Rule r23[i]=start[i] -> dissolve ( notexist ,out)| !d;
+	Rule r23[i]=start[i] -> dissolve(all) ( notexist ,out)| !d;
 	Rule r24= d->;
 	Rule r25[i][j][k]= edge[i][j] -> ( edge[i][j], out)| @start[k] & @end[k];
 }

@@ -16,8 +16,8 @@ Membrane SPM{
 	Rule r10[i][j][k][v1][v2]=e[j][k][v2] -> e[j][k][v2] t2[i][k][j][v1+v2] c | @t1[i][j][v1] & @s3[i];
 	Rule r11[i]=s3[i]->s4[i];
 	
-	Rule r12[i][j][k][m][v1][v2]=t2[i][k][j][v1] e[i][k][v2] fp[k][m] -> e[i][k][v1] fp[k][j] c | v1<v2;//¶Ì
-	Rule r13[i][j][k][m][v1][v2]=t2[i][k][j][v1] e[i][k][v2] fp[k][m] -> e[i][k][v2] fp[k][m] c | v1>=v2;//³¤
+	Rule r12[i][j][k][m][v1][v2]=t2[i][k][j][v1] e[i][k][v2] fp[k][m] -> e[i][k][v1] fp[k][j] c | v1<v2;//ï¿½ï¿½
+	Rule r13[i][j][k][m][v1][v2]=t2[i][k][j][v1] e[i][k][v2] fp[k][m] -> e[i][k][v2] fp[k][m] c | v1>=v2;//ï¿½ï¿½
 	Rule r14[i]=s4[i]->s5[i];
 	
 	Rule r15[i][j][k][v]=t2[i][k][j][v] -> e[i][k][v] fp[k][j] c | @s5[i];
@@ -28,9 +28,9 @@ Membrane SPM{
 	Rule r19[i]=s6[i]->start[i] d |!c;
 	
 	Rule r20[i][j]=end[i] fp[i][j] -> end[j] (edge[j][i],out) d | i!=j;
-	Rule r21[i]=start[i] end[i] -> dissolve;
+	Rule r21[i]=start[i] end[i] -> dissolve(all);
 	Rule r22= c->;
-	Rule r23[i]=start[i] -> dissolve ( notexist ,out)| !d;
+	Rule r23[i]=start[i] -> dissolve(all) ( notexist ,out)| !d;
 	Rule r24= d->;
 }
 
