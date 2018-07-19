@@ -337,7 +337,7 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 	private void initialize() {
 		frmUpsimulator = new JFrame();
 		frmUpsimulator.setTitle("UPSimulator\r\n");
-		frmUpsimulator.setBounds(100, 100, 998, 811);
+		frmUpsimulator.setBounds(100, 100, 894, 811);
 		frmUpsimulator.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		frmUpsimulator.getContentPane().setLayout(new BorderLayout(0, 0));
 		frmUpsimulator.addWindowListener(new WindowListener() {
@@ -440,7 +440,6 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 		projectPanel.add(separator_1, gbc_separator_1);
 
 		splitPane = new JSplitPane();
-		splitPane.setResizeWeight(0.5);
 		splitPane.setToolTipText("");
 		splitPane.setOneTouchExpandable(true);
 		GridBagConstraints gbc_splitPane = new GridBagConstraints();
@@ -451,14 +450,12 @@ public class MainWindow extends UPSLogger implements TreeSelectionListener, Item
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 
 		JPanel panel = new JPanel();
-		panel.setBorder(new TitledBorder(null, "Membrane Classes", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel.setBorder(null);
 		panel.setBackground(UIManager.getColor("Button.background"));
 		splitPane.setLeftComponent(panel);
 		panel.setLayout(new BorderLayout(0, 0));
 
 		modelFileJList = new JList<>();
-		modelFileJList.setBackground(new Color(255, 255, 255));
-		modelFileJList.setBorder(null);
 		modelFileJList.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
