@@ -3,6 +3,7 @@ package upsimulator.core;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -28,13 +29,11 @@ public class PTunnel implements Tunnel {
 	private boolean isOpen;
 	private TunnelType type;
 	private HashMap<Result, Integer> heldResults;
-	private ArrayList<DelayedResult> delayedResults;
-	private ArrayList<Integer> delayedResultTimes;
+	private HashMap<DelayedResult, Integer> delayedResults;
 
 	public PTunnel(TunnelType type) {
 		heldResults = new HashMap<>();
-		delayedResults = new ArrayList<>();
-		delayedResultTimes = new ArrayList<>();
+		delayedResults = new HashMap<>();
 		targets = new ArrayList<Membrane>();
 		this.type = type;
 		open();
@@ -42,8 +41,7 @@ public class PTunnel implements Tunnel {
 
 	public PTunnel() {
 		heldResults = new HashMap<>();
-		delayedResults = new ArrayList<>();
-		delayedResultTimes = new ArrayList<>();
+		delayedResults = new HashMap<>();
 		targets = new ArrayList<Membrane>();
 		this.type = TunnelType.Here;
 		open();
@@ -96,8 +94,10 @@ public class PTunnel implements Tunnel {
 	@Override
 	public void holdResult(Result result, int times) {
 		if (result instanceof DelayedResult && ((DelayedResult) result).getDelay() > 0) {
-			delayedResults.add((DelayedResult) result);
-			delayedResultTimes.add(times);
+			if (delayedResults.containsKey(result)) {
+				delayedResults.put((DelayedResult) result, delayedResults.get(result) + times);
+			} else
+				delayedResults.put((DelayedResult) result, times);
 		} else if (heldResults.containsKey(result)) {
 			heldResults.put(result, heldResults.get(result) + times);
 		} else
@@ -172,14 +172,12 @@ public class PTunnel implements Tunnel {
 		}
 
 		heldResults.clear();
-		for (int i = delayedResults.size() - 1; i >= 0; i--) {
-			DelayedResult result = delayedResults.get(i);
-			if (result.getDelay() == 0) {
-				holdResult(result, delayedResultTimes.get(i));
-				delayedResults.remove(i);
-				delayedResultTimes.remove(i);
-			} else {
-				result.reduceDelay();
+		for (Iterator<Map.Entry<DelayedResult, Integer>> it = delayedResults.entrySet().iterator(); it.hasNext();) {
+			Map.Entry<DelayedResult, Integer> item = it.next();
+			item.getKey().reduceDelay();
+			if (item.getKey().getDelay() == 0) {
+				heldResults.put(item.getKey(), item.getValue());
+				it.remove();
 			}
 		}
 

@@ -321,7 +321,7 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 				if (trueTimes > 0) {
 					fetchedRules.put(rule, trueTimes);
 					for (Result result : rule.getResults()) {
-						result.selectTunnel(this).holdResult(result, trueTimes);
+						result.selectTunnel(this).holdResult(result.deepClone(), trueTimes);
 					}
 				}
 			}
@@ -339,7 +339,7 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 				if (fetched > 0) {
 					addFetched(first, fetched);
 					for (Result result : first.getResults())
-						result.selectTunnel(this).holdResult(result, fetched);
+						result.selectTunnel(this).holdResult(result.deepClone(), fetched);
 
 					if (fetched == readyToFetch && readyToFetch < times) {// can fetch more
 						rules.add(first);

@@ -62,7 +62,10 @@ public class ObjectResult extends PObject implements Result {
 
 	@Override
 	public ObjectResult deepClone() {
-		return new ObjectResult(this);
+		if (isFixed())
+			return this;
+		else
+			return new ObjectResult(this);
 	}
 
 	@Override

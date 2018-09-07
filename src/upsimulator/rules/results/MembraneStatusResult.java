@@ -19,7 +19,7 @@ public class MembraneStatusResult extends MembranePropertyResult implements Cond
 
 	@Override
 	public MembraneStatusResult deepClone() {
-		return (MembraneStatusResult) super.deepClone();
+		return this;
 	}
 
 	@Override
