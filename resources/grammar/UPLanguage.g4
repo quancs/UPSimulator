@@ -42,10 +42,10 @@ prule			:	'Rule' ruleName ('[' abcDim ']')* '=' (regCondition '/')? propertyCond
 
 ruleName		:	Name | Letters;
 condition		:	promoterCondition | inhibitorCondition  | boolCondition | probabilisticCondition;
-result			:	objResult | positionResult | memDissolveResult | memCreateResult | memDivisionResult;
+result			:	objResult | positionResult | memDissolveResult | memCreateResult | memDivisionResult | delayedResult;
+delayedResult	:	'delay' '('(objResult | positionResult | memDissolveResult | memCreateResult | memDivisionResult) ',' Integer ')';
 memDivisionResult: 'divide' '(' '{' additionalResults '}' ',' '{' additionalResults '}' ')';
 additionalResults: 	propertyResult* objResult*;
-
 memCreateResult	: 	membraneType ':' membraneName ('[' formulaDim ']')* ('{' additionalResults '}')? ;
 memDissolveResult:	'dissolve' ( '(' 'all' ')' )?;
 propertyResult	:	'<' (propertyName '=')? propertyValue '>';//Default propertyName=Status

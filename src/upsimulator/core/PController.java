@@ -21,6 +21,7 @@ import upsimulator.interfaces.UPSLogger;
 import upsimulator.recognizer.UPLanguageLexer;
 import upsimulator.recognizer.UPLanguageParser;
 import upsimulator.recognizer.UPLanguageRecognizer;
+import upsimulator.rules.results.DelayedResult;
 
 /**
  * PController is a controller of simulation.<br>
@@ -141,8 +142,16 @@ public class PController extends Thread {
 				leftStep--;
 			}
 
-			for (; leftStep == -1 && (runOneStep() > 0 || satisfiedRulesCount > 0);)
-				;
+			for (int maxDelay = DelayedResult.getMaxDelay() + 1; leftStep == -1 && (satisfiedRulesCount > 0 || maxDelay > 0);) {
+				int ruleUsed = runOneStep();
+				if (ruleUsed == 0) {
+					if (maxDelay == 0)
+						break;
+					else
+						maxDelay--;
+				} else
+					maxDelay = DelayedResult.getMaxDelay() + 1;
+			}
 
 			leftStep = 0;
 			try {
@@ -235,7 +244,7 @@ public class PController extends Thread {
 		long endTime = System.nanoTime();
 		long timeUsed = endTime - startTime;
 		UPSLogger.result(this, "step:" + step + "\t\trules used : " + totalUsed + "\t\ttime used:" + ((double) timeUsed / 1000000) + "ms");
-		UPSLogger.debug(this, "\n" + "step:" + step);
+		UPSLogger.debug(this, "\n" + "step:" + (step - 1) + "->" + step);
 		UPSLogger.debug(this, uMap);
 		UPSLogger.result(this, environment.toString() + "\n");
 

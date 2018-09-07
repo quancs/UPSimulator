@@ -24,6 +24,7 @@ import upsimulator.recognizer.UPLanguageParser.AllContext;
 import upsimulator.recognizer.UPLanguageParser.AndOptContext;
 import upsimulator.recognizer.UPLanguageParser.BoolConditionContext;
 import upsimulator.recognizer.UPLanguageParser.ConditionContext;
+import upsimulator.recognizer.UPLanguageParser.DelayedResultContext;
 import upsimulator.recognizer.UPLanguageParser.EnvironmentDefContext;
 import upsimulator.recognizer.UPLanguageParser.FormulaDimContext;
 import upsimulator.recognizer.UPLanguageParser.GoContext;
@@ -86,6 +87,7 @@ import upsimulator.rules.conditions.PriorityCondition;
 import upsimulator.rules.conditions.ProbabilisticCondition;
 import upsimulator.rules.conditions.PromoterCondition;
 import upsimulator.rules.conditions.RegularExpressionCondition;
+import upsimulator.rules.results.DelayedResult;
 import upsimulator.rules.results.MembraneCreateResult;
 import upsimulator.rules.results.MembraneDissolveAllResult;
 import upsimulator.rules.results.MembraneDissolveResult;
@@ -801,6 +803,23 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 		for (ObjConditionContext occ : ctx.objCondition())
 			oct.addObjectCondition((ObjectCondition) visitObjCondition(occ));
 		return (T) oct;
+	}
+
+	@Override
+	public T visitDelayedResult(DelayedResultContext ctx) {
+		int delay = Integer.parseInt(ctx.Integer().getText());
+		if (ctx.memCreateResult() != null) {
+			return (T) new DelayedResult((Result) visitMemCreateResult(ctx.memCreateResult()), delay);
+		} else if (ctx.memDissolveResult() != null) {
+			return (T) new DelayedResult((Result) visitMemDissolveResult(ctx.memDissolveResult()), delay);
+		} else if (ctx.memDivisionResult() != null) {
+			return (T) new DelayedResult((Result) visitMemDivisionResult(ctx.memDivisionResult()), delay);
+		} else if (ctx.objResult() != null) {
+			return (T) new DelayedResult((Result) visitObjResult(ctx.objResult()), delay);
+		} else if(ctx.positionResult()!=null){
+			return (T) new DelayedResult((Result) visitPositionResult(ctx.positionResult()), delay);
+		}else
+			return null;
 	}
 
 }

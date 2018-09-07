@@ -11,6 +11,7 @@ import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.Result;
 import upsimulator.interfaces.Tunnel;
 import upsimulator.interfaces.UPSLogger;
+import upsimulator.rules.results.DelayedResult;
 
 /**
  * PTunnel is a connection between membranes, used to transfer results.
@@ -27,9 +28,13 @@ public class PTunnel implements Tunnel {
 	private boolean isOpen;
 	private TunnelType type;
 	private HashMap<Result, Integer> heldResults;
+	private ArrayList<DelayedResult> delayedResults;
+	private ArrayList<Integer> delayedResultTimes;
 
 	public PTunnel(TunnelType type) {
 		heldResults = new HashMap<>();
+		delayedResults = new ArrayList<>();
+		delayedResultTimes = new ArrayList<>();
 		targets = new ArrayList<Membrane>();
 		this.type = type;
 		open();
@@ -37,6 +42,8 @@ public class PTunnel implements Tunnel {
 
 	public PTunnel() {
 		heldResults = new HashMap<>();
+		delayedResults = new ArrayList<>();
+		delayedResultTimes = new ArrayList<>();
 		targets = new ArrayList<Membrane>();
 		this.type = TunnelType.Here;
 		open();
@@ -88,7 +95,10 @@ public class PTunnel implements Tunnel {
 
 	@Override
 	public void holdResult(Result result, int times) {
-		if (heldResults.containsKey(result)) {
+		if (result instanceof DelayedResult && ((DelayedResult) result).getDelay() > 0) {
+			delayedResults.add((DelayedResult) result);
+			delayedResultTimes.add(times);
+		} else if (heldResults.containsKey(result)) {
 			heldResults.put(result, heldResults.get(result) + times);
 		} else
 			heldResults.put(result, times);
@@ -162,6 +172,16 @@ public class PTunnel implements Tunnel {
 		}
 
 		heldResults.clear();
+		for (int i = delayedResults.size() - 1; i >= 0; i--) {
+			DelayedResult result = delayedResults.get(i);
+			if (result.getDelay() == 0) {
+				holdResult(result, delayedResultTimes.get(i));
+				delayedResults.remove(i);
+				delayedResultTimes.remove(i);
+			} else {
+				result.reduceDelay();
+			}
+		}
 
 		// Check if need to close this Tunnel
 		if (source.isDeleted())

@@ -1,6 +1,5 @@
 Table of Contents
 =================
-
 * [UPSimulator](#upsimulator)
 * [UPLanguage](#uplanguage)
 * [Usage](#usage)
@@ -33,6 +32,7 @@ Table of Contents
       * [Membrane Create Result](#membrane-create-result)
       * [Membrane Dissolve Result](#membrane-dissolve-result)
       * [Membrane Division Result](#membrane-division-result)
+      * [Delayed Result](#delayed-result)
   * [Mathematical Operators](#mathematical-operators)
 * [Other Projects used in UPSimulator](#other-projects-used-in-upsimulator)
   * [ANTLR](#antlr)
@@ -369,6 +369,12 @@ In the code above, **dissolve** is MembraneDissolveResult and **dissolve(all)** 
 Rule r= a -> divide({ <property=1> b },{ <property=2> c^3 });
 ```
 In the code above, **divide** is Membrane Division Result. Membrane Division Result will divide current membrane into two parts. Inside the division result, **Property Result**s and **Object Result**s can be added.
+
+#### Delayed Result
+```
+Rule r= a -> delay(b,2);
+```
+In the code above, **delay(b,2)** is a delayed result. Delayed result will be delayed to be set. Object Result, Membrane Create Result, Dissolve Result and Division Result can be delayed.
 
 ## Mathematical Operators
 The mathematical expression's parsing and evaluation is done by [aviator](https://github.com/killme2008/aviator). Please check the supported operators at its website https://github.com/killme2008/aviator/.

@@ -156,6 +156,12 @@ public interface UPLanguageVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitResult(UPLanguageParser.ResultContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link UPLanguageParser#delayedResult}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDelayedResult(UPLanguageParser.DelayedResultContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link UPLanguageParser#memDivisionResult}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

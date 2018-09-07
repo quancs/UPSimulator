@@ -27,6 +27,7 @@ import upsimulator.rules.conditions.ObjectCondition;
 import upsimulator.rules.conditions.ObjectConditionsWithTarget;
 import upsimulator.rules.conditions.PriorityCondition;
 import upsimulator.rules.conditions.RegularExpressionCondition;
+import upsimulator.rules.results.DelayedResult;
 import upsimulator.rules.results.MembranePropertyResult;
 import upsimulator.rules.results.MembraneStatusResult;
 import upsimulator.speedup.PossibleValueCombiner;
@@ -328,6 +329,8 @@ public class PRule extends BasicName implements Rule {
 		results.add(result);
 		if (result instanceof Condition)
 			addCondition((Condition) result);
+		if (result instanceof DelayedResult && ((DelayedResult) result).getResult() instanceof Condition)
+			conditions.add((Condition) ((DelayedResult) result).getResult());
 	}
 
 	private class DimensionInfo {
