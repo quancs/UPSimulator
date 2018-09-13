@@ -59,7 +59,7 @@ java -jar UPSimulator.jar
 or double click the UPSimulator.jar if you have linked jar file to JAVA.
 
 ## Simple Usage   
-Following is just a simple usage, more more supported features can be found in [Conditions](#conditions) and [Results](#results). The explanation of code follows a double slash.  Save the following code to a file, and then import this file in the **Environment** column of UPSimulator. After that, initialize it by clicking "Initialize Environment". Then, Click "Run To End" to run it. If any errors have been pointed out after initialization, you can click "Check Grammar" to get an overview about the errors.
+Following is just a simple usage, more more supported features can be found in [Conditions](#conditions) and [Results](#results). The explanation of code follows a double slash.  Save the following code to a file, and then import this file in the **Environment** column of UPSimulator. After that, initialize it by clicking "Initialize Environment". Then, Click "Run To End" to run it. If any errors have been pointed out after initialization, you can click "Check Grammar" to get an overview about the errors. **More examples can be found in [examples](https://github.com/quancs/UPSimulator/tree/master/examples).**
 ### Cell-like P system
 ```
 Membrane A{// Membrane Class A
