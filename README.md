@@ -1,5 +1,6 @@
 Table of Contents
 =================
+
 * [UPSimulator](#upsimulator)
 * [UPLanguage](#uplanguage)
 * [Usage](#usage)
@@ -18,7 +19,7 @@ Table of Contents
   * [Tunnels](#tunnels)
   * [Rule](#rule)
     * [Conditions](#conditions)
-      * [Object Condition or Spike Condition](#object-condition-or-spike-condition)
+      * [Object Condition or Spike Condition or Symport/Antiport](#object-condition-or-spike-condition-or-symportantiport)
       * [Regular Expression Condition](#regular-expression-condition)
       * [Property Condition or Status Condition](#property-condition-or-status-condition)
       * [Inhibitor Condition](#inhibitor-condition)
@@ -265,11 +266,23 @@ Also, they can be written in membrane classes or instances.
 Rules are divided into two parts: conditions and results. 
 
 ### Conditions
-#### Object Condition or Spike Condition
+#### Object Condition or Spike Condition or Symport/Antiport
 ```
-Rule r= a -> b;
-Rule r= a^2 -> b;
-Rule r[i]=a[i] -> b[i+1];
+Rule r1= a -> b;
+Rule r2= a^2 -> b;
+Rule r3[i]=a[i] -> b[i+1];
+
+Rule r41[i]= out{a[i]} -> a[i] ;//symport from outter membrane 
+Rule r42[i]= b[i] -> ( b[i], out);//antiport to outter membrane 
+Rule r43[i]= out{a[i]} b[i] -> a[i] ( b[i], out);//symport and antiport 
+
+Rule r51[i]= in.m[i]{a[i]} -> a[i] ;//symport from inner membrane named m[i] 
+Rule r52[i]= b[i] -> ( b[i], in m[i]);//antiport to inner membrane named m[i]
+Rule r53[i]= in.m[i]{a[i]} b[i] -> a[i] ( b[i], in m[i]);//symport and antiport 
+
+Rule r61[i]= go.m[i]{a[i]} -> a[i] ;//symport from neighboring membrane named m[i]
+Rule r62[i]= b[i] -> ( b[i], go m[i]);//antiport to neighboring membrane named m[i]
+Rule r63[i]= go.m[i]{a[i]} b[i] -> a[i] ( b[i], go m[i]);//symport and antiport 
 ```
 In the code above, **a** and **a[i]** are Object Conditions, and **a^2** means two copy of 'a'.
 
@@ -324,8 +337,8 @@ In the code above, **i!=j** and **i+j!=10** are Boolean Conditions.
 #### Object Result or Spike Result
 ```
 Rule r= a -> b;
+Rule r= a -> ( b, out);
 Rule r[i]=a[i] -> b[i+1];
-
 
 Rule r= a -> ( b, in d);
 Rule r= a -> ( b, in d & f & g);// in all of them
