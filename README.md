@@ -74,7 +74,7 @@ Run this software by using
 java -jar UPSimulator.jar
 ```
 or double click the UPSimulator.jar if you have linked jar file to JAVA.
-
+After you start UPSimulator:
 ![image](https://github.com/quancs/UPSimulator/raw/master/examples/How-to-use-UPSimulator.png)
 
 ## Simple Usages  
