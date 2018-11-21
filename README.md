@@ -3,37 +3,15 @@ Table of Contents
 
 * [UPSimulator](#upsimulator)
 * [UPLanguage](#uplanguage)
-* [Usage](#usage)
+* [Usages](#usages)
   * [Required Environment](#required-environment)
-  * [Simple Usage](#simple-usage)
-    * [Cell\-like P system](#cell-like-p-system)
-    * [Tissue\-like P system](#tissue-like-p-system)
-    * [Neural\-like P system](#neural-like-p-system)
+  * [Simple Usages](#simple-usages)
   * [Skin Membrane or Simulation Environment](#skin-membrane-or-simulation-environment)
   * [Membrane Class](#membrane-class)
-    * [Create an Instance of one Membrane Class](#create-an-instance-of-one-membrane-class)
-    * [Extend a Membrane Class](#extend-a-membrane-class)
-    * [Create an Instance which does not belong to any Membrane Classes](#create-an-instance-which-does-not-belong-to-any-membrane-classes)
   * [Object or Spike](#object-or-spike)
   * [Membrane Property](#membrane-property)
-  * [Tunnels](#tunnels)
+  * [Tunnel](#tunnel)
   * [Rule](#rule)
-    * [Conditions](#conditions)
-      * [Object Condition or Spike Condition or Symport/Antiport](#object-condition-or-spike-condition-or-symportantiport)
-      * [Regular Expression Condition](#regular-expression-condition)
-      * [Property Condition or Status Condition](#property-condition-or-status-condition)
-      * [Inhibitor Condition](#inhibitor-condition)
-      * [Promoter Condition](#promoter-condition)
-      * [Priority Condition](#priority-condition)
-      * [Probabilistic Condition](#probabilistic-condition)
-      * [Boolean Condition](#boolean-condition)
-    * [Results](#results)
-      * [Object Result or Spike Result](#object-result-or-spike-result)
-      * [Property Result or Status Result](#property-result-or-status-result)
-      * [Membrane Create Result](#membrane-create-result)
-      * [Membrane Dissolve Result](#membrane-dissolve-result)
-      * [Membrane Division Result](#membrane-division-result)
-      * [Delayed Result](#delayed-result)
   * [Mathematical Operators](#mathematical-operators)
 * [Other Projects used in UPSimulator](#other-projects-used-in-upsimulator)
   * [ANTLR](#antlr)
@@ -87,7 +65,7 @@ Table 2. Supported models in pLingua
 # UPLanguage
 To describe the complex rules in various types of P systems, we designed a new language called UPLanguage. UPLanguage aims to describe Cell-like P System (supported now), Tissue-like P System (supported now), Neural-like P System (supported since 2.0.0), and the mixed P system of cell-like, tissue-like and neural-like. The UPLanguage description string is the input of UPSimulator, and **the grammar file of UPL is placed in resources/grammar/UPLanguage.g4**.
 
-# Usage
+# Usages
 ## Required Environment
 Java 1.8+ is required to run UPSimulator.  
 Run this software by using
@@ -97,7 +75,7 @@ java -jar UPSimulator.jar
 ```
 or double click the UPSimulator.jar if you have linked jar file to JAVA.
 
-## Simple Usage   
+## Simple Usages  
 Following is just a simple usage, more more supported features can be found in [Conditions](#conditions) and [Results](#results). The explanation of code follows a double slash.  Save the following code to a file, and then import this file in the **Environment** column of UPSimulator. After that, initialize it by clicking "Initialize Environment". Then, Click "Run To End" to run it. If any errors have been pointed out after initialization, you can click "Check Grammar" to get an overview about the errors. **More examples can be found in [examples](https://github.com/quancs/UPSimulator/tree/master/examples).**
 ### Cell-like P system
 ```
@@ -120,7 +98,7 @@ Environment{// skin membrane
 }
 ```
 ### Tissue-like P system
-The differences between cell-like and tissue-like P system are the [Status Property](#membrane-property) and [Net Structure(tunnels)](#tunnels)
+The differences between cell-like and tissue-like P system are the [Status Property](#membrane-property) and [Net Structure(tunnels)](#tunnel)
 
 ```
 Membrane A{// Membrane Class A
@@ -271,7 +249,7 @@ Membrane B{
 Membrane properties can also be written in instances.  
 
 
-## Tunnels
+## Tunnel
 Tunnel is a path between two membranes, and it can be used to transfer objects. Tunnels can be defined in following way:
 
 ```
