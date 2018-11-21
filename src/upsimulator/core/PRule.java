@@ -168,7 +168,9 @@ public class PRule extends BasicName implements Rule {
 				PossibleValueCombiner worker = PossibleValueCombiner.getWorker(last, lastComp, lastDims, lastDimsComp);
 				worker.start();
 				workers.add(worker);
-				UPSLogger.info(this, "Thread " + worker.getWorkerId() + " " + getNameDim() + " search possible values : " + current + "/" + total + " " + last.size() + "*" + lastComp.size());
+				UPSLogger.info(this,
+						"Thread " + worker.getWorkerId() + " " + getNameDim() + " search possible values : " + current
+								+ "/" + total + " " + last.size() + "*" + lastComp.size());
 				current++;
 			}
 			for (int i = 0; i < workers.size(); i++) {
@@ -178,7 +180,8 @@ public class PRule extends BasicName implements Rule {
 					pValuesDim.add(worker.getDims());
 					workers.remove(i);
 					i--;
-					UPSLogger.info(this, "Thread " + worker.getWorkerId() + " finished, time spend= " + worker.getTimeSpend() + " find " + worker.getPValues().size() + " new possible values.");
+					UPSLogger.info(this, "Thread " + worker.getWorkerId() + " finished, time spend= "
+							+ worker.getTimeSpend() + " find " + worker.getPValues().size() + " new possible values.");
 				}
 			}
 			try {
@@ -201,7 +204,8 @@ public class PRule extends BasicName implements Rule {
 			graph.add(new ArrayList<>());
 
 		for (Condition condition : conditions) {
-			if ((condition instanceof Obj || condition instanceof ObjectConditionsWithTarget) && !(condition instanceof InhibitorCondition)) {
+			if ((condition instanceof Obj || condition instanceof ObjectConditionsWithTarget)
+					&& !(condition instanceof InhibitorCondition)) {
 				DimensionInfo dInfo = new DimensionInfo((Name) condition);
 				for (int j = 0; j < ((Name) condition).getDimensionSize(); j++) {
 					for (int i = 0; i < getDimensionSize(); i++) {
@@ -249,7 +253,12 @@ public class PRule extends BasicName implements Rule {
 
 		for (int i = 0; i < graph.size(); i++) {
 			if (graph.get(i).size() == 0) {
-				throw new UnpredictableDimensionException(this, getDimensions().get(i).toString());// Possible wrong form: Rule r1[i][j] = e[i] -> e[j]; Rule r1[i][j] = e[i] -> ;
+				throw new UnpredictableDimensionException(this, getDimensions().get(i).toString());// Possible wrong
+																									// form: Rule
+																									// r1[i][j] = e[i]
+																									// -> e[j]; Rule
+																									// r1[i][j] = e[i]
+																									// -> ;
 				// Rule r1[i][j] = e[i] -> | !e[j]; ");
 			}
 		}
@@ -452,8 +461,10 @@ public class PRule extends BasicName implements Rule {
 
 		StringBuilder otherBuilder = new StringBuilder("| ");
 		for (Condition condition : conditions) {
-			if (condition instanceof MembranePropertyCondition || condition instanceof ObjectCondition || condition instanceof Result || condition instanceof PriorityCondition
-					|| condition instanceof RegularExpressionCondition || condition instanceof ObjectConditionsWithTarget)
+			if (condition instanceof MembranePropertyCondition || condition instanceof ObjectCondition
+					|| condition instanceof Result || condition instanceof PriorityCondition
+					|| condition instanceof RegularExpressionCondition
+					|| condition instanceof ObjectConditionsWithTarget)
 				continue;
 			otherBuilder.append(condition + " & ");
 		}
@@ -494,7 +505,8 @@ public class PRule extends BasicName implements Rule {
 	 *             if clone failed
 	 */
 	@Override
-	public Map<Rule, Integer> satisfiedRules(Membrane membrane) throws UnpredictableDimensionException, CloneNotSupportedException {
+	public Map<Rule, Integer> satisfiedRules(Membrane membrane)
+			throws UnpredictableDimensionException, CloneNotSupportedException {
 		if (dInfos == null)
 			initDimInfos();
 		Calendar t1 = Calendar.getInstance();
@@ -522,7 +534,9 @@ public class PRule extends BasicName implements Rule {
 			try {
 				checker.join();
 				satisfiedRules.putAll(checker.getSatisfiedRules());
-				UPSLogger.info(this, "RuleChecker " + checker.getWorkerId() + " checked " + checker.getSatisfiedRules().size() + "/" + checker.getTotal() + "  " + checker.getTimeSpend() + "ms");
+				UPSLogger.info(this,
+						"RuleChecker " + checker.getWorkerId() + " checked " + checker.getSatisfiedRules().size() + "/"
+								+ checker.getTotal() + "  " + checker.getTimeSpend() + "ms");
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} catch (Exception e) {
@@ -531,7 +545,8 @@ public class PRule extends BasicName implements Rule {
 		}
 
 		Calendar t3 = Calendar.getInstance();
-		UPSLogger.info(this, getNameDim() + " getPossibleValues=" + (t2.getTimeInMillis() - t1.getTimeInMillis()) + "ms\t\t" + " satisfyCheck=" + (t3.getTimeInMillis() - t2.getTimeInMillis()) + "ms");
+		UPSLogger.info(this, getNameDim() + " getPossibleValues=" + (t2.getTimeInMillis() - t1.getTimeInMillis())
+				+ "ms\t\t" + " satisfyCheck=" + (t3.getTimeInMillis() - t2.getTimeInMillis()) + "ms");
 		return satisfiedRules;
 	}
 

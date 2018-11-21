@@ -88,7 +88,8 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 			Membrane m = membranes.get(i);
 			List<Tunnel> tList = m.getTunnels();
 			for (Tunnel t : tList) {
-				if (!(t.getType() == TunnelType.In || t.getType() == TunnelType.Go || (t.getType() == TunnelType.Out && t.getSource() != this)))
+				if (!(t.getType() == TunnelType.In || t.getType() == TunnelType.Go
+						|| (t.getType() == TunnelType.Out && t.getSource() != this)))
 					continue;
 				if (tunnels.contains(t))
 					continue;
@@ -126,8 +127,10 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 			while (iter2.hasNext()) {
 				Entry<String, Object> entry = iter2.next();
 				String key = entry.getKey();
-				Object val = entry.getValue();
-				cloned.setProperty(key, val);
+				if (!key.startsWith("$")) {
+					Object val = entry.getValue();
+					cloned.setProperty(key, val);
+				}
 			}
 		}
 
@@ -240,7 +243,8 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 			rules.sort(new Comparator<Rule>() {
 				@Override
 				public int compare(Rule o1, Rule o2) {
-					if (o1.getConditions().get(0) instanceof PriorityCondition && o2.getConditions().get(0) instanceof PriorityCondition) {
+					if (o1.getConditions().get(0) instanceof PriorityCondition
+							&& o2.getConditions().get(0) instanceof PriorityCondition) {
 						PriorityCondition p1 = (PriorityCondition) o1.getConditions().get(0);
 						PriorityCondition p2 = (PriorityCondition) o2.getConditions().get(0);
 						return p1.getPriority() - p2.getPriority();
@@ -330,7 +334,8 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 			Collections.shuffle(rules);
 			for (int i = 0; rules.size() > 0; i++) {
 				if (urules.size() > 100 && i % 1000 == 0)
-					UPSLogger.info(this, "Membrane " + getNameDim() + " has fetched " + rules.size() + "/" + urules.size() + " rules");
+					UPSLogger.info(this, "Membrane " + getNameDim() + " has fetched " + rules.size() + "/"
+							+ urules.size() + " rules");
 
 				Rule first = rules.removeFirst();
 				Integer times = urules.get(first);
@@ -381,7 +386,8 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 	}
 
 	@Override
-	public String toString(String space, boolean withObject, boolean withProp, boolean withRule, boolean withSubmembrane, boolean withTunnel) {
+	public String toString(String space, boolean withObject, boolean withProp, boolean withRule,
+			boolean withSubmembrane, boolean withTunnel) {
 		StringBuilder mBuilder = new StringBuilder();
 		if (getNameDim().equals("Environment")) {
 			mBuilder.append(getNameDim() + " {\n");
