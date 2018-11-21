@@ -16,7 +16,7 @@ membraneType 	: 	Name | Letters;
 properties		:	'Property' propertyInit (',' propertyInit)* ';';
 propertyInit	:	propertyName '=' propertyValue;
 propertyName	:	Name | Letters;
-propertyValue	:	Letters | Integer | '+' | '-';
+propertyValue	:	Name | Letters | Integer | '+' | '-';
 
 /*膜通道*/
 tunnels			:	'Tunnel' tunnelTarget ( ',' tunnelTarget )* ';';
