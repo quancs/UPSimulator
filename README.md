@@ -43,10 +43,49 @@ Table of Contents
 
 # UPSimulator
 UPSimulator is an universal and high performance simulator for membrane computing. Now, we have supported most features of cell-like P system & tissue-like P system, and basic support for neural-like P system. Visit https://github.com/quancs/UPSimulator/releases to download the [latest version](https://github.com/quancs/UPSimulator/releases).  
-Please notice that: **What you simulate in UPSimulator is what you use**. We are not going to make any limitations about the models you want to simulate, because we will never know that what kind of new P system will be proposed in the future, and what kind of new concepts the new P system has. If you want to simulate one kind of P system whose concepts ( conditions and results and tunnels ) have already been supported by UPSimulator, please just combine the conditions, results and tunnels to make it.  
+Please notice that: **What you simulate in UPSimulator is what you use**. We are not going to make any assumptions about the models you want to simulate, because we will never know that what kind of new P system will be proposed in the future, and what kind of new concepts the new P system will have. If you want to simulate one kind of P system whose concepts ( conditions and results and tunnels ) have already been supported by UPSimulator in **Table 2**, please just combine the conditions, results and tunnels to make it.  
+
+**The main differences between PLingua and UPSimulator**
+
+|       Aspect      |         PLingua       |        UPSimulator        |
+|-------------------|-----------------------|---------------------------|
+| How to support models | Support models directly (Table 2) | Support models by combing different concepts (Table 1) |
+| Supporting new models | Hard. Need to recode almost everything for the new model.          | Easy. If the concepts in the new model exist in the old models, the new model is naturally supported. If not, only few functions need to be implemented for the new concepts in the new model. |
+| User interfaces   | Command line          | Graphical interfaces      |
+| Format            | Input: PLingua language format or other format<br> Output: text format | Input: UPLanguage <br>Output: UPLanguage|
+
+
+Table 1. Supported concepts in UPSimulator
+
+| Concepts                | Cell-like P system | Tissue-like P system | Neural-like P system |
+|-------------------------|--------------------|----------------------|----------------------|
+| Promoter                | √                  | √                    | √                    |
+| Inhibitor               | √                  | √                    | √                    |
+| Probability             | √                  | √                    | √                    |
+| Rule Priority           | √                  | √                    | √                    |
+| Regular Expression      | √                  | √                    | √                    |
+| Thickness               | √                  | √                    | √                    |
+| Polarity                | √                  | √                    | √                    |
+| Dissolution             | √                  | √                    | √                    |
+| Division                | √                  | √                    | √                    |
+| Creation                | √                  | √                    | √                    |
+| Symport/ Antiport       | √                  | √                    | √                    |
+| Multiple Channels       | √                  | √                    | √                    |
+| Anti-object/ Anti-spike | √                  | √                    | √                    |
+| Delay                   | √                  | √                    | √                    |
+
+Table 2. Supported models in pLingua
+
+| Classification                  | Model                                                                                                                                                                                 |
+|---------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Cell-like P system[15]          | Active membranes with division rules Active membranes with creation rules Transition P systems Symport/antiport P systems Stochastic P systems (discontinued) Probabilistic P systems |
+| Tissue-like P system [19], [20] | Tissue P systems with symport/antiport rules and division rules Tissue P systems with cell separation rules                                                                           |
+| Neural-like P system[21]        | Spiking neural P systems with division, budding and delays                                                                                                                            |
+| Other P systems                 | Simple kernel P systems                                                                                                                                                               |
+
 
 # UPLanguage
-To describe the complex rules in various types of P systems, we designed a new language called UPLanguage. UPLanguage aims to describe Cell-like P System (supported now), Tissue-like P System (supported now), Neural-like P System (supported since 2.0.0), and the mixed P system of cell-like, tissue-like and neural-like. The UPLanguage description string is the input of UPSimulator, and the grammar file of UPL is placed in resources/grammar/UPLanguage.g4.
+To describe the complex rules in various types of P systems, we designed a new language called UPLanguage. UPLanguage aims to describe Cell-like P System (supported now), Tissue-like P System (supported now), Neural-like P System (supported since 2.0.0), and the mixed P system of cell-like, tissue-like and neural-like. The UPLanguage description string is the input of UPSimulator, and **the grammar file of UPL is placed in resources/grammar/UPLanguage.g4**.
 
 # Usage
 ## Required Environment
@@ -268,6 +307,8 @@ Rules are divided into two parts: conditions and results.
 ### Conditions
 #### Object Condition or Spike Condition or Symport/Antiport
 ```
+Rule r= a -> ;//No result: a -> λ
+
 Rule r1= a -> b;
 Rule r2= a^2 -> b;
 Rule r3[i]=a[i] -> b[i+1];
@@ -336,6 +377,8 @@ In the code above, **i!=j** and **i+j!=10** are Boolean Conditions.
 ### Results
 #### Object Result or Spike Result
 ```
+Rule r= a -> ;//No result: a -> λ
+
 Rule r= a -> b;
 Rule r= a -> ( b, out);
 Rule r[i]=a[i] -> b[i+1];
