@@ -20,10 +20,18 @@ Table of Contents
 * [Help Needed](#help-needed)
 
 # UPSimulator
-UPSimulator is an universal and high performance simulator for membrane computing. Now, we have supported most features of cell-like P system & tissue-like P system, and basic support for neural-like P system. Visit https://github.com/quancs/UPSimulator/releases to download the [latest version](https://github.com/quancs/UPSimulator/releases).  
-Please notice that: **What you simulate in UPSimulator is what you use**. We are not going to make any assumptions about the models you want to simulate, because we will never know that what kind of new P system will be proposed in the future, and what kind of new concepts the new P system will have. If you want to simulate one kind of P system whose concepts ( conditions and results and tunnels ) have already been supported by UPSimulator in **Table 2**, please just combine the conditions, results and tunnels to make it.  
+UPSimulator is a universal and high performance simulator for membrane computing. Now, we have supported most features of cell-like P system & tissue-like P system, and basic support for neural-like P system. Visit https://github.com/quancs/UPSimulator/releases to download the [latest version](https://github.com/quancs/UPSimulator/releases).  
+Please note that: **What you simulate in UPSimulator is what you use**. We are not going to make any assumptions about the models you want to simulate, because we will never know that what kind of new P system will be proposed in the future, and what kind of new concepts the new P system will have. If you want to simulate one kind of P system whose concepts ( conditions and results and tunnels ) have already been supported by UPSimulator in **Table 2**, please just combine the conditions, results and tunnels to make it.  
 
-**The main differences between PLingua and UPSimulator**
+## Motivations
+P system simulators are important tools for designing and verifying P systems. And, researchers have developed several P-system simulators such as P-Lingua (MeCoSim) and PMCGPU. But, with the development of membrane computing, many new P system models have been proposed which haven't gotten timely support. For example, cSNP systems, SNP-MC systems. Many reasons exist in this situation: the weak extensibility, too many works needed to support new models, and etc. 
+
+To overcome this issue and provide supports for new P system models, we developed UPSimulator, which is flexible, high performance and high-extendable. The key point of UPSimulator is to support models by supporting their underlying concepts. To do this, we researched and divided some common P system models into pieces: controllers, structures, objects/spikes, properties, rules(conditions and results) and tunnels. All the pieces are supported in UPSimulator. Moreover, each of these pieces can be freely combined and used. 
+
+Usually, new P system models won't have too much differences when compared with old ones. We can support the new model by supporting the underlying concepts in the differences. As for the common concepts, they have been supported since we supported the old models. So, it's an easy work to support new models in UPSimulator. 
+
+
+## The main differences between PLingua and UPSimulator
 
 |       Aspect      |         PLingua       |        UPSimulator        |
 |-------------------|-----------------------|---------------------------|
@@ -78,7 +86,7 @@ After you start UPSimulator:
 ![image](https://github.com/quancs/UPSimulator/raw/master/examples/How-to-use-UPSimulator.png)
 
 ## Simple Usages  
-Following is just a simple usage, more more supported features can be found in [Conditions](#conditions) and [Results](#results). The explanation of code follows a double slash.  Save the following code to a file, and then import this file in the **Environment** column of UPSimulator. After that, initialize it by clicking "Initialize Environment". Then, Click "Run To End" to run it. If any errors have been pointed out after initialization, you can click "Check Grammar" to get an overview about the errors. **More examples can be found in [examples](https://github.com/quancs/UPSimulator/tree/master/examples).**
+Following is just a simple usage, more more supported features can be found in [Conditions](#conditions) and [Results](#results). The explanation of code follows a double slash. Save the following code to a file, and then import this file in the **Environment** column of UPSimulator. After that, initialize it by clicking "Initialize Environment". Then, Click "Run To End" to run it. If any errors have been pointed out after initialization, you can click "Check Grammar" to get an overview about the errors. **More examples can be found in [examples](https://github.com/quancs/UPSimulator/tree/master/examples).**
 ### Cell-like P system
 ```
 Membrane A{// Membrane Class A
