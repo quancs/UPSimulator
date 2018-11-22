@@ -2,6 +2,8 @@ Table of Contents
 =================
 
 * [UPSimulator](#upsimulator)
+  * [Motivations](#motivations)
+  * [The main differences between PLingua and UPSimulator](#the-main-differences-between-plingua-and-upsimulator)
 * [UPLanguage](#uplanguage)
 * [Usages](#usages)
   * [Required Environment](#required-environment)
@@ -21,12 +23,12 @@ Table of Contents
 
 # UPSimulator
 UPSimulator is a universal and high performance simulator for membrane computing. Now, we have supported most features of cell-like P system & tissue-like P system, and basic support for neural-like P system. Visit https://github.com/quancs/UPSimulator/releases to download the [latest version](https://github.com/quancs/UPSimulator/releases).  
-Please note that: **What you simulate in UPSimulator is what you use**. We are not going to make any assumptions about the models you want to simulate, because we will never know that what kind of new P system will be proposed in the future, and what kind of new concepts the new P system will have. If you want to simulate one kind of P system whose concepts ( conditions and results and tunnels ) have already been supported by UPSimulator in **Table 2**, please just combine the conditions, results and tunnels to make it.  
+Please note that: **What you simulate in UPSimulator is what you use**. We are not going to make any assumptions about the models you want to simulate, because we will never know that what kind of new P system will be proposed in the future, and what kind of new concepts the new P system will have. If you want to simulate one kind of P system whose concepts ( conditions and results and tunnels ) have already been supported by UPSimulator in **Table 2**, please just combine these conditions, results and tunnels to make it.  
 
 ## Motivations
 P system simulators are important tools for designing and verifying P systems. And, researchers have developed several P-system simulators such as P-Lingua (MeCoSim) and PMCGPU. But, with the development of membrane computing, many new P system models have been proposed which haven't gotten timely support. For example, cSNP systems, SNP-MC systems. Many reasons exist in this situation: the weak extensibility, too many works needed to support new models, and etc. 
 
-To overcome this issue and provide supports for new P system models, we developed UPSimulator, which is flexible, high performance and high-extendable. The key point of UPSimulator is to support models by supporting their underlying concepts. To do this, we researched and divided some common P system models into pieces: controllers, structures, objects/spikes, properties, rules(conditions and results) and tunnels. All the pieces are supported in UPSimulator. Moreover, each of these pieces can be freely combined and used. 
+To overcome this issue and provide supports for new P system models, we developed UPSimulator, which is flexible, user-friendly, high performance and high-extendable. One software (UPSimulator) and one language (UPLanguage) for everything! The key point of UPSimulator is to support models by supporting their underlying concepts. To do this, we researched and divided some common P system models into pieces: controllers, structures, objects/spikes, properties, rules(conditions and results) and tunnels. All the pieces are supported in UPSimulator. Moreover, each of these pieces can be freely combined and used. 
 
 Usually, new P system models won't have too much differences when compared with old ones. We can support the new model by supporting the underlying concepts in the differences. As for the common concepts, they have been supported since we supported the old models. So, it's an easy work to support new models in UPSimulator. 
 
