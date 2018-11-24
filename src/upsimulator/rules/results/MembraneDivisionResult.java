@@ -8,7 +8,6 @@ import upsimulator.core.PTunnel;
 import upsimulator.exceptions.TimesException;
 import upsimulator.exceptions.TunnelNotExistException;
 import upsimulator.exceptions.UnknownMembraneClassException;
-import upsimulator.interfaces.BasicName;
 import upsimulator.interfaces.Condition;
 import upsimulator.interfaces.Dimension;
 import upsimulator.interfaces.Dimensional;
