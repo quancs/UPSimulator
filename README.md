@@ -76,6 +76,8 @@ Table 2. Supported models in pLingua
 To describe the complex rules in various types of P systems, we designed a new language called UPLanguage. UPLanguage aims to describe Cell-like P System (supported now), Tissue-like P System (supported now), Neural-like P System (supported since 2.0.0), and the mixed P system of cell-like, tissue-like and neural-like. The UPLanguage description string is the input of UPSimulator, and **the grammar file of UPL is placed in resources/grammar/UPLanguage.g4**.
 
 # Usages
+You can download a slide to learn how to use UPSimulator from [here](https://github.com/quancs/UPSimulator/blob/master/examples/How-to-Use-UPSimulator.pptx).
+
 ## Required Environment
 Java 1.8+ is required to run UPSimulator.  
 Run this software by using
