@@ -78,6 +78,7 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 	public PMembrane deepClone() {
 		// no need to clone name , they won't change.
 		// rules, objects and properties need to be cloned
+		// all tunnels to neighbours won't be cloned in this function.
 
 		ArrayList<Membrane> membranes = new ArrayList<>();//
 		ArrayList<Tunnel> tunnels = new ArrayList<>();
@@ -88,9 +89,12 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 			Membrane m = membranes.get(i);
 			List<Tunnel> tList = m.getTunnels();
 			for (Tunnel t : tList) {
-				if (!(t.getType() == TunnelType.In || t.getType() == TunnelType.Go
+				// exclude all neighbours of this membrane and exclude the tunnel from this to
+				// father
+				if (!(t.getType() == TunnelType.In || (t.getType() == TunnelType.Go && t.getSource() != this)
 						|| (t.getType() == TunnelType.Out && t.getSource() != this)))
 					continue;
+
 				if (tunnels.contains(t))
 					continue;
 

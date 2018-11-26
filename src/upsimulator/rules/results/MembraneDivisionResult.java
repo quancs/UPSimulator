@@ -162,7 +162,47 @@ public class MembraneDivisionResult implements Result, Condition, Dimensional, M
 			for (Result or : mpResults2)
 				or.setResult(cloned, times);
 
-			membrane.getParent().addChild(PTunnel.class, cloned);
+			List<Tunnel> tunnels = membrane.getTunnels();
+			for (Tunnel tunnel : tunnels) {// cloned -> membrane.neighbours
+				if (tunnel.getType() == TunnelType.Go) {
+					Tunnel clonedTunnel = null;
+					try {
+						clonedTunnel = tunnel.getClass().newInstance();
+					} catch (InstantiationException | IllegalAccessException e) {
+						e.printStackTrace();
+					}
+					clonedTunnel.setType(tunnel.getType());
+					clonedTunnel.setSource(cloned);
+					clonedTunnel.addTarget(tunnel.getTargets().get(0));
+
+					cloned.addTunnel(clonedTunnel);
+				}
+			}
+
+			// cloned -> membrane.father
+			PTunnel.addChildParentTunnel(membrane.getParent(), cloned);
+
+			// membrane.neighbours -> cloned
+			List<Membrane> neighbours = membrane.getParent().getChildren();
+			for (Membrane neighbour : neighbours) {
+				List<Tunnel> nTunnels = neighbour.getTunnels();
+				for (int i = nTunnels.size() - 1; i >= 0; i--) {
+					Tunnel tunnel = nTunnels.get(i);
+					if (tunnel.getType() == TunnelType.Go && tunnel.getTargets().get(0) == membrane) {
+						Tunnel clonedTunnel = null;
+						try {
+							clonedTunnel = tunnel.getClass().newInstance();
+						} catch (InstantiationException | IllegalAccessException e) {
+							e.printStackTrace();
+						}
+						clonedTunnel.setType(tunnel.getType());
+						clonedTunnel.setSource(neighbour);
+						clonedTunnel.addTarget(cloned);
+						neighbour.addTunnel(clonedTunnel);
+					}
+				}
+			}
+
 			membrane.removeListener(this);
 		} catch (TimesException | UnknownMembraneClassException e) {
 			e.printStackTrace();

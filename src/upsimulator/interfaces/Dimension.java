@@ -1,5 +1,6 @@
 package upsimulator.interfaces;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.googlecode.aviator.AviatorEvaluator;
@@ -20,8 +21,12 @@ public class Dimension {
 	public Dimension(String text) {
 		super();
 		expression = AviatorEvaluator.compile(text, true);
-		this.value = null;
 		this.text = text;
+		Map<String, Object> env = new HashMap<>();
+		try {
+			fix(env);
+		} catch (Exception e) {
+		}
 	}
 
 	public Dimension(Dimension dimension) {
