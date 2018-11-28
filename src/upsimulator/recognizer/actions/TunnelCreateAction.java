@@ -38,12 +38,11 @@ public class TunnelCreateAction extends RecognizerAction {
 		Membrane parent = source.getParent();
 		List<Membrane> brothers = parent.getChildren();
 		for (Membrane brother : brothers) {
-			if (brother.getNameDim().equals(target)) {
+			if (brother.getNameDim().equals(target) && brother != source) {
 				PTunnel tunnel = new PTunnel(TunnelType.Go);
 				tunnel.setSource(source);
 				tunnel.addTarget(brother);
 				source.addTunnel(tunnel);
-				break;
 			}
 		}
 		minusUnreadyCount(source);

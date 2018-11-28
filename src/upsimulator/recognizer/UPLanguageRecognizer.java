@@ -87,6 +87,7 @@ import upsimulator.rules.conditions.PriorityCondition;
 import upsimulator.rules.conditions.ProbabilisticCondition;
 import upsimulator.rules.conditions.PromoterCondition;
 import upsimulator.rules.conditions.RegularExpressionCondition;
+import upsimulator.rules.results.AntiportResult;
 import upsimulator.rules.results.DelayedResult;
 import upsimulator.rules.results.MembraneCreateResult;
 import upsimulator.rules.results.MembraneDissolveAllResult;
@@ -95,8 +96,8 @@ import upsimulator.rules.results.MembraneDivisionResult;
 import upsimulator.rules.results.MembranePropertyResult;
 import upsimulator.rules.results.MembraneStatusResult;
 import upsimulator.rules.results.ObjectResult;
-import upsimulator.rules.results.PositionResult;
-import upsimulator.rules.results.PositionResult.Target;
+import upsimulator.rules.results.ObjectResultsWithTarget;
+import upsimulator.rules.results.ObjectResultsWithTarget.Target;
 
 /**
  * This class provides an empty implementation of {@link UPLanguageVisitor},
@@ -276,7 +277,8 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 	@Override
 	public T visitRuleSetDeclare(RuleSetDeclareContext ctx) {
 		logger.info("visitRuleSetDeclare");
-		RuleSetDeclareAction rsdAction = new RuleSetDeclareAction(ctx.ruleSetType().getText(), ctx.ruleSetNamePrefix().getText(), currMembrane);
+		RuleSetDeclareAction rsdAction = new RuleSetDeclareAction(ctx.ruleSetType().getText(),
+				ctx.ruleSetNamePrefix().getText(), currMembrane);
 		actions.add(rsdAction);
 		return null;
 	}
@@ -408,6 +410,65 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 			Result result = (Result) visitResult(rc);
 			rule.addResult(result);
 		}
+
+		// Combine objectConditionWithTarget and objectResultWithTarget
+		List<ObjectConditionsWithTarget> octs = new ArrayList<>();
+		for (Condition condition : rule.getConditions())
+			if (condition instanceof ObjectConditionsWithTarget)
+				octs.add((ObjectConditionsWithTarget) condition);
+		List<ObjectResultsWithTarget> orts = new ArrayList<>();
+		for (Result result : rule.getResults())
+			if (result instanceof ObjectResultsWithTarget)
+				orts.add((ObjectResultsWithTarget) result);
+		for (int i = 0; i < octs.size(); i++) {
+			ObjectConditionsWithTarget oct1 = octs.get(i);
+			for (int j = i + 1; j < octs.size(); j++) {
+				ObjectConditionsWithTarget oct2 = octs.get(j);
+				if (oct1.isTheSameTarget(oct2)) {
+					oct1.combine(oct2);
+					octs.remove(j);
+					rule.getConditions().remove(oct2);
+					rule.getResults().remove(oct2);
+					j--;
+				}
+			}
+		}
+		for (int i = 0; i < orts.size(); i++) {
+			ObjectResultsWithTarget ort1 = orts.get(i);
+			for (int j = i + 1; j < orts.size(); j++) {
+				ObjectResultsWithTarget ort2 = orts.get(j);
+				if (ort1.isTheSameTarget(ort2)) {
+					ort1.combine(ort2);
+					orts.remove(j);
+					rule.getConditions().remove(ort2);
+					rule.getResults().remove(ort2);
+					j--;
+				}
+			}
+		}
+
+		for (int i = 0; i < octs.size(); i++) {
+			ObjectConditionsWithTarget oct = octs.get(i);
+			for (int j = 0; j < orts.size(); j++) {
+				ObjectResultsWithTarget ort = orts.get(j);
+				if (oct.nameDimEqualsTo(ort) && oct.getMove() == ort.getMove()) {
+					rule.getConditions().remove(oct);
+					rule.getConditions().remove(ort);
+					rule.getResults().remove(oct);
+					rule.getResults().remove(ort);
+					octs.remove(i);
+					orts.remove(j);
+
+					AntiportResult antiportResult = new AntiportResult(oct);
+					for (ObjectResult or : ort.getObjectResults())
+						antiportResult.addObjectResult(or);
+					rule.addCondition(antiportResult);
+					i--;
+					break;
+				}
+			}
+		}
+
 		// 获取condition
 		for (ConditionContext cc : ctx.condition()) {
 			Condition condition = (Condition) visitCondition(cc);
@@ -423,7 +484,8 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 		}
 
 		for (PropertyConditionContext mpctx : ctx.propertyCondition()) {
-			MembranePropertyCondition membranePropertyCondition = (MembranePropertyCondition) visitPropertyCondition(mpctx);
+			MembranePropertyCondition membranePropertyCondition = (MembranePropertyCondition) visitPropertyCondition(
+					mpctx);
 			rule.addCondition(membranePropertyCondition);
 		}
 
@@ -431,6 +493,8 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 			MembranePropertyResult mPropertyResult = (MembranePropertyResult) visitPropertyResult(mprctx);
 			rule.addResult(mPropertyResult);
 		}
+
+		// Combine
 
 		currRule = null;
 		return (T) rule;
@@ -520,11 +584,11 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 		return (T) or;
 	}
 
-	private PositionResult currPositionResult;
+	private ObjectResultsWithTarget currPositionResult;
 
 	@Override
 	public T visitPositionResult(PositionResultContext ctx) {
-		PositionResult pResult = new PositionResult();
+		ObjectResultsWithTarget pResult = new ObjectResultsWithTarget();
 		currPositionResult = pResult;
 		for (ObjResultContext orc : ctx.objResult())
 			pResult.addObjectResult((ObjectResult) visitObjResult(orc));
@@ -790,12 +854,12 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 	public T visitObjConditionWithTarget(ObjConditionWithTargetContext ctx) {
 		ObjectConditionsWithTarget oct;
 		if (ctx.getText().startsWith("in")) {
-			oct = new ObjectConditionsWithTarget(upsimulator.rules.conditions.ObjectConditionsWithTarget.Target.Child);
+			oct = new ObjectConditionsWithTarget(TunnelType.In);
 			oct.setName(ctx.membraneName().getText());
 		} else if (ctx.getText().startsWith("out")) {
-			oct = new ObjectConditionsWithTarget(upsimulator.rules.conditions.ObjectConditionsWithTarget.Target.Parent);
+			oct = new ObjectConditionsWithTarget(TunnelType.Out);
 		} else {
-			oct = new ObjectConditionsWithTarget(upsimulator.rules.conditions.ObjectConditionsWithTarget.Target.Neighbor);
+			oct = new ObjectConditionsWithTarget(TunnelType.Go);
 			oct.setName(ctx.membraneName().getText());
 		}
 		for (int i = 0; i < ctx.formulaDim().size(); i++)
@@ -816,9 +880,9 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 			return (T) new DelayedResult((Result) visitMemDivisionResult(ctx.memDivisionResult()), delay);
 		} else if (ctx.objResult() != null) {
 			return (T) new DelayedResult((Result) visitObjResult(ctx.objResult()), delay);
-		} else if(ctx.positionResult()!=null){
+		} else if (ctx.positionResult() != null) {
 			return (T) new DelayedResult((Result) visitPositionResult(ctx.positionResult()), delay);
-		}else
+		} else
 			return null;
 	}
 

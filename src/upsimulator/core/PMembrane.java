@@ -18,6 +18,7 @@ import upsimulator.interfaces.BasicName;
 import upsimulator.interfaces.Condition;
 import upsimulator.interfaces.Membrane;
 import upsimulator.interfaces.MembraneListener;
+import upsimulator.interfaces.Name;
 import upsimulator.interfaces.Obj;
 import upsimulator.interfaces.Result;
 import upsimulator.interfaces.Rule;
@@ -329,7 +330,9 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 				if (trueTimes > 0) {
 					fetchedRules.put(rule, trueTimes);
 					for (Result result : rule.getResults()) {
-						result.selectTunnel(this).holdResult(result.deepClone(), trueTimes);
+						Tunnel tunnel = result.selectTunnel(this);
+						if (tunnel != null)
+							tunnel.holdResult(result.deepClone(), trueTimes);
 					}
 				}
 			}
@@ -347,8 +350,11 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 				int fetched = first.fetch(this, readyToFetch);
 				if (fetched > 0) {
 					addFetched(first, fetched);
-					for (Result result : first.getResults())
-						result.selectTunnel(this).holdResult(result.deepClone(), fetched);
+					for (Result result : first.getResults()) {
+						Tunnel tunnel = result.selectTunnel(this);
+						if (tunnel != null)
+							tunnel.holdResult(result.deepClone(), fetched);
+					}
 
 					if (fetched == readyToFetch && readyToFetch < times) {// can fetch more
 						rules.add(first);
@@ -675,6 +681,25 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 	@Override
 	public List<Tunnel> getTunnels() {
 		return tunnels;
+	}
+
+	@Override
+	public List<Tunnel> getTunnels(TunnelType type, Name name, boolean compareDim) {
+		LinkedList<Tunnel> tunnelsTemp = new LinkedList<>();
+
+		for (Tunnel t : tunnels) {
+			if (t.getType() == type) {
+				Membrane target = t.getTargets().get(0);
+				if (!compareDim) {
+					if (target.nameEqualsTo(name))
+						tunnelsTemp.add(t);
+				} else {
+					if (target.nameDimEqualsTo(name))
+						tunnelsTemp.add(t);
+				}
+			}
+		}
+		return tunnelsTemp;
 	}
 
 	@Override

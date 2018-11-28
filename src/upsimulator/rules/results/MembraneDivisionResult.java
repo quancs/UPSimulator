@@ -8,7 +8,7 @@ import upsimulator.core.PTunnel;
 import upsimulator.exceptions.TimesException;
 import upsimulator.exceptions.TunnelNotExistException;
 import upsimulator.exceptions.UnknownMembraneClassException;
-import upsimulator.interfaces.Condition;
+import upsimulator.interfaces.ConditionalResult;
 import upsimulator.interfaces.Dimension;
 import upsimulator.interfaces.Dimensional;
 import upsimulator.interfaces.Membrane;
@@ -18,7 +18,7 @@ import upsimulator.interfaces.Tunnel;
 import upsimulator.interfaces.Tunnel.TunnelType;
 import upsimulator.interfaces.UPSLogger;
 
-public class MembraneDivisionResult implements Result, Condition, Dimensional, MembraneListener {
+public class MembraneDivisionResult implements ConditionalResult, Dimensional, MembraneListener {
 
 	private ArrayList<ObjectResult> oResults1, oResults2;// source cloned
 	private ArrayList<MembranePropertyResult> mpResults1, mpResults2;
@@ -279,5 +279,15 @@ public class MembraneDivisionResult implements Result, Condition, Dimensional, M
 	@Override
 	public List<Long[]> predictPossibleValue(Membrane membrane, List<Dimension> dList) {
 		return null;
+	}
+
+	@Override
+	public String toConditionString() {
+		return "";
+	}
+
+	@Override
+	public String toResultString() {
+		return toString();
 	}
 }

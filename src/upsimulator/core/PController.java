@@ -106,6 +106,7 @@ public class PController extends Thread {
 			visitor = new UPLanguageRecognizer<>();
 			membrane = (PMembrane) visitor.visit(tree);
 		} catch (Exception e) {
+			e.printStackTrace();
 			System.err.println(e);
 		}
 
@@ -142,7 +143,8 @@ public class PController extends Thread {
 				leftStep--;
 			}
 
-			for (int maxDelay = DelayedResult.getMaxDelay() + 1; leftStep == -1 && (satisfiedRulesCount > 0 || maxDelay > 0);) {
+			for (int maxDelay = DelayedResult.getMaxDelay() + 1; leftStep == -1
+					&& (satisfiedRulesCount > 0 || maxDelay > 0);) {
 				int ruleUsed = runOneStep();
 				if (ruleUsed == 0) {
 					if (maxDelay == 0)
@@ -243,7 +245,8 @@ public class PController extends Thread {
 
 		long endTime = System.nanoTime();
 		long timeUsed = endTime - startTime;
-		UPSLogger.result(this, "step:" + step + "\t\trules used : " + totalUsed + "\t\ttime used:" + ((double) timeUsed / 1000000) + "ms");
+		UPSLogger.result(this, "step:" + step + "\t\trules used : " + totalUsed + "\t\ttime used:"
+				+ ((double) timeUsed / 1000000) + "ms");
 		UPSLogger.debug(this, "\n" + "step:" + (step - 1) + "->" + step);
 		UPSLogger.debug(this, uMap);
 		UPSLogger.result(this, environment.toString() + "\n");

@@ -179,6 +179,19 @@ public interface Membrane extends Name, Cloneable {
 	public List<Tunnel> getTunnels();
 
 	/**
+	 * Get all the tunnel from current to name
+	 * 
+	 * @param type
+	 *            the type of the tunnel
+	 * @param name
+	 *            the name of the target membrane. It cannot be null.
+	 * @param compareDim
+	 *            whether to compare the dimensions of name
+	 * @return the tunnels to name. Void list will be returned if not found.
+	 */
+	public List<Tunnel> getTunnels(TunnelType type, Name name, boolean compareDim);
+
+	/**
 	 * Delete a membrane.
 	 * <p>
 	 * Close all the tunnels and set current membrane deleted
@@ -244,7 +257,8 @@ public interface Membrane extends Name, Cloneable {
 	 *            whether show tunnels
 	 * @return a string which represents this membrane
 	 */
-	public String toString(String space, boolean withObject, boolean withProp, boolean withRule, boolean withSubmembrane, boolean withTunnel);
+	public String toString(String space, boolean withObject, boolean withProp, boolean withRule,
+			boolean withSubmembrane, boolean withTunnel);
 
 	/**
 	 * Deep clone a membrane

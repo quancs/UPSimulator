@@ -53,7 +53,7 @@ public class BasicName implements Name {
 	public BasicName(BasicName dimensional) {
 		super();
 		if (dimensional.isFixed() == false && dimensional.getDimensionSize() > 0) {
-			this.dimensions = new ArrayList<>(dimensional.doGetDimensionSize());
+			this.dimensions = new ArrayList<>(dimensional.getNameDimensionSize());
 			for (Dimension dimension : dimensional.dimensions)
 				this.dimensions.add(new Dimension(dimension));
 		} else
@@ -77,7 +77,7 @@ public class BasicName implements Name {
 	public void addDimension(Long dimension) {
 		if (dimensions == null)
 			dimensions = new ArrayList<>();
-		dimensions.add(new Dimension(dimension.toString(), new Long(dimension.toString())));
+		dimensions.add(new Dimension(dimension.toString(), new Long(dimension)));
 		if (dimensions.size() == 1)
 			fixed = true;
 	}
@@ -115,7 +115,8 @@ public class BasicName implements Name {
 		return fixed;
 	}
 
-	private final int doGetDimensionSize() {
+	@Override
+	public int getNameDimensionSize() {
 		if (dimensions == null)
 			return 0;
 		else
@@ -124,7 +125,7 @@ public class BasicName implements Name {
 
 	@Override
 	public int getDimensionSize() {
-		return doGetDimensionSize();
+		return getNameDimensionSize();
 	}
 
 	@Override
@@ -139,7 +140,7 @@ public class BasicName implements Name {
 	public String getNameDim() {
 		if (nameDim == null) {
 			nameDim = name;
-			if (doGetDimensionSize() > 0) {
+			if (getNameDimensionSize() > 0) {
 				for (Dimension dimension : dimensions)
 					nameDim += "[" + dimension + "]";
 			}
@@ -147,7 +148,7 @@ public class BasicName implements Name {
 		} else {
 			if (nameDimStatus != isFixed()) {
 				nameDim = name;
-				if (doGetDimensionSize() > 0) {
+				if (getNameDimensionSize() > 0) {
 					for (Dimension dimension : dimensions)
 						nameDim += "[" + dimension + "]";
 				}
@@ -163,7 +164,7 @@ public class BasicName implements Name {
 	}
 
 	private final Dimension doGet(int i) {
-		if (i >= doGetDimensionSize()) {
+		if (i >= getNameDimensionSize()) {
 			throw new ArrayIndexOutOfBoundsException(i);
 		} else {
 			return dimensions.get(i);
@@ -185,7 +186,7 @@ public class BasicName implements Name {
 
 	private HashMap<Integer, Integer> getDimensionInfoMap(List<Dimension> dList) {
 		HashMap<Integer, Integer> dMap = new HashMap<>();
-		for (int i = 0; i < doGetDimensionSize(); i++) {
+		for (int i = 0; i < getNameDimensionSize(); i++) {
 			Dimension d = get(i);
 			if (d.isFixed())
 				continue;
@@ -204,7 +205,7 @@ public class BasicName implements Name {
 
 		while (iter.hasNext()) {
 			Name obj = (Name) iter.next();
-			if (obj.getName().equals(getName()) && obj.getDimensionSize() == doGetDimensionSize()) {
+			if (obj.getName().equals(getName()) && obj.getDimensionSize() == getNameDimensionSize()) {
 				Long pValue[] = new Long[dList.size()];
 
 				for (int i = 0; i < obj.getDimensionSize(); i++) {
@@ -265,5 +266,25 @@ public class BasicName implements Name {
 			Iterator<?> iter = membrane.getNeighbors().iterator();
 			return doPredict(dMap, iter, dList);
 		}
+	}
+
+	@Override
+	public boolean nameEqualsTo(Name name) {
+		if (getName().equals(name.getName()) && name.getNameDimensionSize() == getNameDimensionSize())
+			return true;
+
+		return false;
+	}
+
+	@Override
+	public boolean nameDimEqualsTo(Name name) {
+		if (getNameDim() == null) {
+			if (name.getNameDim() == null)
+				return true;
+			else
+				return false;
+		} else if (getNameDim().equals(name.getNameDim()))
+			return true;
+		return false;
 	}
 }

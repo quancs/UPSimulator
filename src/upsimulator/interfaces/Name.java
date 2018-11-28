@@ -25,6 +25,30 @@ public interface Name extends Dimensional {
 	public String getName();
 
 	/**
+	 * Get the dimension size of name
+	 * 
+	 * @return the dimension size
+	 */
+	public int getNameDimensionSize();
+
+	/**
+	 * Check if two names are the same class: names are the same and
+	 * dimensions.sizes are the same
+	 * 
+	 * @param name
+	 * @return true if yes
+	 */
+	public boolean nameEqualsTo(Name name);
+
+	/**
+	 * Check if two names are totally the same
+	 * 
+	 * @param name
+	 * @return true if yes
+	 */
+	public boolean nameDimEqualsTo(Name name);
+
+	/**
 	 * Clone the name
 	 * 
 	 * @return name

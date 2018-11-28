@@ -1,6 +1,6 @@
 package upsimulator.rules.results;
 
-import upsimulator.interfaces.Condition;
+import upsimulator.interfaces.ConditionalResult;
 import upsimulator.interfaces.Membrane;
 
 /**
@@ -9,7 +9,7 @@ import upsimulator.interfaces.Membrane;
  * @author quan
  *
  */
-public class MembraneStatusResult extends MembranePropertyResult implements Condition {
+public class MembraneStatusResult extends MembranePropertyResult implements ConditionalResult {
 
 	private static String endStatusStr = "$endStatus", endStatusCountStr = "$endStatusCount";
 
@@ -50,7 +50,8 @@ public class MembraneStatusResult extends MembranePropertyResult implements Cond
 				} else {
 					synchronized (endStatus) {
 						if (endStatus.equals(getValue())) {
-							membrane.setProperty(endStatusCountStr, (Integer) membrane.getProperty(endStatusCountStr) + 1);
+							membrane.setProperty(endStatusCountStr,
+									(Integer) membrane.getProperty(endStatusCountStr) + 1);
 							return times;
 						} else {
 							return 0;

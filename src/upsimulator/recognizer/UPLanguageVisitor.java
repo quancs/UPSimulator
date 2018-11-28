@@ -373,7 +373,7 @@ public interface UPLanguageVisitor<T> extends ParseTreeVisitor<T> {
 	T visitRandom(UPLanguageParser.RandomContext ctx);
 
 	/**
-	 * Visit a parse tree produced by {@link UPLanguageParser#target}.
+	 * Visit a parse tree produced by {@link UPLanguageParser#move}.
 	 * 
 	 * @param ctx
 	 *            the parse tree

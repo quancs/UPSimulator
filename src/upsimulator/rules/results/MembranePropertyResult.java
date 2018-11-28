@@ -2,9 +2,8 @@ package upsimulator.rules.results;
 
 import upsimulator.exceptions.TunnelNotExistException;
 import upsimulator.exceptions.UnknownMembraneClassException;
-import upsimulator.interfaces.Condition;
+import upsimulator.interfaces.ConditionalResult;
 import upsimulator.interfaces.Membrane;
-import upsimulator.interfaces.Result;
 import upsimulator.interfaces.Tunnel;
 import upsimulator.interfaces.Tunnel.TunnelType;
 
@@ -14,7 +13,7 @@ import upsimulator.interfaces.Tunnel.TunnelType;
  * @author quan
  *
  */
-public class MembranePropertyResult implements Result, Condition {
+public class MembranePropertyResult implements ConditionalResult {
 
 	private String endPropStr = "$end", endPropCountStr = "$endStatusCount";
 
@@ -123,5 +122,15 @@ public class MembranePropertyResult implements Result, Condition {
 				membrane.setProperty(endPropCountStr, count - 1);
 			}
 		}
+	}
+
+	@Override
+	public String toConditionString() {
+		return "";
+	}
+
+	@Override
+	public String toResultString() {
+		return toString();
 	}
 }
