@@ -3,7 +3,7 @@ Table of Contents
 
 * [UPSimulator](#upsimulator)
   * [Motivations](#motivations)
-  * [The main differences between PLingua and UPSimulator](#the-main-differences-between-plingua-and-upsimulator)
+  * [The main differences between PLingua and UPSimulator](#the-main-differences-between-upsimulator-and-other-simulators)
 * [UPLanguage](#uplanguage)
 * [Usages](#usages)
   * [Required Environment](#required-environment)
@@ -33,14 +33,15 @@ To overcome this issue and provide supports for new P system models, we develope
 Usually, new P system models won't have too much differences when compared with old ones. We can support the new model by supporting the underlying concepts in the differences. As for the common concepts, they have been supported since we supported the old models. So, it's an easy work to support new models in UPSimulator. 
 
 
-## The main differences between PLingua and UPSimulator
+## The main differences between UPSimulator and other simulators
+Several P system simulators have been proposed in the last years, such as P-Lingua, MeCoSim, and PMCGPU project. To the best of our knowledge, most of the other simulators aren't general-purpose simulators, so we don't list them here. In the table below, we put PLingua and MeCoSim in one column, because MeCoSim use pLinguaCore as its inner simulator.
 
-|       Aspect      |         PLingua       |        UPSimulator        |
-|-------------------|-----------------------|---------------------------|
-| How to support models | Support models directly (Table 2) | Support models by combing different concepts (Table 1) |
-| Supporting new models | Hard. Need to recode almost everything for the new model.          | Easy. If the concepts in the new model exist in the old models, the new model is naturally supported. If not, only few functions need to be implemented for the new concepts in the new model. |
-| User interfaces   | Command line          | Graphical interfaces      |
-| Format            | Input: PLingua language format or other format<br> Output: text format | Input: UPLanguage <br>Output: UPLanguage|
+|       Aspect      |         PLingua(MeCoSim)       |        UPSimulator        |        PMCGPU        |
+|-------------------|-----------------------|---------------------------|---------------------------|
+| How to support models | Support models directly (Table 2) | Support models by combing different concepts (Table 1) | Support models directly. <br>Supported models: P systems with active membranes, P systems with active membranes, tissue-like P systems with cell division, Population Dynamics P systems, Enzymatic Numerical P systems<br> Some of these models are supported with many restrictions, for example the size of alphabet should below 512. |
+| Supporting new models | Hard. Need to recode almost everything for the new model.          | Easy. If the concepts in the new model exist in the old models, the new model is naturally supported. If not, only few functions need to be implemented for the new concepts in the new model. | As hard as PLingua. | 
+| User interfaces   | Command line(Graphical interfaces)          | Graphical interfaces      | Not clear. |
+| Format            | Input: PLingua language format or other format<br> Output: text format | Input: UPLanguage <br>Output: UPLanguage| Input: specific binary file<br> Output: csv file| 
 
 
 Table 1. Supported concepts in UPSimulator
