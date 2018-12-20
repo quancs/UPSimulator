@@ -27,9 +27,11 @@ import upsimulator.rules.conditions.ObjectCondition;
 import upsimulator.rules.conditions.ObjectConditionsWithTarget;
 import upsimulator.rules.conditions.PriorityCondition;
 import upsimulator.rules.conditions.RegularExpressionCondition;
+import upsimulator.rules.results.AntiportResult;
 import upsimulator.rules.results.DelayedResult;
 import upsimulator.rules.results.MembranePropertyResult;
 import upsimulator.rules.results.MembraneStatusResult;
+import upsimulator.rules.results.ObjectResultsWithTarget;
 import upsimulator.speedup.PossibleValueCombiner;
 import upsimulator.speedup.RuleChecker;
 
@@ -47,8 +49,10 @@ public class PRule extends BasicName implements Rule {
 
 	private List<Condition> conditions;
 	private List<Result> results;
+	private boolean existOCWithTarget;
 
 	public PRule(String name, String... dims) {
+		existOCWithTarget = false;
 		conditions = new ArrayList<>();
 		results = new ArrayList<>();
 		for (String dim : dims)
@@ -57,6 +61,7 @@ public class PRule extends BasicName implements Rule {
 	}
 
 	public PRule() {
+		existOCWithTarget = false;
 		conditions = new ArrayList<>();
 		results = new ArrayList<>();
 		setName("NoType");
@@ -64,7 +69,7 @@ public class PRule extends BasicName implements Rule {
 
 	public PRule(PRule rule) {
 		super(rule);
-
+		existOCWithTarget = rule.existOCWithTarget;
 		conditions = new ArrayList<>(rule.conditions.size());
 		results = new ArrayList<>(rule.results.size());
 
@@ -78,7 +83,7 @@ public class PRule extends BasicName implements Rule {
 
 	@Override
 	public PRule deepClone() {
-		if (isFixed())
+		if (isFixed() && existOCWithTarget == false)
 			return this;
 		return new PRule(this);
 	}
@@ -123,6 +128,8 @@ public class PRule extends BasicName implements Rule {
 		LinkedList<int[]> pValuesDim = new LinkedList<>();
 		for (DimensionInfo dInfo : dInfos) {
 			List<Long[]> pList = findValues(dInfo, membrane);
+			if (pList != null && pList.size() == 1 && pList.get(0)[0] == null)
+				throw new RuntimeException();
 			if (pList != null && pList.size() == 0)
 				return new LinkedList<>();
 			pValuesList.add(pList);
@@ -336,6 +343,10 @@ public class PRule extends BasicName implements Rule {
 			return;
 
 		results.add(result);
+
+		if (result instanceof ObjectResultsWithTarget)
+			existOCWithTarget = true;
+
 		if (result instanceof Condition)
 			addCondition((Condition) result);
 		if (result instanceof DelayedResult && ((DelayedResult) result).getResult() instanceof Condition)
@@ -441,9 +452,15 @@ public class PRule extends BasicName implements Rule {
 		}
 
 		for (Condition condition : conditions) {
-			if (condition instanceof ObjectCondition || condition instanceof ObjectConditionsWithTarget) {
+			if (condition instanceof ObjectCondition
+					|| (condition instanceof ObjectConditionsWithTarget && !(condition instanceof AntiportResult))) {
 				sBuilder.append(condition + " ");
 			}
+		}
+
+		for (Condition condition : conditions) {
+			if (condition instanceof AntiportResult)
+				sBuilder.append(((AntiportResult) condition).toConditionString() + " ");
 		}
 
 		sBuilder.append("-> ");
@@ -454,9 +471,14 @@ public class PRule extends BasicName implements Rule {
 		}
 
 		for (Result result : results) {
-			if (!(result instanceof MembranePropertyResult)) {
+			if (!(result instanceof MembranePropertyResult) && !(result instanceof AntiportResult)) {
 				sBuilder.append(result + " ");
 			}
+		}
+
+		for (Result result : results) {
+			if (result instanceof AntiportResult)
+				sBuilder.append(((AntiportResult) result).toResultString() + " ");
 		}
 
 		StringBuilder otherBuilder = new StringBuilder("| ");
