@@ -35,9 +35,9 @@ public class ObjectConditionsWithTarget extends BasicName implements Condition {
 		for (ObjectCondition oc : oct.ocList)
 			ocList.add(oc.deepClone());
 		// temporary data will be cloned.
-		if (oct.satMemMap != null && oct.satMemMap.size() > 0)
-			satMemMap = new HashMap<>(oct.satMemMap);
-		if (oct.fetMemMap != null && oct.fetMemMap.size() > 0)
+		if (oct.satMemMap != null)
+			satMemMap = new HashMap<>();
+		if (oct.fetMemMap != null)
 			fetMemMap = new HashMap<>(oct.fetMemMap);
 	}
 
@@ -203,7 +203,12 @@ public class ObjectConditionsWithTarget extends BasicName implements Condition {
 		for (; entries.size() != 0;) {
 			Entry<Membrane, Integer> first = entries.remove(0);
 			Membrane target = first.getKey();
-			int tryTimes = (int) (1 + first.getValue() * Math.random());
+			int tryTimes;
+			if (first.getValue() <= times)
+				tryTimes = (int) (1 + first.getValue() * Math.random());
+			else
+				tryTimes = (int) (1 + times * Math.random());
+
 			int fetchTimes = doFetch(target, tryTimes);
 			if (fetchTimes == 0)
 				continue;
@@ -213,7 +218,7 @@ public class ObjectConditionsWithTarget extends BasicName implements Condition {
 			else
 				fetMemMap.put(target, fetMemMap.get(target) + fetchTimes);
 			total += fetchTimes;
-			if (tryTimes == fetchTimes && fetchTimes < first.getValue())
+			if (tryTimes == fetchTimes && fetchTimes < first.getValue() && fetchTimes < times)
 				entries.add(first);
 		}
 
