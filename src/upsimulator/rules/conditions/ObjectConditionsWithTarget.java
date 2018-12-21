@@ -113,7 +113,8 @@ public class ObjectConditionsWithTarget extends BasicName implements Condition {
 				if (ocs < satisfy)
 					satisfy = ocs;
 			}
-			satMemMap.put(targetMembrane, satisfy);
+			if (satisfy > 0)
+				satMemMap.put(targetMembrane, satisfy);
 			total += satisfy;
 		}
 
