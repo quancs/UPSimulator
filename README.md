@@ -1,3 +1,9 @@
+# Publications
+[1]	P. Guo, C. Quan, and L. Ye, “A Simulator for Cell-Like P System,” in Bio-inspired Computing: Theories and Applications, 2018, pp. 223–235.
+
+[2]	P. Guo, C. Quan, and L. Ye, “UPSimulator: A general P system simulator,” Knowl.-Based Syst., vol. 170, pp. 20–25, Apr. 2019.
+
+
 Table of Contents
 =================
 
