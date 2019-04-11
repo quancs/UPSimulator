@@ -120,7 +120,7 @@ public class PRule extends BasicName implements Rule {
 	 * Get the possible values of current rule
 	 * 
 	 * @param membrane
-	 *            the membrane current rule in
+	 *                     the membrane current rule in
 	 * @return All the possible value
 	 */
 	private List<Long[]> getPossibleValues(Membrane membrane) {
@@ -128,8 +128,8 @@ public class PRule extends BasicName implements Rule {
 		LinkedList<int[]> pValuesDim = new LinkedList<>();
 		for (DimensionInfo dInfo : dInfos) {
 			List<Long[]> pList = findValues(dInfo, membrane);
-			if (pList != null && pList.size() == 1 && pList.get(0)[0] == null)
-				throw new RuntimeException();
+			// if (pList != null && pList.size() == 1 && pList.get(0)[0] == null)
+			// throw new RuntimeException();
 			if (pList != null && pList.size() == 0)
 				return new LinkedList<>();
 			pValuesList.add(pList);
@@ -287,7 +287,7 @@ public class PRule extends BasicName implements Rule {
 	 * 
 	 * @param membrane
 	 * @param times
-	 *            try to fetch
+	 *                     try to fetch
 	 * @return times really fetched
 	 */
 	private int doFetch(Membrane membrane, int times) {
@@ -519,12 +519,13 @@ public class PRule extends BasicName implements Rule {
 	 * Rule with dimensions check all the satisfied rule of it.
 	 * 
 	 * @param membrane
-	 *            the test membrane
+	 *                     the test membrane
 	 * @return All the satisfied rules and satisfied times
 	 * @throws UnpredictableDimensionException
-	 *             if rule has dimension whose value cannot be predicted
+	 *                                             if rule has dimension whose value
+	 *                                             cannot be predicted
 	 * @throws CloneNotSupportedException
-	 *             if clone failed
+	 *                                             if clone failed
 	 */
 	@Override
 	public Map<Rule, Integer> satisfiedRules(Membrane membrane)
