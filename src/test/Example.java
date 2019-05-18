@@ -23,7 +23,7 @@ public class Example {
 		PMembrane environment = new PMembrane("Environment");
 		PMembrane a = new PMembrane("a");
 
-		environment.addChild(PTunnel.class, a);
+		environment.addChild(a, PTunnel.class);
 		a.addObject(new PObject("d"), 3);
 		PRule rule = new PRule();
 		rule.setName("r1");

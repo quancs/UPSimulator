@@ -9,6 +9,7 @@
 package upsimulator.rules.results;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import upsimulator.core.PTunnel;
@@ -29,6 +30,8 @@ import upsimulator.interfaces.Tunnel.TunnelType;
  *
  */
 public class MembraneCreateResult extends BasicName implements Result {
+
+	private boolean checkNeighbors = false;// 是否检查 邻居膜是否含有到新建膜同名字的膜的Go通道
 
 	private String templateMemName;
 
@@ -61,7 +64,72 @@ public class MembraneCreateResult extends BasicName implements Result {
 			throw new UnknownMembraneClassException(templateMemName);
 
 		sonMembrane.setName(getNameDim());
-		PTunnel.addChildParentTunnel(membrane, sonMembrane);
+		// if (checkNeighbors) {// membrane.children -> created
+		List<Membrane> children = membrane.getChildren();
+		Membrane sameNameMembrane = null;
+		for (Membrane child : children) {
+			if (child.getNameDim().equals(sonMembrane.getNameDim())) {
+				sameNameMembrane = child;
+				break;
+			}
+		}
+
+		if (sameNameMembrane != null) {
+			for (Membrane child : children) {
+				if (child == sameNameMembrane)
+					continue;
+
+				List<Tunnel> nTunnels = child.getTunnels();
+				for (int i = nTunnels.size() - 1; i >= 0; i--) {
+					Tunnel tunnel = nTunnels.get(i);
+					if (tunnel.getTargets().contains(sameNameMembrane) && tunnel.getType() != TunnelType.Here) {
+						Tunnel clonedTunnel = null;
+						try {
+							clonedTunnel = tunnel.getClass().newInstance();
+						} catch (InstantiationException | IllegalAccessException e) {
+							e.printStackTrace();
+						}
+						clonedTunnel.setType(tunnel.getType());
+						clonedTunnel.setSource(tunnel.getSource());
+						for (Membrane target : tunnel.getTargets()) {
+							if (target != sameNameMembrane)
+								clonedTunnel.addTarget(target);
+							else
+								clonedTunnel.addTarget(sonMembrane);
+						}
+
+						child.addTunnel(clonedTunnel);
+					}
+				}
+			}
+		}
+		// }
+
+		if (sameNameMembrane != null) {
+			List<Tunnel> pTunnels = membrane.getTunnels();
+			for (int i = pTunnels.size() - 1; i >= 0; i--) {
+				Tunnel tunnel = pTunnels.get(i);
+				if (tunnel.getType().toString().contains("In_") && tunnel.getTargets().contains(sameNameMembrane)) {
+					Tunnel clonedTunnel = null;
+					try {
+						clonedTunnel = tunnel.getClass().newInstance();
+					} catch (InstantiationException | IllegalAccessException e) {
+						e.printStackTrace();
+					}
+					clonedTunnel.setType(tunnel.getType());
+					clonedTunnel.setSource(tunnel.getSource());
+					for (Membrane target : tunnel.getTargets()) {
+						if (target != sameNameMembrane)
+							clonedTunnel.addTarget(target);
+						else
+							clonedTunnel.addTarget(sonMembrane);
+					}
+					membrane.addTunnel(clonedTunnel);
+				}
+			}
+		}
+		membrane.addChild(sonMembrane, PTunnel.class);
+
 		for (Result result : extraResults)
 			result.setResult(sonMembrane, 1);
 	}

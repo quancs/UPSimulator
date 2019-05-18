@@ -179,8 +179,29 @@ public class MembraneDivisionResult implements ConditionalResult, Dimensional, M
 				}
 			}
 
-			// cloned -> membrane.father
-			PTunnel.addChildParentTunnel(membrane.getParent(), cloned);
+			// cloned <-> membrane.father
+			List<Tunnel> pTunnels = membrane.getParent().getTunnels();
+			for (int i = pTunnels.size() - 1; i >= 0; i--) {
+				Tunnel tunnel = pTunnels.get(i);
+				if (tunnel.getType().toString().contains("In_") && tunnel.getTargets().contains(membrane)) {
+					Tunnel clonedTunnel = null;
+					try {
+						clonedTunnel = tunnel.getClass().newInstance();
+					} catch (InstantiationException | IllegalAccessException e) {
+						e.printStackTrace();
+					}
+					clonedTunnel.setType(tunnel.getType());
+					clonedTunnel.setSource(tunnel.getSource());
+					for (Membrane target : tunnel.getTargets()) {
+						if (target != membrane)
+							clonedTunnel.addTarget(target);
+						else
+							clonedTunnel.addTarget(cloned);
+					}
+					membrane.getParent().addTunnel(clonedTunnel);
+				}
+			}
+			membrane.getParent().addChild(cloned, PTunnel.class);
 
 			// membrane.neighbours -> cloned
 			List<Membrane> neighbours = membrane.getParent().getChildren();
@@ -188,7 +209,7 @@ public class MembraneDivisionResult implements ConditionalResult, Dimensional, M
 				List<Tunnel> nTunnels = neighbour.getTunnels();
 				for (int i = nTunnels.size() - 1; i >= 0; i--) {
 					Tunnel tunnel = nTunnels.get(i);
-					if (tunnel.getType() == TunnelType.Go && tunnel.getTargets().get(0) == membrane) {
+					if (tunnel.getType().toString().contains("Go") && tunnel.getTargets().contains(membrane)) {
 						Tunnel clonedTunnel = null;
 						try {
 							clonedTunnel = tunnel.getClass().newInstance();
@@ -197,7 +218,12 @@ public class MembraneDivisionResult implements ConditionalResult, Dimensional, M
 						}
 						clonedTunnel.setType(tunnel.getType());
 						clonedTunnel.setSource(neighbour);
-						clonedTunnel.addTarget(cloned);
+						for (Membrane target : tunnel.getTargets()) {
+							if (target != membrane)
+								clonedTunnel.addTarget(target);
+							else
+								clonedTunnel.addTarget(cloned);
+						}
 						neighbour.addTunnel(clonedTunnel);
 					}
 				}

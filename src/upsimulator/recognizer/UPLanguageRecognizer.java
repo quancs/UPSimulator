@@ -163,7 +163,7 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 		}
 
 		for (SubmembraneContext sc : ctx.submembrane()) {
-			PTunnel.addChildParentTunnel(currMembrane, (Membrane) visitSubmembrane(sc));
+			currMembrane.addChild((Membrane) visitSubmembrane(sc), PTunnel.class);
 		}
 
 		for (RuleSetDeclareContext rsdc : ctx.ruleSetDeclare())
@@ -227,7 +227,7 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 		}
 
 		for (SubmembraneContext sc : ctx.submembrane()) {
-			PTunnel.addChildParentTunnel(currMembrane, (Membrane) visitSubmembrane(sc));
+			currMembrane.addChild((Membrane) visitSubmembrane(sc), PTunnel.class);
 		}
 
 		for (RuleSetDeclareContext rsdc : ctx.ruleSetDeclare())
@@ -321,7 +321,7 @@ public class UPLanguageRecognizer<T> extends AbstractParseTreeVisitor<T> impleme
 		}
 
 		for (SubmembraneContext sc : ctx.submembrane()) {
-			PTunnel.addChildParentTunnel(currMembrane, (Membrane) visitSubmembrane(sc));
+			currMembrane.addChild((Membrane) visitSubmembrane(sc), PTunnel.class);
 		}
 
 		for (RuleSetDeclareContext rsdc : ctx.ruleSetDeclare())

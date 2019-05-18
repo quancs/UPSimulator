@@ -2,6 +2,7 @@ package upsimulator.interfaces;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -24,14 +25,14 @@ public interface Membrane extends Name, Cloneable {
 	 * Register a Membrane Class
 	 * 
 	 * @param name
-	 *            name of membrane class
+	 *                       name of membrane class
 	 * @param membrane
-	 *            template of membrane class
+	 *                       template of membrane class
 	 * @param predefined
-	 *            if it is a predefined membrane class. Predefined membrane classes
-	 *            can be membranes which use Java code to implement
-	 *            <tt>Membrane</tt> interface, other than use <tt>UPLanguage</tt> to
-	 *            define a membrane class.
+	 *                       if it is a predefined membrane class. Predefined
+	 *                       membrane classes can be membranes which use Java code
+	 *                       to implement <tt>Membrane</tt> interface, other than
+	 *                       use <tt>UPLanguage</tt> to define a membrane class.
 	 */
 	public static void registMemClass(String name, Membrane membrane, boolean predefined) {
 		membraneClass.put(name, membrane);
@@ -42,7 +43,7 @@ public interface Membrane extends Name, Cloneable {
 	 * Create an instance of a membrane class
 	 * 
 	 * @param membraneName
-	 *            the name of membrane class
+	 *                         the name of membrane class
 	 * @return an instance or {@code null} if membrane class required does not exist
 	 */
 	public static Membrane getMemInstanceOf(String membraneName) {
@@ -57,7 +58,7 @@ public interface Membrane extends Name, Cloneable {
 	 * Check if a name is the name of one predefined membrane class
 	 * 
 	 * @param membraneName
-	 *            the name used to check
+	 *                         the name used to check
 	 * @return return {@code true} if the name is registered as a predefined
 	 *         membrane class, else return {@code false}
 	 */
@@ -73,7 +74,7 @@ public interface Membrane extends Name, Cloneable {
 	 * Get the template of one membrane class
 	 * 
 	 * @param name
-	 *            the name of membrane class
+	 *                 the name of membrane class
 	 * @return template membrane
 	 */
 	public static Membrane getMemClass(String name) {
@@ -90,7 +91,7 @@ public interface Membrane extends Name, Cloneable {
 	 * Get the quantity of object
 	 * 
 	 * @param object
-	 *            P object
+	 *                   P object
 	 * @return the quantity of object
 	 */
 	public Number getNumOf(Obj object);
@@ -99,9 +100,9 @@ public interface Membrane extends Name, Cloneable {
 	 * Add object to this membrane
 	 * 
 	 * @param object
-	 *            the new added object
+	 *                   the new added object
 	 * @param num
-	 *            the quantity of object
+	 *                   the quantity of object
 	 */
 	public void addObject(Obj object, Number num);
 
@@ -109,9 +110,9 @@ public interface Membrane extends Name, Cloneable {
 	 * Reduce object in this membrane
 	 * 
 	 * @param object
-	 *            the object which will be reduced
+	 *                   the object which will be reduced
 	 * @param num
-	 *            the reduced quantity
+	 *                   the reduced quantity
 	 * @return if the object's quantity is greater than num, then reduce it and
 	 *         return {@code true}
 	 */
@@ -128,7 +129,7 @@ public interface Membrane extends Name, Cloneable {
 	 * Add a new rule
 	 * 
 	 * @param rule
-	 *            A new rule
+	 *                 A new rule
 	 */
 	public void addRule(Rule rule);
 
@@ -143,8 +144,8 @@ public interface Membrane extends Name, Cloneable {
 	 * Add a tunnel between two membranes.
 	 * 
 	 * @param t
-	 *            the tunnel between two membrane, through it the results of rules
-	 *            can be set.
+	 *              the tunnel between two membrane, through it the results of rules
+	 *              can be set.
 	 */
 	public void addTunnel(Tunnel t);
 
@@ -152,8 +153,8 @@ public interface Membrane extends Name, Cloneable {
 	 * Remove a tunnel from this membranes.
 	 * 
 	 * @param t
-	 *            the tunnel between two membrane, through it the results of rules
-	 *            can be set.
+	 *              the tunnel between two membrane, through it the results of rules
+	 *              can be set.
 	 */
 	public default void removeTunnel(Tunnel t) {
 		getTunnels().remove(t);
@@ -163,10 +164,10 @@ public interface Membrane extends Name, Cloneable {
 	 * Get the tunnel from current to target
 	 * 
 	 * @param type
-	 *            the type of the tunnel
+	 *                   the type of the tunnel
 	 * @param target
-	 *            the name of the target membrane. It can be null if the type is
-	 *            Out, Here, in/go all/random.
+	 *                   the name of the target membrane. It can be null if the type
+	 *                   is Out, Here, in/go all/random.
 	 * @return the tunnel to target. Null will be returned if not found.
 	 */
 	public Tunnel getTunnel(TunnelType type, String target);
@@ -182,11 +183,11 @@ public interface Membrane extends Name, Cloneable {
 	 * Get all the tunnel from current to name
 	 * 
 	 * @param type
-	 *            the type of the tunnel
+	 *                       the type of the tunnel
 	 * @param name
-	 *            the name of the target membrane. It cannot be null.
+	 *                       the name of the target membrane. It cannot be null.
 	 * @param compareDim
-	 *            whether to compare the dimensions of name
+	 *                       whether to compare the dimensions of name
 	 * @return the tunnels to name. Void list will be returned if not found.
 	 */
 	public List<Tunnel> getTunnels(TunnelType type, Name name, boolean compareDim);
@@ -217,10 +218,13 @@ public interface Membrane extends Name, Cloneable {
 	 * 
 	 * @return All the usable rules and satisfied times
 	 * @throws CloneNotSupportedException
-	 *             if some rules, objects, cannot be cloned
+	 *                                             if some rules, objects, cannot be
+	 *                                             cloned
 	 * @throws UnpredictableDimensionException
-	 *             if there exist unpredictable dimension, such as the dimension of
-	 *             one rule only appears at a inhibitor
+	 *                                             if there exist unpredictable
+	 *                                             dimension, such as the dimension
+	 *                                             of one rule only appears at a
+	 *                                             inhibitor
 	 */
 	public Map<Rule, Integer> getUsableRules() throws UnpredictableDimensionException, CloneNotSupportedException;
 
@@ -229,8 +233,8 @@ public interface Membrane extends Name, Cloneable {
 	 * 
 	 * @return the quantity of rules which have fetched the objects
 	 * @throws TunnelNotExistException
-	 *             If one rule want to get a neighbor of this membrane and no tunnel
-	 *             was found
+	 *                                     If one rule want to get a neighbor of
+	 *                                     this membrane and no tunnel was found
 	 */
 	public Map<Rule, Integer> fetch() throws TunnelNotExistException;
 
@@ -244,17 +248,17 @@ public interface Membrane extends Name, Cloneable {
 	/**
 	 * 
 	 * @param space
-	 *            put in the front of items
+	 *                            put in the front of items
 	 * @param withObject
-	 *            whether show objects or not
+	 *                            whether show objects or not
 	 * @param withProp
-	 *            whether show properties or not
+	 *                            whether show properties or not
 	 * @param withRule
-	 *            whether show rules or not
+	 *                            whether show rules or not
 	 * @param withSubmembrane
-	 *            whether show sub-membranes or not
+	 *                            whether show sub-membranes or not
 	 * @param withTunnel
-	 *            whether show tunnels
+	 *                            whether show tunnels
 	 * @return a string which represents this membrane
 	 */
 	public String toString(String space, boolean withObject, boolean withProp, boolean withRule,
@@ -272,9 +276,9 @@ public interface Membrane extends Name, Cloneable {
 	 * Set property of membrane
 	 * 
 	 * @param propertyName
-	 *            the name of property
+	 *                          the name of property
 	 * @param propertyValue
-	 *            the value of property
+	 *                          the value of property
 	 */
 	public void setProperty(String propertyName, Object propertyValue);
 
@@ -282,7 +286,7 @@ public interface Membrane extends Name, Cloneable {
 	 * Get the property's value of this membrane
 	 * 
 	 * @param propertyName
-	 *            the name of property
+	 *                         the name of property
 	 * @return property's value. If property doesn't exist in this membrane,
 	 *         {@code null} will be returned.
 	 */
@@ -298,7 +302,7 @@ public interface Membrane extends Name, Cloneable {
 	 * Add a listener to this membrane
 	 * 
 	 * @param listener
-	 *            a membrane listener
+	 *                     a membrane listener
 	 */
 	public void addListener(MembraneListener listener);
 
@@ -306,7 +310,7 @@ public interface Membrane extends Name, Cloneable {
 	 * Remove a listener from this membrane
 	 * 
 	 * @param listener
-	 *            the listener you want to remove
+	 *                     the listener you want to remove
 	 */
 	public void removeListener(MembraneListener listener);
 
@@ -314,7 +318,7 @@ public interface Membrane extends Name, Cloneable {
 	 * Extend a template
 	 * 
 	 * @param template
-	 *            template membrane
+	 *                     template membrane
 	 */
 	public void extend(Membrane template);
 
@@ -365,24 +369,54 @@ public interface Membrane extends Name, Cloneable {
 	/**
 	 * Add a child to this membrane
 	 * 
-	 * @param tunnelClass
-	 *            the tunnel class of the two membrane
 	 * @param child
-	 *            child membrane
+	 *                        child membrane
+	 * @param tunnelClass
+	 *                        the tunnel class of the two membrane
 	 */
-	public default void addChild(Class<?> tunnelClass, Membrane child) {
+	public default void addChild(Membrane child, Class<?> tunnelClass) {
 		try {
 			Tunnel in = (Tunnel) tunnelClass.newInstance();
 			in.setType(TunnelType.In);
 			in.setSource(this);
 			in.addTarget(child);
-			this.addTunnel(in);
+			addTunnel(in);
 
 			Tunnel out = (Tunnel) tunnelClass.newInstance();
 			out.setType(TunnelType.Out);
 			out.setSource(child);
 			out.addTarget(this);
 			child.addTunnel(out);
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public default void removeChild(Membrane child) {
+		Iterator<Tunnel> tIter = getTunnels().iterator();
+		for (; tIter.hasNext();) {
+			Tunnel t = tIter.next();
+
+			if (t.getTargets().contains(child)) {
+				t.pushResult();
+				t.close();
+			}
+		}
+
+		Tunnel tunnel = child.getTunnel(TunnelType.Out, null);
+		tunnel.pushResult();
+		tunnel.close();
+	}
+
+	public default void addNeighbor(Membrane neighbor, Class<?> tunnelClass) {
+		try {
+			Tunnel go = (Tunnel) tunnelClass.newInstance();
+			go.setType(TunnelType.In);
+			go.setSource(this);
+			go.addTarget(neighbor);
+			addTunnel(go);
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {

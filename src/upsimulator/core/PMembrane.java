@@ -46,7 +46,7 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 	 * Create an empty membrane with a name
 	 * 
 	 * @param name
-	 *            membrane name
+	 *                 membrane name
 	 */
 	public PMembrane(String name) {
 		super();
@@ -74,7 +74,6 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 		fetchedRules = new HashMap<Rule, Integer>(1000);
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public PMembrane deepClone() {
 		// no need to clone name , they won't change.
@@ -141,6 +140,9 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 
 		// clone tunnels
 		for (Tunnel t : tunnels) {
+			Membrane source = t.getSource();
+			Membrane sourceCloned = m2mMap.get(source);
+
 			Tunnel cloned = null;
 			try {
 				cloned = t.getClass().newInstance();
@@ -148,10 +150,10 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 				e.printStackTrace();
 			}
 			cloned.setType(t.getType());
-			cloned.setSource(m2mMap.get(t.getSource()));
+			cloned.setSource(sourceCloned);
 			for (Membrane target : t.getTargets())
 				cloned.addTarget(m2mMap.get(target));
-			m2mMap.get(t.getSource()).addTunnel(cloned);
+			sourceCloned.addTunnel(cloned);
 		}
 
 		return (PMembrane) m2mMap.get(this);
@@ -552,32 +554,14 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 		addDimension(Long.parseLong(formula));
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void extend(Membrane template) {
 		for (Tunnel t : template.getTunnels()) {
-			try {
-				if (t.getSource() == template && t.getType() == TunnelType.In) {
-					Membrane son = t.getTargets().get(0);
-					Membrane sonClone = null;
-					sonClone = son.deepClone();
+			if (t.getSource() == template && t.getType() == TunnelType.In) {
+				Membrane son = t.getTargets().get(0);
+				Membrane sonClone = son.deepClone();
 
-					Tunnel cloneIn = t.getClass().newInstance();
-					cloneIn.setSource(this);
-					cloneIn.addTarget(sonClone);
-					cloneIn.setType(TunnelType.In);
-					addTunnel(cloneIn);
-
-					Tunnel cloneOut = t.getClass().newInstance();
-					cloneOut.setSource(sonClone);
-					cloneOut.addTarget(this);
-					cloneOut.setType(TunnelType.Out);
-					sonClone.addTunnel(cloneOut);
-				}
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
+				addChild(sonClone, t.getClass());
 			}
 		}
 
@@ -641,22 +625,34 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 		}
 		// remove closed tunnels
 		for (int i = 0; i < tunnels.size();) {
-			if (!tunnels.get(i).isOpen()) {
-				tunnels.remove(i);
+			Tunnel tunnel = tunnels.get(i);
+			if (!tunnel.isOpen()) {
+				removeTunnel(tunnel);
 				continue;
 			}
 			i++;
 		}
+
 		// initial the membrane count
-		unfinishedMembraneCount = 1 + getChildren().size();
+		unfinishedMembraneCount = 1;
 	}
 
 	private ArrayList<Tunnel> tunnels = new ArrayList<>();
 
 	@Override
 	public void addTunnel(Tunnel t) {
-		if (!tunnels.contains(t))
+		if (!tunnels.contains(t)) {
 			tunnels.add(t);
+			if (t.getType() == TunnelType.In)
+				t.getTargets().get(0).addListener(this);
+		}
+	}
+
+	@Override
+	public void removeTunnel(Tunnel t) {
+		Membrane.super.removeTunnel(t);
+		if (t.getType() == TunnelType.In)
+			t.getTargets().get(0).removeListener(this);
 	}
 
 	@Override
@@ -702,11 +698,13 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 		return tunnelsTemp;
 	}
 
-	@Override
-	public void addChild(Class<?> tunnelClass, Membrane child) {
-		Membrane.super.addChild(tunnelClass, child);
-		child.addListener(this);
-	}
+	/*
+	 * @Override public void addChild(Membrane child, Class<?> tunnelClass) {
+	 * Membrane.super.addChild(child, tunnelClass); child.addListener(this); }
+	 * 
+	 * @Override public void removeChild(Membrane child) {
+	 * Membrane.super.removeChild(child); child.removeListener(this); }
+	 */
 
 	@Override
 	public void addListener(MembraneListener listener) {
@@ -749,8 +747,9 @@ public class PMembrane extends BasicName implements Membrane, MembraneListener {
 	@Override
 	public void endSetting(Membrane membrane) {
 		unfinishedMembraneCount--;
-		if (unfinishedMembraneCount == 0)
+		if (unfinishedMembraneCount == 0) {
 			for (int i = listeners.size() - 1; i >= 0; i--)
 				listeners.get(i).endSetting(this);
+		}
 	}
 }

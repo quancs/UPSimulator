@@ -111,9 +111,18 @@ public class PTunnel implements Tunnel {
 
 	private final void pushResultsTo(Membrane membrane) {
 		try {
+			Membrane targetMembrane = membrane;
+			if (membrane.isDeleted()) {// push result to parent if membrane is deleted
+				for (targetMembrane = targetMembrane.getParent(); targetMembrane != null
+						&& targetMembrane.isDeleted() == true; targetMembrane = targetMembrane.getParent())
+					;
+				if (targetMembrane == null)
+					targetMembrane = membrane;
+			}
+
 			for (Map.Entry<Result, Integer> entry : heldResults.entrySet()) {
 				Result result = entry.getKey();
-				result.setResult(membrane, entry.getValue());
+				result.setResult(targetMembrane, entry.getValue());
 			}
 		} catch (UnknownMembraneClassException e) {
 			e.printStackTrace();
@@ -224,7 +233,8 @@ public class PTunnel implements Tunnel {
 	public String getTargetsName() {
 		if (targetsName != null)
 			return targetsName;
-		if (type == TunnelType.In_all || type == TunnelType.Go_all || type == TunnelType.Go_one_of_all || type == TunnelType.In_one_of_all || type == TunnelType.Out || type == TunnelType.Here) {
+		if (type == TunnelType.In_all || type == TunnelType.Go_all || type == TunnelType.Go_one_of_all
+				|| type == TunnelType.In_one_of_all || type == TunnelType.Out || type == TunnelType.Here) {
 			targetsName = type.toString();
 			return targetsName;
 		}
@@ -247,18 +257,6 @@ public class PTunnel implements Tunnel {
 			targetsName += targets.get(targets.size() - 1).getNameDim();
 		}
 		return targetsName;
-	}
-
-	public static void addChildParentTunnel(Membrane father, Membrane child) {
-		Tunnel in = new PTunnel(TunnelType.In);
-		in.setSource(father);
-		in.addTarget(child);
-		father.addTunnel(in);
-
-		Tunnel out = new PTunnel(TunnelType.Out);
-		out.setSource(child);
-		out.addTarget(father);
-		child.addTunnel(out);
 	}
 
 	@Override

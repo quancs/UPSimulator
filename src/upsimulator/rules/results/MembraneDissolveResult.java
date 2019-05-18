@@ -73,21 +73,14 @@ public class MembraneDissolveResult implements Result, MembraneListener {
 		Membrane parent = membrane.getParent();
 
 		// remove from parent
-		Iterator<Tunnel> tIter = parent.getTunnels().iterator();
-		for (; tIter.hasNext();) {
-			Tunnel t = tIter.next();
-			t.pushResult();
-
-			if (t.getTargets().contains(membrane))
-				t.close();
-		}
+		parent.removeChild(membrane);
 
 		// move sub-membrane to parent
 		for (Membrane child : children) {
-			Tunnel tunnel = membrane.getTunnel(TunnelType.Out, null);
+			Tunnel tunnel = child.getTunnel(TunnelType.Out, null);
 			tunnel.pushResult();
 			tunnel.close();
-			PTunnel.addChildParentTunnel(parent, child);
+			parent.addChild(child, PTunnel.class);
 		}
 
 		// move objects to parent

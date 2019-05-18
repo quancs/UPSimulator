@@ -53,7 +53,7 @@ public class PController extends Thread {
 	 * Create a controller using the string description of environment
 	 * 
 	 * @param string
-	 *            the string description of environment in UPL
+	 *                   the string description of environment in UPL
 	 */
 	public PController(String string) {
 		this.method = PMethod.maximum;
@@ -61,13 +61,20 @@ public class PController extends Thread {
 		if (environment != null)
 			records.add((Membrane) environment.deepClone());
 		step = 1;
+
+		smList.add(environment);
+		for (int i = 0; i < smList.size(); i++) {
+			Membrane membrane = smList.get(i);
+			membrane.newStepInit();
+			smList.addAll(((PMembrane) membrane).getChildren());
+		}
 	}
 
 	/**
 	 * Recognize simulation environment
 	 * 
 	 * @param modelInstanceStr
-	 *            the string description of environment
+	 *                             the string description of environment
 	 * @return environment
 	 */
 	public Membrane getEnvironment(String modelInstanceStr) {
@@ -175,7 +182,7 @@ public class PController extends Thread {
 	 * Simulate the environment with steps specified
 	 * 
 	 * @param steps
-	 *            Steps need to simulate
+	 *                  Steps need to simulate
 	 */
 	public void runSteps(int steps) {
 		leftStep = steps;
