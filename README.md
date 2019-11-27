@@ -1,133 +1,62 @@
-# Publications
+[in English](https://github.com/quancs/UPSimulator/blob/master/README-EN.md)
+
+# 已发表论文
 [1]	P. Guo, C. Quan, and L. Ye, “A Simulator for Cell-Like P System,” in Bio-inspired Computing: Theories and Applications, 2018, pp. 223–235.
 
 [2]	P. Guo, C. Quan, and L. Ye, “UPSimulator: A general P system simulator,” Knowl.-Based Syst., vol. 170, pp. 20–25, Apr. 2019.
 
-
-Table of Contents
-=================
-
-* [UPSimulator](#upsimulator)
-  * [Motivations](#motivations)
-  * [The main differences between PLingua and UPSimulator](#the-main-differences-between-upsimulator-and-other-simulators)
-* [UPLanguage](#uplanguage)
-* [Usages](#usages)
-  * [Required Environment](#required-environment)
-  * [Simple Usages](#simple-usages)
-  * [Skin Membrane or Simulation Environment](#skin-membrane-or-simulation-environment)
-  * [Membrane Class](#membrane-class)
-  * [Object or Spike](#object-or-spike)
-  * [Membrane Property](#membrane-property)
-  * [Tunnel](#tunnel)
-  * [Rule](#rule)
-  * [Mathematical Operators](#mathematical-operators)
-* [Other Projects used in UPSimulator](#other-projects-used-in-upsimulator)
-  * [ANTLR](#antlr)
-  * [aviator](#aviator)
-* [Author](#author)
-* [Help Needed](#help-needed)
-
 # UPSimulator
-UPSimulator is a universal and high performance simulator for membrane computing. Now, we have supported most features of cell-like P system & tissue-like P system, and basic support for neural-like P system. Visit https://github.com/quancs/UPSimulator/releases to download the [latest version](https://github.com/quancs/UPSimulator/releases).  
-Please note that: **What you simulate in UPSimulator is what you use**. We are not going to make any assumptions about the models you want to simulate, because we will never know that what kind of new P system will be proposed in the future, and what kind of new concepts the new P system will have. If you want to simulate one kind of P system whose concepts ( conditions and results and tunnels ) have already been supported by UPSimulator in **Table 2**, please just combine these conditions, results and tunnels to make it.  
+UPSimulator是一个通用的、高性能的P系统仿真工具。现在，UPSimulator已经支持类细胞P系统、类组织P系统、类神经P系统的绝大部分特性。 [点击此处下载最新版UPSimulator](https://github.com/quancs/UPSimulator/releases)
 
-## Motivations
-P system simulators are important tools for designing and verifying P systems. And, researchers have developed several P-system simulators such as P-Lingua (MeCoSim) and PMCGPU. But, with the development of membrane computing, many new P system models have been proposed which haven't gotten timely support. For example, cSNP systems, SNP-MC systems and tissue P systems with evolutional symport/antiport rules. Many reasons exist in this situation: the weak extensibility, too many works needed to support new models, and etc. 
+UPSimulator的设计原则是：没有假设即是最好的假设！ 我们不会对你要仿真的模型做任何假设/限制，因为我们不可能知道未来会有什么样的P系统被提出来，也不可能预测新的P系统会包含哪些特性。如果你想要仿真的P系统的概念（条件、结果、通道）已经被UPSimulator支持，那么该P系统就可以被UPSimulator所仿真。仿真的过程也很简单，只需要按照[语法规则](#uplanguage)将您的P系统所包含的条件、结果以及通道写进一个文本文件，导入UPSimulator即可。
 
-To overcome this issue and provide supports for new P system models, we developed UPSimulator, which is flexible, user-friendly, high performance and high-extendable. One software (UPSimulator) and one language (UPLanguage) for everything! The key point of UPSimulator is to support models by supporting their underlying concepts. To do this, we researched and divided some common P system models into pieces: controllers, structures, objects/spikes, properties, rules(conditions and results) and tunnels. All the pieces are supported in UPSimulator. Moreover, each of these pieces can be freely combined and used. 
-
-Usually, new P system models won't have too much differences when compared with old ones. We can support the new model by supporting the underlying concepts in the differences. As for the common concepts, they have been supported since we supported the old models. So, it's an easy work to support new models in UPSimulator. 
-
-
-## The main differences between UPSimulator and other simulators
-Several P system simulators have been proposed in the last years, such as P-Lingua, MeCoSim, and PMCGPU project. To the best of our knowledge, most of the other simulators aren't general-purpose simulators, so we don't list them here. In the table below, we put PLingua and MeCoSim in one column, because MeCoSim use pLinguaCore as its inner simulator.
-
-|       Aspect      |         PLingua(MeCoSim)       |        UPSimulator        |        PMCGPU        |
-|-------------------|-----------------------|---------------------------|---------------------------|
-| How to support models | Support models directly (Table 2) | Support models by combing different concepts (Table 1) | Support models directly. <br>Supported models: P systems with active membranes, P systems with active membranes, tissue-like P systems with cell division, Population Dynamics P systems, Enzymatic Numerical P systems<br> Some of these models are supported with many restrictions, for example the size of alphabet should below 512. |
-| Supporting new models | Hard. Need to recode almost everything for the new model.          | Easy. If the concepts in the new model exist in the old models, the new model is naturally supported. If not, only few functions need to be implemented for the new concepts in the new model. | As hard as PLingua. | 
-| User interfaces   | Command line(Graphical interfaces)          | Graphical interfaces      | Not clear. |
-| Format            | Input: PLingua language format or other format<br> Output: text format | Input: UPLanguage <br>Output: UPLanguage| Input: specific binary file<br> Output: csv file| 
-
-
-Table 1. Supported concepts in UPSimulator
-
-| Concepts                | Cell-like P system | Tissue-like P system | Neural-like P system |
-|-------------------------|--------------------|----------------------|----------------------|
-| Promoter                | √                  | √                    | √                    |
-| Inhibitor               | √                  | √                    | √                    |
-| Probability             | √                  | √                    | √                    |
-| Rule Priority           | √                  | √                    | √                    |
-| Regular Expression      | √                  | √                    | √                    |
-| Thickness               | √                  | √                    | √                    |
-| Polarity                | √                  | √                    | √                    |
-| Dissolution             | √                  | √                    | √                    |
-| Division                | √                  | √                    | √                    |
-| Creation                | √                  | √                    | √                    |
-| Symport/ Antiport       | √                  | √                    | √                    |
-| Multiple Channels       | √                  | √                    | √                    |
-| Anti-object/ Anti-spike | √                  | √                    | √                    |
-| Delay                   | √                  | √                    | √                    |
-
-Table 2. Supported models in pLingua
-
-| Classification                  | Model                                                                                                                                                                                 |
-|---------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Cell-like P system[15]          | Active membranes with division rules Active membranes with creation rules Transition P systems Symport/antiport P systems Stochastic P systems (discontinued) Probabilistic P systems |
-| Tissue-like P system [19], [20] | Tissue P systems with symport/antiport rules and division rules Tissue P systems with cell separation rules                                                                           |
-| Neural-like P system[21]        | Spiking neural P systems with division, budding and delays                                                                                                                            |
-| Other P systems                 | Simple kernel P systems                                                                                                                                                               |
-
+## 支持的概念
+促进剂（Promoter）、抑制剂（Inhibitor）、规则执行概率（Probability）、规则优先级（Rule Priority）、正则表达式（Regular Expression）、膜厚度（Thickness）、膜溶解（Dissolution）、膜极性（Polarity）、膜分裂（Division）、膜创建（Creation）、同向反向转运（Symport/ Antiport）、膜多通道（Multiple Channels）、正对象与反对象（object/Anti-object）/正脉冲与反脉冲（spike/Anti-spike）、规则延迟执行（delay）
 
 # UPLanguage
-To describe the complex rules in various types of P systems, we designed a new language called UPLanguage. UPLanguage aims to describe Cell-like P System (supported now), Tissue-like P System (supported now), Neural-like P System (supported since 2.0.0), and the mixed P system of cell-like, tissue-like and neural-like. The UPLanguage description string is the input of UPSimulator, and **the grammar file of UPL is placed in resources/grammar/UPLanguage.g4**.
+为了描述各种P系统内复杂的规则，我们设计了一门语言UPLanguage。**UPLanguage的具体语法规范，可查阅[resources/grammar/UPLanguage.g4](https://github.com/quancs/UPSimulator/blob/master/resources/grammar/UPLanguage.g4)**.
 
-# Usages
-You can download a slide to learn how to use UPSimulator from [here](https://github.com/quancs/UPSimulator/blob/master/examples/How-to-Use-UPSimulator.pptx).
+# UPS使用方法
 
-## Required Environment
-Java 1.8+ is required to run UPSimulator.  
-Run this software by using
+## 1. 启动UPS
+UPS的运行环境为Java 1.8+。你可以双击UPSimulator.jar运行，或者在命令行使用如下命令运行
 
 ```
 java -jar UPSimulator.jar
 ```
-or double click the UPSimulator.jar if you have linked jar file to JAVA.
-After you start UPSimulator:
-![image](https://github.com/quancs/UPSimulator/raw/master/examples/How-to-use-UPSimulator.png)
+## 2. 下载实例或者书写实例
+点击[此处](https://github.com/quancs/UPSimulator/tree/master/examples)下载实例，或者保存以下例子到文本文件（更多详细的用法参照[条件](#条件)以及[结果](#结果)）。在以下示例代码中，双斜杠被用来注释代码。
 
-## Simple Usages  
-Following is just a simple usage, more more supported features can be found in [Conditions](#conditions) and [Results](#results). The explanation of code follows a double slash. Save the following code to a file, and then import this file in the **Environment** column of UPSimulator. After that, initialize it by clicking "Initialize Environment". Then, Click "Run To End" to run it. If any errors have been pointed out after initialization, you can click "Check Grammar" to get an overview about the errors. **More examples can be found in [examples](https://github.com/quancs/UPSimulator/tree/master/examples).**
-### Cell-like P system
+### 类细胞P系统 Cell-like P Systems
 ```
-Membrane A{// Membrane Class A
-	//objects and rules and properties can be defined here
+Membrane A{// 膜类A
+	//可以在此处定义对象、规则、属性
 }
 
-Environment{// skin membrane
-	Object a^2,b,c[1][2][3],d[1];// objects or spikes
-	Rule r1= a^2 b -> c; //rule
-	Rule r2[i][j][k]= c[i][j][k] -> ( d[i+1][j*3][k/4], in a );// rules with dimension for the evolution of a class of objects
-	Rule r1[i]= d[i] -> ( d[i], in b[i]);// membrane target can also have dimensions in one rule
+Environment{// 皮肤膜
+	Object a^2,b,c[1][2][3],d[1];// 对象
+	Rule r1= a^2 b -> c; //规则
+	Rule r2[i][j][k]= c[i][j][k] -> ( d[i+1][j*3][k/4], in a );// 一类规则（带维度的规则）
+	Rule r1[i]= d[i] -> ( d[i], in b[i]);// 目标膜也可以包含维度
 	
-	Membrane A a{// an instance of Class A
-		//other objects and rules and properties can be defined here
-		//tunnels to neighbors can also be defined here
+	Membrane A a{// 膜类A的一个实例，名称a
+		//额外的对象、规则、属性
+		//此处可定义到邻居的通道
 	}
 	
-	Membrane A b[1];// another instance of Class A
+	Membrane A b[1];// 膜类A的另外一个实例，名称b[1]
 }
 ```
-### Tissue-like P system
-The differences between cell-like and tissue-like P system are the [Status Property](#membrane-property) and [Net Structure(tunnels)](#tunnel)
+### 类组织P系统 Tissue-like P Systems
+类组织P系统和类细胞P系统的差异在于[膜状态](#膜属性或膜状态) 和 [网状膜结构](#通道)
 
 ```
-Membrane A{// Membrane Class A
-	Property status=1;
+Membrane A{// 膜类A
+	Property status=1;//定义一个属性，名称为status，属性值为1
 	Rule r1= <status=1> a -> <status=2> b;
 }
 
-Environment{// skin membrane
+Environment{// 皮肤膜
 	Membrane A a1{
 		Object a;
 		Rule r2 = <status=2> b -> ( c, go a2 );
@@ -141,16 +70,16 @@ Environment{// skin membrane
 	}
 }
 ```
-### Neural-like P system
-The differences between neural-like and tissue-like P system are the [Regular Expression Condition](#regular-expression-condition)
+### 类神经P系统 Neural-like P system
+类神经P系统和类组织P系统的差异之处在于[正则表达式条件](#正则表达式条件)
 
 ```
 Environment{
 	Membrane a1{
-		Object a;//Spike
-		Rule r1 = aa/ a -> ( a, go all );// aa/a -> a
-		Rule r2 = aaa/ a -> ( a, go all );// aaa/a -> a
-		Rule r3 = a/ a -> ( a, go all );// this rule represents the rule: a-> a
+		Object a;//脉冲
+		Rule r1 = aa/ a -> ( a, go all );// 对应脉冲神经P系统规则: aa/a -> a
+		Rule r2 = aaa/ a -> ( a, go all );// 对应脉冲神经P系统规则: aaa/a -> a
+		Rule r3 = a/ a -> ( a, go all );// 对应脉冲神经P系统规则: a-> a
 		Tunnel a2;
 	}
 	
@@ -161,21 +90,45 @@ Environment{
 	}
 }
 ```
-**Notice:** If you want to simulate a spiking rule like **a -> a**, which doesn't have a Regular Expression, you must write its hidden Regular Expression as showed in rule **r3**. If you don't write the hidden Regular Expression, the rule without a Regular Expression will be simulated in the way of cell-like P system.
-## Skin Membrane or Simulation Environment
-There is a special membrane named "Environment" in UPL. "Environment" can be treated as a skin membrane or an environment, and only the membranes or rules in "Environment" will be simulated.
+**注意:** 如果您想要仿真脉冲神经P系统中隐藏正则表达式的规则**a -> a**，你必须手动写出其隐含的正则表达式，如rule **r3**。 如果没有正则表达式，则规则就会按照类细胞P系统的方式执行。
+
+## 导入和仿真
+启动完成之后，具体仿真步骤参照下图
+![image](https://github.com/quancs/UPSimulator/raw/master/examples/How-to-use-UPSimulator.png)
+
+具体步骤如下：
+- 在**Environment**栏导入下载或保存的文件
+- 选择需要仿真的**Environment**
+- 点击**Initialize Environment**进行初始化
+- 若初始化无误，则可以点击**Run To End**运行代码至P系统停机，或点击**Run One Step**运行代码一个时间拍
+- 若初始化失败，你可以点击**Check Grammar**来检查是否存在语法错误（语法错误会被标红）
+
+# UPL详细使用说明
+## 膜
+在UPL里面可以使用各种类型的膜。若干个膜加上不同的通道，即可组成不同的膜结构（类细胞、类组成、类神经等）。
+### 皮肤膜
+在UPL里面，存在一个特殊的膜"Environment"。"Environment"是一个皮肤膜，只有被定义在皮肤膜内的膜和规则才会被仿真。
 
 ```
 Environment{
-	//Rules, Objects, Sub-membranes, Properties can be added here. 
+	//Rules, Objects, Sub-membranes, Properties 
 }
 ```
+### 普通膜  
+```
+Environment{  
+	Membrane d{
+		//Rules, Objects, Sub-membranes, Properties, Tunnels
+	}
+	//Rules, Objects, Sub-membranes, Properties
+}  
+```
 
-## Membrane Class
-As class in Java and C++, membrane class is encapsulation which have a certain function for some purposes. Membrane can contain properties, sub-membranes, objects, rules.
+### 膜类
+UPL是一门面向对象的语言，可以创建一个含有特殊功能的膜类。膜类可以包含properties, sub-membranes, objects, rules。
 
-### Create an Instance of one Membrane Class
-Create an instance is very simple. Three ways to create instances are showed in following code, where a1 and a4 equal to A, and a2 have more objects than A, and a3 contains another instance a4 of A.  
+#### 实例化膜类
+以下示例展示了如何创建一个膜类的实例，其中a1，a4和A是相等的，a2比A拥有更多的对象，a3比A多了一个子膜a4.
 
 ```
 Membrane A{
@@ -197,8 +150,8 @@ Environment{
 }
 ```
 
-### Extend a Membrane Class
-Membrane class can extends other membrane class's rules, objects, properties, sub-membranes through the following way.
+#### 继承膜类
+膜类可以继承其他膜类的rules, objects, properties, sub-membranes。在以下示例中，膜C继承了膜B。
 
 ```
 Membrane A{
@@ -219,31 +172,23 @@ Environment{
 	Membrane C c;
 }  
 ```
-### Create an Instance which does not belong to any Membrane Classes  
-```
-Environment{  
-	Membrane d{
-		//Rules, Objects, Sub-membranes, Properties, Tunnels
-	}
-	//Rules, Objects, Sub-membranes, Properties
-}  
-```
 
-## Object or Spike
-Spike is implemented as an object in UPSimulator. And no special symbol is used to defined a spike. So, the usage of spike is the same as object. When declare a object or spike, you need to specify its name and quantity (if more than one copy). And you can specify its dimension as well. Following is an example.
+
+## 对象或者脉冲
+脉冲在UPL里面的使用是和对象完全一致的。以下是例子
 
 ```
 Object a,b^2,c[1]^1,d[2][3];
 ```
 
-Code above can be written in a membrane class
+以上代码也可以被放到膜类里面：
 
 ```
 Membrane A{
 	Object a,b^2,c[1]^1;
 }
 ```
-or an instance.
+或者实例里面：
 
 ```
 Environment{
@@ -252,13 +197,14 @@ Environment{
 	}
 }
 ```
-Anti-object or anti-spike can be represented as follows
+
+反对象和反脉冲以以下方式定义：
 
 ```
 Object -a,-b^2,-c[1]^1,-d[2][3];
 ```
-## Membrane Property
-Membrane property is some property on the membrane, including **polarity**, **thickness**, **status in tissue-like P system**, and other properties. Membrane property can be used to restrict the execution of rules. And the execution of rules can change properties as well. In the case below, r1 will execute while property 'p' of B equals to 1, and r2 will change the property 'p' to 2.
+## 膜属性
+膜属性是在膜上的属性，例如 **polarity**, **thickness**, **status in tissue-like P system**。膜属性可以被用于限制规则的执行，规则也可以更改膜属性。以下例子中，r1会在p属性为1时执行，r2会将膜属性改为2。
 
 ```
 Membrane B{  
@@ -267,11 +213,11 @@ Membrane B{
 	Rule r2= b -> <p=2>;  
 }  
 ```
-Membrane properties can also be written in instances.  
+膜属性也可以定义在膜实例里面。  
 
 
-## Tunnel
-Tunnel is a path between two membranes, and it can be used to transfer objects. Tunnels can be defined in following way:
+## 通道
+通道位于两个膜之间，存在**方向性**，可以被用来转移对象：
 
 ```
 Environment{
@@ -287,24 +233,19 @@ Environment{
 	}
 }
 ```
-**Invisible Tunnels** : the tunnel from parent to child, the tunnel from child to parent, the tunnel from self to self. All the invisible tunnels are defined automatically.   
+**特殊通道** : 自己到自己的通道，以及父子膜之间的通道都是默认存在的、不可见的。 
 
-**Notice: Tunnel is a directed edge. If you want to transfer objects in two directions, you must define tunnel in both membranes.**
-
-
-## Rule
-Rules have their name and dimensions (if needed). The dimension of rules can be used to restrict the relationship between objects.
+## 规则
+规则由[条件](#条件)和[结果](#结果)组成，同时每个规则都可以包含多个维度：
 
 ```
 Rule r1= a -> b;  
 Rule r2= b -> ;  
 Rule r2[i]= c[i] -> d[i] f[i+1] g[i%10];  
 ```
-Also, they can be written in membrane classes or instances.   
-Rules are divided into two parts: conditions and results. 
 
-### Conditions
-#### Object Condition or Spike Condition or Symport/Antiport
+### 条件
+#### 对象条件、脉冲条件、同向反向转运条件
 ```
 Rule r= a -> ;//No result: a -> λ
 
@@ -312,69 +253,69 @@ Rule r1= a -> b;
 Rule r2= a^2 -> b;
 Rule r3[i]=a[i] -> b[i+1];
 
-Rule r41[i]= out{a[i]} -> a[i] ;//symport from outter membrane 
-Rule r42[i]= b[i] -> ( b[i], out);//antiport to outter membrane 
-Rule r43[i]= out{a[i]} b[i] -> a[i] ( b[i], out);//symport and antiport 
+Rule r41[i]= out{a[i]} -> a[i] ;//从父膜转运物质进来 
+Rule r42[i]= b[i] -> ( b[i], out);//转运物质到父膜 
+Rule r43[i]= out{a[i]} b[i] -> a[i] ( b[i], out);//同向反向转运 
 
-Rule r51[i]= in.m[i]{a[i]} -> a[i] ;//symport from inner membrane named m[i] 
-Rule r52[i]= b[i] -> ( b[i], in m[i]);//antiport to inner membrane named m[i]
-Rule r53[i]= in.m[i]{a[i]} b[i] -> a[i] ( b[i], in m[i]);//symport and antiport 
+Rule r51[i]= in.m[i]{a[i]} -> a[i] ;//从子膜m[i]转运
+Rule r52[i]= b[i] -> ( b[i], in m[i]);//转运到子膜m[i]
+Rule r53[i]= in.m[i]{a[i]} b[i] -> a[i] ( b[i], in m[i]);//同向反向转运 
 
-Rule r61[i]= go.m[i]{a[i]} -> a[i] ;//symport from neighboring membrane named m[i]
-Rule r62[i]= b[i] -> ( b[i], go m[i]);//antiport to neighboring membrane named m[i]
-Rule r63[i]= go.m[i]{a[i]} b[i] -> a[i] ( b[i], go m[i]);//symport and antiport 
+Rule r61[i]= go.m[i]{a[i]} -> a[i] ;//从邻居膜m[i]转运
+Rule r62[i]= b[i] -> ( b[i], go m[i]);//转运到邻居膜m[i]
+Rule r63[i]= go.m[i]{a[i]} b[i] -> a[i] ( b[i], go m[i]);//同向反向转运 
 ```
-In the code above, **a** and **a[i]** are Object Conditions, and **a^2** means two copy of 'a'.
+在上述代码中， **a** 、 **a[i]** 、 **a^2** 都是对象条件。
 
-#### Regular Expression Condition
+#### 正则表达式条件
 ```
 Rule r1= a(aa)*/ a^2 -> a;
 Rule r2= -a/ -a -> a;
 ```
-In the code above, **a(aa)** and **-a** are both Regular Expression Conditions. **a** and **-a** represent spike or anti-spike respectively.
+在上述代码中， **a(aa)** 和 **-a** 都是正则表达式条件. **a** 和 **-a** 分别代表正反脉冲。
 
-#### Property Condition or Status Condition
+#### 属性条件或状态条件
 ```
 Rule r= <status=1> a -> b;
 Rule r[i]=<1> a[i] -> b[i+1];
 ```
-In the code above, **<status=1>** and **<1>** are Property Conditions, and **<1>** is the same as **<status=1>**. Only status condition's name can be omitted.
+在上述代码中， **<status=1>** 和 **<1>** 都是属性条件，且两者等价。
 
-#### Inhibitor Condition
+#### 抑制剂条件
 ```
 Rule r= a -> b | !c;
 Rule r[i]= a[i] -> b[i+1] | !c[i];
 ```
-In the code above, **!c** and **!c[i]** are Inhibitor Conditions.
+在上述代码中， **!c** 和 **!c[i]** 都是抑制剂条件。若对象c存在，则r的抑制剂条件不满足，规则不可能执行；反之，则r的促进剂条件满足，规则可能执行。
 
-#### Promoter Condition
+#### 促进剂条件
 ```
 Rule r= a -> b | @c;
 Rule r[i]= a[i] -> b[i+1] | @c[i];
 ```
-In the code above, **@c** and **@c[i]** are Promoter Conditions.
+在上述代码中， **@c** 和 **@c[i]** 都是促进剂条件。若对象c存在，则r的促进剂条件满足，规则可能执行；反之，则r的促进剂条件不满足，规则不可能执行。
 
-#### Priority Condition
+#### 优先级条件
 ```
 Rule r= a -> b ,1;
 Rule r[i]= a[i] -> b[i+1] | @c[i] ,1;
 ```
-In the code above, **,1** is a Priority Condition.
+在上述代码中， **,1** 是优先级条件。
 
-#### Probabilistic Condition
+#### 规则执行概率条件
 ```
 Rule r= a -> b | probability=0.3;
 ```
-In the code above, **probability=0.3** is a Probabilistic Condition.
+在上述代码中， **probability=0.3** 是执行概率条件。规则r按照0.3的概率执行。
 
-#### Boolean Condition
+#### 布尔条件
 ```
 Rule r[i][j]= a[i] b[j] -> c[i+j] | @d & i!=j & i+j!=10;
 ```
-In the code above, **i!=j** and **i+j!=10** are Boolean Conditions.
+在上述代码中， **i!=j** 和 **i+j!=10** 都是布尔条件。
 
-### Results
-#### Object Result or Spike Result
+### 结果
+#### 对象结果或脉冲结果
 ```
 Rule r= a -> ;//No result: a -> λ
 
@@ -394,56 +335,50 @@ Rule r= a -> ( b, go d | f | g);// go one of them
 Rule r= a -> ( b, go random);
 Rule r= a -> ( b, go all);
 ```
-In the code above, **b** and **b[i+1]** are Object Results or Spike Results. And most target instructions are supported. 
+在上述代码中， **b** 和 **b[i+1]** 都是对象结果或脉冲结果。在对象结果或脉冲结果中，大多数目标指令都是支持的。
 
-#### Property Result or Status Result
+#### 属性结果或状态结果
 ```
 Rule r= a -> <2> b;
-Rule r[i]=a[i] -> <status=2> b[i+1];
+Rule r[i]= a[i] -> <status=2> b[i+1];
 ```
-In the code above, **<2>** and **<status=2>** are Property Results.
+在上述代码中， **<2>** 和 **<status=2>** 都是属性结果。
 
-#### Membrane Create Result
+#### 创建新膜结果
 ```
 Rule r1= a ->  A:subm;
 Rule r2= a ->  A:subm{ c };
 Rule r3[i]=a[i] ->  A:subm[i];
 Rule r4[i]=a[i] ->  A:subm[i]{ c[i] };
 ```
-In the code above, **A:subm**, **A:subm{ c }**, **A:subm[i]** and **A:subm[i]{ c[i] }** are Membrane Create Results. The difference between **subm** and **subm[i]** is that the name of created membranes are different, where **subm[i]** has a dimension. The difference between **A:subm** and **A:subm{ c }** is that the created membrane of **A:subm{ c }** has one more object **c** and the created membrane of **A:subm** equals to Membrane Class **A**.  
+在上述代码中， **A:subm**、 **A:subm{ c }**、 **A:subm[i]** 以及 **A:subm[i]{ c[i] }** 都是创建新膜结果。**subm** 和 **subm[i]** 的区别在于新膜的名字不同，因为 **subm[i]** 包含有一个维度。 **A:subm** 和 **A:subm{ c }** 的区别在于： **A:subm{ c }** 有一个额外的对象 **c** ，而 **A:subm** 创建的膜等价于 **A**。
 
-#### Membrane Dissolve Result
+#### 膜溶解结果
 ```
 Rule r= a -> dissolve;
 Rule r= a -> dissolve(all);
 ```
-In the code above, **dissolve** is MembraneDissolveResult and **dissolve(all)** is a MembraneDissolveAllResult. MembraneDissolveResult will dissolve current membrane and then all the content inside will be the content of parent membrane. MembraneDissolveAllResult will dissolve the current membrane and all the content inside.
+在上述代码中， **dissolve** 和 **dissolve(all)** 都是膜溶解结果。区别在于，后者会溶解膜内的全部内容（包括子膜、对象等），而前者则溶解掉了膜，而内容则变成父膜的一部分。
 
-#### Membrane Division Result
+#### 膜分裂结果
 ```
 Rule r= a -> divide({ <property=1> b },{ <property=2> c^3 });
 ```
-In the code above, **divide** is Membrane Division Result. Membrane Division Result will divide current membrane into two parts. Inside the division result, **Property Result**s and **Object Result**s can be added.
+在上述代码中， **divide** 是膜分裂结果。膜分裂结果会将当前膜分裂成两个部分。分裂结果的内部可以加入属性结果以及对象结果。
 
-#### Delayed Result
+#### 延迟结果
 ```
 Rule r= a -> delay(b,2);
 ```
-In the code above, **delay(b,2)** is a delayed result. Delayed result will be delayed to be set. Object Result, Membrane Create Result, Dissolve Result and Division Result can be delayed.
+在上述代码中，**delay(b,2)** 是一个延迟结果，其中**b**是一个对象结果，**2**是延迟的时间拍数目。延迟结果里面可以嵌入对象结果、膜创建结果、膜溶解结果、以及膜分裂结果。
 
-## Mathematical Operators
-The mathematical expression's parsing and evaluation is done by [aviator](https://github.com/killme2008/aviator). Please check the supported operators at its website https://github.com/killme2008/aviator/.
+## 支持的数学运算符号
+维度内部可以使用数学表达式来表示维度间关系。数学表达式的解析和计算均使用[aviator](https://github.com/killme2008/aviator)框架。其所支持的运算符号可以到其官网查询 https://github.com/killme2008/aviator/
 
-# Other Projects used in UPSimulator
+# UPS中使用的其他项目成果
 ## ANTLR
-ANTLR is a powerful parser generator, used to recognize UPLanguage.
-
 ## aviator
-aviator is an advanced library for high-performance, mathematical, boolean and functional expression parsing and evaluation, used to calculate the dimension relationship in UPSimulator. 
 
-# Author
-* Changsheng Quan, quancs@qq.com  or quancs@cqu.edu.cn  
-If you need any help for usage or development, or you want to make contributions to this project, please contact me.
-
-# Help Needed
-Do you have a new P system need to simulate? Are you a software developer with java skills? Do you have expertise in building software? Are you an experienced lead technical writer? Do you like contributing to open source projects? Come and join us in helping UPSimulator to thrive and universal.
+# 作者
+* Changsheng Quan, quancs@qq.com  or quancs@cqu.edu.cn
+如果你需要任何使用或者自定义方面的帮助，或者你想要对UPS项目做出贡献，都可以联系我。
