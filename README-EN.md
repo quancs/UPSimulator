@@ -4,32 +4,10 @@
 [2]	P. Guo, C. Quan, and L. Ye, “UPSimulator: A general P system simulator,” Knowl.-Based Syst., vol. 170, pp. 20–25, Apr. 2019.
 
 
-Table of Contents
-=================
-
-* [UPSimulator](#upsimulator)
-  * [Motivations](#motivations)
-  * [The main differences between PLingua and UPSimulator](#the-main-differences-between-upsimulator-and-other-simulators)
-* [UPLanguage](#uplanguage)
-* [Usages](#usages)
-  * [Required Environment](#required-environment)
-  * [Simple Usages](#simple-usages)
-  * [Skin Membrane or Simulation Environment](#skin-membrane-or-simulation-environment)
-  * [Membrane Class](#membrane-class)
-  * [Object or Spike](#object-or-spike)
-  * [Membrane Property](#membrane-property)
-  * [Tunnel](#tunnel)
-  * [Rule](#rule)
-  * [Mathematical Operators](#mathematical-operators)
-* [Other Projects used in UPSimulator](#other-projects-used-in-upsimulator)
-  * [ANTLR](#antlr)
-  * [aviator](#aviator)
-* [Author](#author)
-* [Help Needed](#help-needed)
-
 # UPSimulator
-UPSimulator is a universal and high performance simulator for membrane computing. Now, we have supported most features of cell-like P system & tissue-like P system, and basic support for neural-like P system. Visit https://github.com/quancs/UPSimulator/releases to download the [latest version](https://github.com/quancs/UPSimulator/releases).  
-Please note that: **What you simulate in UPSimulator is what you use**. We are not going to make any assumptions about the models you want to simulate, because we will never know that what kind of new P system will be proposed in the future, and what kind of new concepts the new P system will have. If you want to simulate one kind of P system whose concepts ( conditions and results and tunnels ) have already been supported by UPSimulator in **Table 2**, please just combine these conditions, results and tunnels to make it.  
+UPSimulator is a universal and high performance simulator for membrane computing. Now, we have supported most features of cell-like P system & tissue-like P system, and basic support for neural-like P system. Visit https://github.com/quancs/UPSimulator/releases to download the [latest version](https://github.com/quancs/UPSimulator/releases).
+
+The principle of UPSimulator: **What you simulate in UPSimulator is what you use**. We are not going to make any assumptions about the models you want to simulate, because we will never know that what kind of new P system will be proposed in the future, and what kind of new concepts the new P system will have. If you want to simulate one kind of P system whose concepts ( conditions and results and tunnels ) have already been supported by UPSimulator, please just combine these conditions, results and tunnels to make it.
 
 ## Motivations
 P system simulators are important tools for designing and verifying P systems. And, researchers have developed several P-system simulators such as P-Lingua (MeCoSim) and PMCGPU. But, with the development of membrane computing, many new P system models have been proposed which haven't gotten timely support. For example, cSNP systems, SNP-MC systems and tissue P systems with evolutional symport/antiport rules. Many reasons exist in this situation: the weak extensibility, too many works needed to support new models, and etc. 
@@ -39,66 +17,27 @@ To overcome this issue and provide supports for new P system models, we develope
 Usually, new P system models won't have too much differences when compared with old ones. We can support the new model by supporting the underlying concepts in the differences. As for the common concepts, they have been supported since we supported the old models. So, it's an easy work to support new models in UPSimulator. 
 
 
-## The main differences between UPSimulator and other simulators
-Several P system simulators have been proposed in the last years, such as P-Lingua, MeCoSim, and PMCGPU project. To the best of our knowledge, most of the other simulators aren't general-purpose simulators, so we don't list them here. In the table below, we put PLingua and MeCoSim in one column, because MeCoSim use pLinguaCore as its inner simulator.
-
-|       Aspect      |         PLingua(MeCoSim)       |        UPSimulator        |        PMCGPU        |
-|-------------------|-----------------------|---------------------------|---------------------------|
-| How to support models | Support models directly (Table 2) | Support models by combing different concepts (Table 1) | Support models directly. <br>Supported models: P systems with active membranes, P systems with active membranes, tissue-like P systems with cell division, Population Dynamics P systems, Enzymatic Numerical P systems<br> Some of these models are supported with many restrictions, for example the size of alphabet should below 512. |
-| Supporting new models | Hard. Need to recode almost everything for the new model.          | Easy. If the concepts in the new model exist in the old models, the new model is naturally supported. If not, only few functions need to be implemented for the new concepts in the new model. | As hard as PLingua. | 
-| User interfaces   | Command line(Graphical interfaces)          | Graphical interfaces      | Not clear. |
-| Format            | Input: PLingua language format or other format<br> Output: text format | Input: UPLanguage <br>Output: UPLanguage| Input: specific binary file<br> Output: csv file| 
-
-
-Table 1. Supported concepts in UPSimulator
-
-| Concepts                | Cell-like P system | Tissue-like P system | Neural-like P system |
-|-------------------------|--------------------|----------------------|----------------------|
-| Promoter                | √                  | √                    | √                    |
-| Inhibitor               | √                  | √                    | √                    |
-| Probability             | √                  | √                    | √                    |
-| Rule Priority           | √                  | √                    | √                    |
-| Regular Expression      | √                  | √                    | √                    |
-| Thickness               | √                  | √                    | √                    |
-| Polarity                | √                  | √                    | √                    |
-| Dissolution             | √                  | √                    | √                    |
-| Division                | √                  | √                    | √                    |
-| Creation                | √                  | √                    | √                    |
-| Symport/ Antiport       | √                  | √                    | √                    |
-| Multiple Channels       | √                  | √                    | √                    |
-| Anti-object/ Anti-spike | √                  | √                    | √                    |
-| Delay                   | √                  | √                    | √                    |
-
-Table 2. Supported models in pLingua
-
-| Classification                  | Model                                                                                                                                                                                 |
-|---------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Cell-like P system[15]          | Active membranes with division rules Active membranes with creation rules Transition P systems Symport/antiport P systems Stochastic P systems (discontinued) Probabilistic P systems |
-| Tissue-like P system [19], [20] | Tissue P systems with symport/antiport rules and division rules Tissue P systems with cell separation rules                                                                           |
-| Neural-like P system[21]        | Spiking neural P systems with division, budding and delays                                                                                                                            |
-| Other P systems                 | Simple kernel P systems                                                                                                                                                               |
-
+## Supported concepts
+Promoter, Inhibitor, Probability, Rule Priority, Regular Expression, Thickness, Dissolution, Polarity, Division, Creation of Membrane, Symport/Antiport, Multiple Channels, Object/Anti-object, Spike/Anti-spike, delay
 
 # UPLanguage
-To describe the complex rules in various types of P systems, we designed a new language called UPLanguage. UPLanguage aims to describe Cell-like P System (supported now), Tissue-like P System (supported now), Neural-like P System (supported since 2.0.0), and the mixed P system of cell-like, tissue-like and neural-like. The UPLanguage description string is the input of UPSimulator, and **the grammar file of UPL is placed in resources/grammar/UPLanguage.g4**.
+To describe the complex rules in various types of P systems, we designed a new language called UPLanguage. **The detailed grammar of UPLanguage is placed at [resources/grammar/UPLanguage.g4](https://github.com/quancs/UPSimulator/blob/master/resources/grammar/UPLanguage.g4)**.
 
-# Usages
-You can download a slide to learn how to use UPSimulator from [here](https://github.com/quancs/UPSimulator/blob/master/examples/How-to-Use-UPSimulator.pptx).
+# How to use UPSimulator
 
-## Required Environment
+## 1. Start UPSimualtor
 Java 1.8+ is required to run UPSimulator.  
 Run this software by using
 
 ```
 java -jar UPSimulator.jar
 ```
-or double click the UPSimulator.jar if you have linked jar file to JAVA.
-After you start UPSimulator:
-![image](https://github.com/quancs/UPSimulator/raw/master/examples/How-to-use-UPSimulator.png)
+or double click the UPSimulator.jar if you have linked jar file to JRE.
 
-## Simple Usages  
-Following is just a simple usage, more more supported features can be found in [Conditions](#conditions) and [Results](#results). The explanation of code follows a double slash. Save the following code to a file, and then import this file in the **Environment** column of UPSimulator. After that, initialize it by clicking "Initialize Environment". Then, Click "Run To End" to run it. If any errors have been pointed out after initialization, you can click "Check Grammar" to get an overview about the errors. **More examples can be found in [examples](https://github.com/quancs/UPSimulator/tree/master/examples).**
-### Cell-like P system
+## 2. Download examples or write your own instances
+Click [here](https://github.com/quancs/UPSimulator/tree/master/examples) to download examples, or save the examples below to files (for more detailed usage, please refer to [Conditions](#Conditions) and [Results](#Results)). In the following examples, double slash is used to make a comment of codes.
+
+#### Cell-like P system
 ```
 Membrane A{// Membrane Class A
 	//objects and rules and properties can be defined here
@@ -118,8 +57,8 @@ Environment{// skin membrane
 	Membrane A b[1];// another instance of Class A
 }
 ```
-### Tissue-like P system
-The differences between cell-like and tissue-like P system are the [Status Property](#membrane-property) and [Net Structure(tunnels)](#tunnel)
+#### Tissue-like P system
+The differences between cell-like and tissue-like P system are the [Status Property](#3.-membrane-property) and [Net Structure(tunnels)](#4.-tunnel)
 
 ```
 Membrane A{// Membrane Class A
@@ -141,8 +80,8 @@ Environment{// skin membrane
 	}
 }
 ```
-### Neural-like P system
-The differences between neural-like and tissue-like P system are the [Regular Expression Condition](#regular-expression-condition)
+#### Neural-like P system
+The differences between neural-like and tissue-like P system are the [Regular Expression Condition](#regular-expression-condition) and [Delayed Result](#delayed-result) 
 
 ```
 Environment{
@@ -162,7 +101,25 @@ Environment{
 }
 ```
 **Notice:** If you want to simulate a spiking rule like **a -> a**, which doesn't have a Regular Expression, you must write its hidden Regular Expression as showed in rule **r3**. If you don't write the hidden Regular Expression, the rule without a Regular Expression will be simulated in the way of cell-like P system.
-## Skin Membrane or Simulation Environment
+
+## 3. Import and simulate
+After starting UPSimulator, you can simulate your model by referring to the steps below:
+![image](https://github.com/quancs/UPSimulator/raw/master/examples/How-to-use-UPSimulator.png)
+
+Steps:
+- Import your model in **Environment** column
+- Select the **Environment** you want to simulate
+- Click **Initialize Environment** to initialize
+- If no errors, you can click **Run To End** to run your model till the stop of your model, or you can click **Run One Step** to run your model one more step
+- If there are some errors in the initialization step, you can click **Check Grammar** to check if there are any problems in your code (errors will be marked in red)
+
+# The detailed usage of UPLanguage
+
+## 1. Membrane
+In UPLanguage, you can use many types of membranes. You can contruct your own membrane structure by using different membranes and tunnels.
+
+
+### Skin Membrane or Simulation Environment
 There is a special membrane named "Environment" in UPL. "Environment" can be treated as a skin membrane or an environment, and only the membranes or rules in "Environment" will be simulated.
 
 ```
@@ -171,10 +128,20 @@ Environment{
 }
 ```
 
-## Membrane Class
-As class in Java and C++, membrane class is encapsulation which have a certain function for some purposes. Membrane can contain properties, sub-membranes, objects, rules.
+### Simple membrane
+```
+Environment{  
+	Membrane d{
+		//Rules, Objects, Sub-membranes, Properties, Tunnels
+	}
+	//Rules, Objects, Sub-membranes, Properties
+}  
+```
 
-### Create an Instance of one Membrane Class
+### Membrane Class
+UPLanguage is an object-oriented language. You can use it to define membrane classes with special functions. Membrane class can have properties, sub-membranes, objects, or rules.
+
+#### Create an Instance of one Membrane Class
 Create an instance is very simple. Three ways to create instances are showed in following code, where a1 and a4 equal to A, and a2 have more objects than A, and a3 contains another instance a4 of A.  
 
 ```
@@ -197,7 +164,7 @@ Environment{
 }
 ```
 
-### Extend a Membrane Class
+#### Extend a Membrane Class
 Membrane class can extends other membrane class's rules, objects, properties, sub-membranes through the following way.
 
 ```
@@ -219,18 +186,9 @@ Environment{
 	Membrane C c;
 }  
 ```
-### Create an Instance which does not belong to any Membrane Classes  
-```
-Environment{  
-	Membrane d{
-		//Rules, Objects, Sub-membranes, Properties, Tunnels
-	}
-	//Rules, Objects, Sub-membranes, Properties
-}  
-```
 
-## Object or Spike
-Spike is implemented as an object in UPSimulator. And no special symbol is used to defined a spike. So, the usage of spike is the same as object. When declare a object or spike, you need to specify its name and quantity (if more than one copy). And you can specify its dimension as well. Following is an example.
+## 2. Object or Spike
+Spike is implemented as an object in UPSimulator. Following is an example.
 
 ```
 Object a,b^2,c[1]^1,d[2][3];
@@ -257,7 +215,7 @@ Anti-object or anti-spike can be represented as follows
 ```
 Object -a,-b^2,-c[1]^1,-d[2][3];
 ```
-## Membrane Property
+## 3. Membrane Property
 Membrane property is some property on the membrane, including **polarity**, **thickness**, **status in tissue-like P system**, and other properties. Membrane property can be used to restrict the execution of rules. And the execution of rules can change properties as well. In the case below, r1 will execute while property 'p' of B equals to 1, and r2 will change the property 'p' to 2.
 
 ```
@@ -270,7 +228,7 @@ Membrane B{
 Membrane properties can also be written in instances.  
 
 
-## Tunnel
+## 4. Tunnel
 Tunnel is a path between two membranes, and it can be used to transfer objects. Tunnels can be defined in following way:
 
 ```
@@ -292,8 +250,8 @@ Environment{
 **Notice: Tunnel is a directed edge. If you want to transfer objects in two directions, you must define tunnel in both membranes.**
 
 
-## Rule
-Rules have their name and dimensions (if needed). The dimension of rules can be used to restrict the relationship between objects.
+## 5. Rule
+Rules are formed by [Conditions](#Conditions) and [Results](#Results), and each rule can have many dimensions：
 
 ```
 Rule r1= a -> b;  
@@ -301,7 +259,6 @@ Rule r2= b -> ;
 Rule r2[i]= c[i] -> d[i] f[i+1] g[i%10];  
 ```
 Also, they can be written in membrane classes or instances.   
-Rules are divided into two parts: conditions and results. 
 
 ### Conditions
 #### Object Condition or Spike Condition or Symport/Antiport
